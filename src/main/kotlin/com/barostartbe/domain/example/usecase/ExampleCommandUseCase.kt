@@ -1,6 +1,8 @@
 package com.barostartbe.domain.example.usecase
 
 import com.barostartbe.domain.example.domain.Example
+import com.barostartbe.domain.example.dto.request.ExampleReq
+import com.barostartbe.domain.example.dto.response.ExampleRes
 import com.barostartbe.domain.example.error.ExampleNotFoundException
 import com.barostartbe.domain.example.repository.ExampleRepository
 import com.barostartbe.global.annotation.CommandUseCase
@@ -12,7 +14,11 @@ class ExampleCommandUseCase(
 ) {
 
     // 새로운 예제 데이터 생성
-    fun create(entity: Example): Example = exampleRepository.save(entity)
+    fun create(exampleReq : ExampleReq): ExampleRes {
+        val entity = Example.from(exampleReq)
+        exampleRepository.save(entity)
+        return ExampleRes.from(entity)
+    }
 
     // 예제 데이터 삭제
     fun delete(id: Long) {

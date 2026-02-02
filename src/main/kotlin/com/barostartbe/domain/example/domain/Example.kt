@@ -1,5 +1,6 @@
 package com.barostartbe.domain.example.domain
 
+import com.barostartbe.domain.example.dto.request.ExampleReq
 import jakarta.persistence.*
 
 @Entity
@@ -13,4 +14,12 @@ class Example(
     // 이름
     @Column(nullable = false, length = 100)
     val name: String
-)
+) {
+    companion object {
+        fun from(exampleReq: ExampleReq): Example {
+            return Example(
+                name = exampleReq.name
+            )
+        }
+    }
+}

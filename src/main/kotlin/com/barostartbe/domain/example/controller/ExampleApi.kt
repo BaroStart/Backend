@@ -1,6 +1,6 @@
 package com.barostartbe.domain.example.controller
 
-import com.barostartbe.domain.example.domain.Example
+import com.barostartbe.domain.example.dto.response.ExampleRes
 import com.barostartbe.global.response.ApiResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -17,12 +17,12 @@ interface ExampleApi {
     // 예제 데이터 목록을 조회합니다
     @GetMapping
     @Operation(summary = "예제 데이터 목록 조회", description = "모든 예제 데이터를 조회합니다.")
-    fun getAll(): ResponseEntity<ApiResponse<MutableList<Example>>>
+    fun getAll(): ResponseEntity<ApiResponse<MutableList<ExampleRes>>>
 
     // ID로 특정 예제 데이터를 조회합니다
     @GetMapping("/{id}")
     @Operation(summary = "예제 데이터 단건 조회", description = "ID로 특정 예제 데이터를 조회합니다.")
     fun getById(
         @Parameter(description = "조회할 예제 ID", required = true, example = "1") @PathVariable id: Long?
-    ): ResponseEntity<ApiResponse<Example>>
+    ): ResponseEntity<ApiResponse<ExampleRes>>
 }
