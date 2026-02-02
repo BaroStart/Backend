@@ -23,7 +23,7 @@ class ExampleQueryUseCaseTest : DescribeSpec({
         context("ID로 예제 데이터를 조회할 때") {
             val exampleId = 1L
             val name = "조회할 예제"
-            val expectedEntity = Example(id = exampleId, name = name)
+            val expectedEntity = Example(name = name)
 
             it("예제 데이터가 존재하면 해당 데이터를 반환한다") {
                 every { exampleRepository.findByIdOrNull(exampleId) } returns expectedEntity
@@ -49,9 +49,9 @@ class ExampleQueryUseCaseTest : DescribeSpec({
         context("모든 예제 데이터를 조회할 때") {
             it("여러 예제 데이터가 존재하면 모든 데이터를 반환한다") {
                 val exampleList = mutableListOf(
-                    Example(id = 1L, name = "예제1"),
-                    Example(id = 2L, name = "예제2"),
-                    Example(id = 3L, name = "예제3")
+                    Example(name = "예제1"),
+                    Example(name = "예제2"),
+                    Example(name = "예제3")
                 )
                 every { exampleRepository.findAll() } returns exampleList
 

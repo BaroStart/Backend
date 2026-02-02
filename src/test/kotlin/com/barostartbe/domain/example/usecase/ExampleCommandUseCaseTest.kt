@@ -23,7 +23,7 @@ class ExampleCommandUseCaseTest : DescribeSpec({
         context("예제 데이터를 생성할 때") {
             val name = "테스트 예제"
             val exampleReq = ExampleReq(name = name)
-            val savedEntity = Example(id = 1L, name = name)
+            val savedEntity = Example(name = name)
 
             it("예제 데이터가 성공적으로 저장되면 ExampleRes를 반환한다") {
                 every { exampleRepository.save(any()) } returns savedEntity
@@ -37,7 +37,7 @@ class ExampleCommandUseCaseTest : DescribeSpec({
 
         context("예제 데이터를 삭제할 때") {
             val exampleId = 1L
-            val existingEntity = Example(id = exampleId, name = "삭제할 예제")
+            val existingEntity = Example(name = "삭제할 예제")
 
             it("예제 데이터가 존재하면 성공적으로 삭제된다") {
                 every { exampleRepository.findByIdOrNull(exampleId) } returns existingEntity
