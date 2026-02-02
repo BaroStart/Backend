@@ -56,6 +56,9 @@ dependencies {
     implementation("com.oracle.oci.sdk:oci-java-sdk-objectstorage:3.79.0")
     implementation("com.oracle.oci.sdk:oci-java-sdk-common-httpclient-jersey3:3.79.0")
 
+    // Logger
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
+
     // Spring Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
