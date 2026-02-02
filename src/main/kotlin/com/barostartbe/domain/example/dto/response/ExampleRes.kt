@@ -1,6 +1,6 @@
 package com.barostartbe.domain.example.dto.response
 
-import com.barostartbe.domain.example.domain.Example
+import com.barostartbe.domain.example.entity.Example
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "예제 응답 DTO")

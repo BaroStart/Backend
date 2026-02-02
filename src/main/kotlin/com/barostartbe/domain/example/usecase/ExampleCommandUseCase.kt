@@ -1,6 +1,6 @@
 package com.barostartbe.domain.example.usecase
 
-import com.barostartbe.domain.example.domain.Example
+import com.barostartbe.domain.example.entity.Example
 import com.barostartbe.domain.example.dto.request.ExampleReq
 import com.barostartbe.domain.example.dto.response.ExampleRes
 import com.barostartbe.domain.example.error.ExampleNotFoundException

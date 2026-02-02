@@ -1,4 +1,4 @@
-package com.barostartbe.domain.example.domain
+package com.barostartbe.domain.example.entity
 
 import com.barostartbe.domain.example.dto.request.ExampleReq
 import jakarta.persistence.*

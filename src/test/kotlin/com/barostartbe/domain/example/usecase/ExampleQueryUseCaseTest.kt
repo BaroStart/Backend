@@ -1,6 +1,6 @@
 package com.barostartbe.domain.example.usecase
 
-import com.barostartbe.domain.example.domain.Example
+import com.barostartbe.domain.example.entity.Example
 import com.barostartbe.domain.example.error.ExampleNotFoundException
 import com.barostartbe.domain.example.repository.ExampleRepository
 import io.kotest.assertions.throwables.shouldThrow
