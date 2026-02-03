@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
 
-@RequestMapping("/storages")
+@RequestMapping("api/v1/storages")
 @Tag(name = "Object Storage API", description = "OCI Object Storage 관리 API")
 interface ObjectStorageApi {
 
