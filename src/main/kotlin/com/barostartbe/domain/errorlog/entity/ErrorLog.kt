@@ -6,7 +6,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Table
 
 @Entity
-@Table(name = "error_log")
+@Table(name = "error_logs")
 class ErrorLog(
 
     @Column(nullable = false)
