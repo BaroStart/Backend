@@ -34,4 +34,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: baroit/baroit-be:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/baroit-be:latest
