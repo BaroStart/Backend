@@ -1,0 +1,21 @@
+name: 바로잇 CD 파이프라인
+
+on:
+  workflow_run:
+    workflows: [ "바로잇 CI 파이프라인" ]
+    types:
+      - completed
+
+jobs:
+  depploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 배포
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_IP }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_IDENTITYFILE }}
+          port: ${{ secrets.REMOTE_PORT }}
+          script: |
+            sudo ./deploy.sh
