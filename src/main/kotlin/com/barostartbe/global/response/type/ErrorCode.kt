@@ -5,6 +5,8 @@ enum class ErrorCode(
     val code: String,
     val message: String,
 ) {
+    LOGIN_ID_DUPLICATED(400, "LOGIN_ID_DUPLICATED", "로그인 아이디가 중복됩니다."),
+
     PASSWORD_MISMATCH(403, "PASSWORD_MISMATCH", "패스워드가 일치하지 않습니다."),
 
     TOKEN_EXPIRED(403, "TOKEN_EXPIRED", "토큰의 만료시간이 지났습니다."),

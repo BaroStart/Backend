@@ -4,6 +4,8 @@ import com.barostartbe.domain.auth.dto.SignupRequestDto
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.domain.user.repository.UserRepository
 import com.barostartbe.global.annotation.CommandUseCase
+import com.barostartbe.global.error.exception.ServiceException
+import com.barostartbe.global.response.type.ErrorCode
 import org.springframework.security.crypto.password.PasswordEncoder
 
 @CommandUseCase
@@ -13,7 +15,7 @@ class AuthCommandUseCase(
 ) {
     fun createUser(request: SignupRequestDto){
         if (userRepository.existsUserByLoginId(request.loginId)) {
-            return
+            throw ServiceException(ErrorCode.LOGIN_ID_DUPLICATED)
         }
         val user = User.from(request)
         user.password = passwordEncoder.encode(request.password).toString()
