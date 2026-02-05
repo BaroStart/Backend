@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.OncePerRequestFilter
+import java.time.Duration
 
 class JwtAuthenticationFilter(
     val jwtUtil: JwtUtil,
@@ -37,9 +38,14 @@ class JwtAuthenticationFilter(
         SecurityContextHolder.getContext().authentication =
             UsernamePasswordAuthenticationToken(user,  "password", user.authorities)
 
+        saveAccessSessionInRedis(user.loginId!!)
+
         filterChain.doFilter(request, response)
     }
 
     fun isLogoutToken(tokenId: String): Boolean = redisTemplate.hasKey("redis::logout::$tokenId")
+
+    fun saveAccessSessionInRedis(loginId: String) = redisTemplate.opsForValue().set("active::user::$loginId", true,
+        Duration.ofMinutes(10))
 
 }
