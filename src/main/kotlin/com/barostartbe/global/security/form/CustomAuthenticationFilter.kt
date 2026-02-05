@@ -39,7 +39,7 @@ class CustomAuthenticationFilter(
                 request.setAttribute("requestBody", loginRequestDto)
 
                 val authentication = customAuthenticationManager.authenticate(
-                    UsernamePasswordAuthenticationToken(loginRequestDto.loginId, loginRequestDto.password, listOf<GrantedAuthority>())
+                    UsernamePasswordAuthenticationToken(loginRequestDto.loginId!!, loginRequestDto.password, listOf<GrantedAuthority>())
                 )
                 SecurityContextHolder.getContext().authentication = authentication
             }
