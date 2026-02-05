@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.security.SecurityRequirement
 import io.swagger.v3.oas.models.security.SecurityScheme
 import io.swagger.v3.oas.models.servers.Server
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -18,7 +19,10 @@ import org.springframework.context.annotation.Configuration
     )
 )
 @Configuration
-class SwaggerConfig {
+class SwaggerConfig(
+    @Value("\${app.server.url}")
+    private val serverUrl: String
+) {
 
     @Bean
     fun openApi(): OpenAPI {
@@ -34,7 +38,7 @@ class SwaggerConfig {
         )
 
         return OpenAPI()
-            .addServersItem(Server().url("/"))
+            .addServersItem(Server().url(serverUrl))
             .addSecurityItem(securityRequirement)
             .components(components)
     }

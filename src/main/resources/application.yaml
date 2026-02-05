@@ -42,3 +42,8 @@ oci:
     name: ${OCI_BUCKET_NAME}
     namespace: ${OCI_BUCKET_NAMESPACE}
 
+app:
+  server:
+    url: ${APP_SERVER_URL}
+  service:
+    url: ${APP_SERVICE_URL}
