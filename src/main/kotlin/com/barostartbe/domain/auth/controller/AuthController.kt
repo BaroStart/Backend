@@ -1,5 +1,6 @@
 package com.barostartbe.domain.auth.controller
 
+import com.barostartbe.domain.auth.dto.LoginRequestDto
 import com.barostartbe.domain.auth.dto.TokenPairResponseDto
 import com.barostartbe.domain.auth.dto.SignupRequestDto
 import com.barostartbe.domain.auth.usecase.AuthCommandUseCase
@@ -15,7 +16,7 @@ class AuthController(
     val authCommandUseCase: AuthCommandUseCase,
 ) : AuthApi {
 
-    override fun login(request: HttpServletRequest): ResponseEntity<ApiResponse<TokenPairResponseDto>> = ApiResponse.success(SuccessCode.REQUEST_OK, authCommandUseCase.login(request))
+    override fun login(request: HttpServletRequest, @io.swagger.v3.oas.annotations.parameters.RequestBody body: LoginRequestDto): ResponseEntity<ApiResponse<TokenPairResponseDto>> = ApiResponse.success(SuccessCode.REQUEST_OK, authCommandUseCase.login(request))
 
     override fun signup(@RequestBody request: SignupRequestDto): ResponseEntity<ApiResponse<String>> {
         authCommandUseCase.createUser(request)
