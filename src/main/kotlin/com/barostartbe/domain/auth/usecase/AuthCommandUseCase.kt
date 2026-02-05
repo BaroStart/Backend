@@ -11,11 +11,11 @@ import org.springframework.security.crypto.password.PasswordEncoder
 @CommandUseCase
 class AuthCommandUseCase(
     val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder
+    val passwordEncoder: PasswordEncoder
 ) {
     fun createUser(request: SignupRequestDto){
         if (userRepository.existsUserByLoginId(request.loginId)) {
-            throw ServiceException(ErrorCode.LOGIN_ID_DUPLICATED)
+            throw ServiceException(ErrorCode.DUPLICATED_LOGIN_ID)
         }
         val user = User.from(request)
         user.password = passwordEncoder.encode(request.password).toString()
