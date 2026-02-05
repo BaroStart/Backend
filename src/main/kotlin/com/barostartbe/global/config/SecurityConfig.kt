@@ -50,7 +50,7 @@ class SecurityConfig(
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
 
         val whitelist = listOf<String>(
-            "/api/v1/login", "/api/v1/signup",
+            "/api/v1/login", "/api/v1/signup", "/api/v1/refresh/**",
             "/v3/api-docs/**",
             "/swagger-ui/**"
         )

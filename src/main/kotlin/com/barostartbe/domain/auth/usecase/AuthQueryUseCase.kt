@@ -1,8 +1,6 @@
 package com.barostartbe.domain.auth.usecase
 
-import com.barostartbe.domain.auth.dto.LoginRequestDto
 import com.barostartbe.domain.auth.dto.TokenPairResponseDto
-import com.barostartbe.domain.user.entity.AccessLog
 import com.barostartbe.domain.user.repository.UserRepository
 import com.barostartbe.global.annotation.QueryUseCase
 import com.barostartbe.global.error.exception.ServiceException
@@ -23,7 +21,8 @@ class AuthQueryUseCase(
     fun regenerateToken(refreshToken: String): TokenPairResponseDto{
         val claims = jwtUtil.getClaimsFromToken(refreshToken);
 
-        val token = redisTemplate.opsForValue().get("redis::refresh::${claims.subject}").toString()
+        val token = redisTemplate.opsForValue().get("redis::refresh::${claims.subject}")?.toString()
+            ?: throw ServiceException(ErrorCode.INVALID_TOKEN)
 
         return if (token.equals(refreshToken)){
 
@@ -54,7 +53,7 @@ class AuthQueryUseCase(
 
         val claims = jwtUtil.getClaimsFromToken(access)
 
-        redisTemplate.delete(claims.subject)
+        redisTemplate.delete("redis::refresh::${claims.subject}")
         redisTemplate.opsForValue().set("redis::logout::${claims.id}", true, Duration.ofMinutes(30))
     }
 }
