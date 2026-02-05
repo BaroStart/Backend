@@ -2,6 +2,7 @@ package com.barostartbe.domain.auth.controller
 
 import com.barostartbe.domain.auth.dto.LoginRequestDto
 import com.barostartbe.domain.auth.dto.SignupRequestDto
+import com.barostartbe.domain.auth.dto.SignupResponseDto
 import com.barostartbe.domain.auth.dto.TokenPairResponseDto
 import com.barostartbe.global.response.ApiResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -23,7 +24,7 @@ interface AuthApi {
 
     @PostMapping("/signup")
     @Operation(summary = "회원가입 api", description = "회원 정보를 db에 저장한다.")
-    fun signup(@RequestBody request: SignupRequestDto): ResponseEntity<ApiResponse<String>>
+    fun signup(@RequestBody request: SignupRequestDto): ResponseEntity<ApiResponse<SignupResponseDto>>
 
     @GetMapping("/logout")
     @Operation(summary = "로그아웃 api", description = "회원의 access 토큰을 무효화시킨다.")

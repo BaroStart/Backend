@@ -2,6 +2,7 @@ package com.barostartbe.domain.auth.usecase
 
 import com.barostartbe.domain.auth.dto.LoginRequestDto
 import com.barostartbe.domain.auth.dto.SignupRequestDto
+import com.barostartbe.domain.auth.dto.SignupResponseDto
 import com.barostartbe.domain.auth.dto.TokenPairResponseDto
 import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.mentor.entity.Mentor
@@ -21,7 +22,7 @@ class AuthCommandUseCase(
     val accessLogRepository: AccessLogRepository,
     val passwordEncoder: PasswordEncoder
 ) {
-    fun createUser(request: SignupRequestDto){
+    fun createUser(request: SignupRequestDto): SignupResponseDto{
         if (userRepository.existsUserByLoginId(request.loginId)) {
             throw ServiceException(ErrorCode.DUPLICATED_LOGIN_ID)
         }
@@ -32,7 +33,9 @@ class AuthCommandUseCase(
         }
         user.password = passwordEncoder.encode(request.password).toString()
 
-        userRepository.save(user)
+        val savedUser = userRepository.save(user)
+
+        return SignupResponseDto(savedUser.id!!)
     }
 
     fun login(request: HttpServletRequest): TokenPairResponseDto {

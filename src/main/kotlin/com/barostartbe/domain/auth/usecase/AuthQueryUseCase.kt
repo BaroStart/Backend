@@ -41,7 +41,7 @@ class AuthQueryUseCase(
 
         saveRefreshTokenInRedis(loginId, refresh)
 
-        return TokenPairResponseDto(access, refresh)
+        return TokenPairResponseDto(user.id, access, refresh)
     }
 
     fun saveRefreshTokenInRedis(loginId: String, refreshToken: String){
@@ -49,7 +49,9 @@ class AuthQueryUseCase(
     }
 
     fun logout(request: HttpServletRequest){
-        val access = request.getHeader("Authorization").substringAfter("Bearer ")
+        val access = request.getHeader("Authorization")
+            ?.substringAfter("Bearer ")
+            ?: throw ServiceException(ErrorCode.INVALID_TOKEN)
 
         val claims = jwtUtil.getClaimsFromToken(access)
 
