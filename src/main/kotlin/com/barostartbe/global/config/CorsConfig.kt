@@ -8,14 +8,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 @Configuration
 class CorsConfig(
     @Value("\${app.service.url}")
-    private val serviceUrl: String
+    private val serviceUrl: String,
+
+    @Value("\${app.server.url}")
+    private val serverUrl: String
 ) : WebMvcConfigurer {
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**").apply {
             allowedMethods("OPTIONS", "HEAD", "GET", "POST", "PUT", "PATCH", "DELETE")
             allowCredentials(true)
-            allowedOrigins("http://localhost:3000", serviceUrl)
+            allowedOrigins("http://localhost:3000", serviceUrl, serverUrl)
             allowedHeaders("*")
         }
     }
