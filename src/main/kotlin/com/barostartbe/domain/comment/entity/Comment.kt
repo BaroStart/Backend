@@ -16,4 +16,9 @@ class Comment (
 
     var content: String? = null
 ): BaseEntity(){
+    companion object{
+        fun of(mentee: Mentee, content: String): Comment{
+            return Comment(mentee, content)
+        }
+    }
 }

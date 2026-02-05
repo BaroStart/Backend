@@ -21,4 +21,14 @@ class SubComment(
     var content: String? = null
 ): BaseEntity() {
 
+    companion object{
+        fun of(user: User, comment: Comment, content: String): SubComment{
+            return SubComment(
+                user = user,
+                comment = comment,
+                content = content
+            )
+        }
+    }
+
 }

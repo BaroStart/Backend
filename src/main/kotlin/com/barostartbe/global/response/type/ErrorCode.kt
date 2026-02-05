@@ -11,6 +11,8 @@ enum class ErrorCode(
 
     UNMATCHED_PAIR(400, "UNMATCHED_PAIR", "매칭되지 않은 멘토, 멘티 쌍입니다."),
 
+    NO_AUTH(403, "NO_AUTH", "권한이 없습니다."),
+
     PASSWORD_MISMATCH(403, "PASSWORD_MISMATCH", "패스워드가 일치하지 않습니다."),
 
     TOKEN_EXPIRED(403, "TOKEN_EXPIRED", "토큰의 만료시간이 지났습니다."),
