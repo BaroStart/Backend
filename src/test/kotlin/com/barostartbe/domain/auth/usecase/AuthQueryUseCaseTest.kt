@@ -94,7 +94,7 @@ class AuthQueryUseCaseTest : BehaviorSpec({
 
                 every { request.getHeader("Authorization") } returns "Bearer access-token"
                 every { jwtUtil.getClaimsFromToken("access-token") } returns claims
-                every { redisTemplate.delete("testUser") } returns true
+                every { redisTemplate.delete("redis::refresh::testUser") } returns true
                 every {
                     valueOps.set(
                         "redis::logout::jwt-id",
@@ -106,7 +106,7 @@ class AuthQueryUseCaseTest : BehaviorSpec({
                 authQueryUseCase.logout(request)
 
                 verify {
-                    redisTemplate.delete("testUser")
+                    redisTemplate.delete("redis::refresh::testUser")
                     valueOps.set(
                         "redis::logout::jwt-id",
                         true,
