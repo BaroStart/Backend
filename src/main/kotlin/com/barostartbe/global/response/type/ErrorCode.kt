@@ -5,7 +5,11 @@ enum class ErrorCode(
     val code: String,
     val message: String,
 ) {
+    BAD_PARAMETER(400, "BAD_PARAMETER", "잘못된 파라미터 전달"),
+
     DUPLICATED_LOGIN_ID(400, "LOGIN_ID_DUPLICATED", "로그인 아이디가 중복됩니다."),
+
+    UNMATCHED_PAIR(400, "UNMATCHED_PAIR", "매칭되지 않은 멘토, 멘티 쌍입니다."),
 
     PASSWORD_MISMATCH(403, "PASSWORD_MISMATCH", "패스워드가 일치하지 않습니다."),
 
@@ -16,6 +20,8 @@ enum class ErrorCode(
     EXAMPLE_NOT_FOUND(404, "EXAMPLE_NOT_FOUND", "예제를 찾을 수 없습니다."),
 
     USER_NOT_FOUND(404, "USER_NOT_FOUND", "유저를 찾을 수 없습니다."),
+
+    NOT_FOUND(404, "NOT_FOUND", "엔티티를 찾을 수 없습니다."),
 
     INTERNAL_SERVER_ERROR(500, "INTERNAL_SERVER_ERROR", "서버 오류가 발생했습니다."),
 }

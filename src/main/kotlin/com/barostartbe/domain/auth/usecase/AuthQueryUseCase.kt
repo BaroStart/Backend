@@ -2,6 +2,7 @@ package com.barostartbe.domain.auth.usecase
 
 import com.barostartbe.domain.auth.dto.LoginRequestDto
 import com.barostartbe.domain.auth.dto.TokenPairResponseDto
+import com.barostartbe.domain.user.entity.AccessLog
 import com.barostartbe.domain.user.repository.UserRepository
 import com.barostartbe.global.annotation.QueryUseCase
 import com.barostartbe.global.error.exception.ServiceException
@@ -18,14 +19,6 @@ class AuthQueryUseCase(
     val jwtUtil: JwtUtil,
     val redisTemplate: RedisTemplate<String, Any>
 ){
-    fun login(request: HttpServletRequest): TokenPairResponseDto {
-        val requestDto: LoginRequestDto = request.getAttribute("requestBody") as LoginRequestDto
-
-        val user = userRepository.findUserByLoginId(requestDto.loginId)
-            ?: throw ServiceException(ErrorCode.USER_NOT_FOUND)
-
-        return generateTokenPairAndSaveRefreshTokenInRedis(user.loginId)
-    }
 
     fun regenerateToken(refreshToken: String): TokenPairResponseDto{
         val claims = jwtUtil.getClaimsFromToken(refreshToken);
