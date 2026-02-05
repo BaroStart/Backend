@@ -21,7 +21,8 @@ class AuthQueryUseCase(
     fun regenerateToken(refreshToken: String): TokenPairResponseDto{
         val claims = jwtUtil.getClaimsFromToken(refreshToken);
 
-        val token = redisTemplate.opsForValue().get("redis::refresh::${claims.subject}").toString()
+        val token = redisTemplate.opsForValue().get("redis::refresh::${claims.subject}")?.toString()
+            ?: throw ServiceException(ErrorCode.INVALID_TOKEN)
 
         return if (token.equals(refreshToken)){
 

@@ -9,6 +9,7 @@ import com.barostartbe.global.response.type.SuccessCode
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -28,4 +29,7 @@ class AuthController(
         authQueryUseCase.logout(request)
         return ApiResponse.success(SuccessCode.REQUEST_OK, "로그아웃 되었습니다.")
     }
+
+    override fun refresh(@RequestParam token: String): ResponseEntity<ApiResponse<TokenPairResponseDto>> =
+        ApiResponse.success(SuccessCode.REQUEST_OK, authQueryUseCase.regenerateToken(token))
 }
