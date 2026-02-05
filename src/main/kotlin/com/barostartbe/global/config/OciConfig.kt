@@ -10,19 +10,23 @@ import java.io.FileInputStream
 import java.io.InputStream
 import java.util.function.Supplier
 
-@Deprecated("Oracle Cloud Infrastructure 기능 미구현")
-//@Configuration
+@Configuration
 class OciConfig(
     @Value("\${oci.tenant-id}")
     private val tenantId: String,
+
     @Value("\${oci.user-id}")
     private val userId: String,
+
     @Value("\${oci.fingerprint}")
     private val fingerprint: String,
+
     @Value("\${oci.private-key-path}")
     private val privateKeyPath: String,
+
     @Value("\${oci.region}")
     private val region: String,
+
     @Value("\${oci.bucket.namespace}")
     private val bucketNamespace: String
 ) {
