@@ -61,12 +61,9 @@ class MenteeQueryUseCase(
     fun getLastAccessTime(menteeId: Long): Int {
         val accessLog = accessLogRepository.findFirstByUserIdOrderByCreatedAtDesc(menteeId)
             ?: throw ServiceException(ErrorCode.NOT_FOUND)
-        val day = ChronoUnit.DAYS.between(accessLog.createdAt, LocalDateTime.now())
-        return if (day > 0) {
-            day.toInt()
-        } else {
-            ChronoUnit.HOURS.between(accessLog.createdAt, LocalDateTime.now()).toInt()
-        }
+
+        return ChronoUnit.HOURS.between(accessLog.createdAt, LocalDateTime.now()).toInt()
+
     }
 
     fun getMentoringStartDate(mentor: Mentor, mentee: Mentee): String {
