@@ -14,6 +14,6 @@ class Comment (
     @JoinColumn(name = "mentee_id")
     var mentee: Mentee? = null,
 
-    var comment: String? = null
+    var content: String? = null
 ): BaseEntity(){
 }
