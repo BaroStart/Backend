@@ -38,7 +38,7 @@ class AuthCommandUseCase(
     fun login(request: HttpServletRequest): TokenPairResponseDto {
         val requestDto: LoginRequestDto = request.getAttribute("requestBody") as LoginRequestDto
 
-        val user = userRepository.findUserByLoginId(requestDto.loginId)
+        val user = userRepository.findUserByLoginId(requestDto.loginId!!)
             ?: throw ServiceException(ErrorCode.USER_NOT_FOUND)
 
         saveAccessLog(user.id!!)
