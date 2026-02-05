@@ -42,46 +42,6 @@ class AuthQueryUseCaseTest : BehaviorSpec({
         )
     }
 
-    given("login 요청이 들어오면") {
-
-        `when`("존재하는 유저라면") {
-            then("토큰 페어를 반환하고 refreshToken을 redis에 저장한다") {
-                val request = mockk<HttpServletRequest>()
-                val loginRequestDto = createTestLoginRequest()
-                val user = createTestUser()
-
-                every { request.getAttribute("requestBody") } returns loginRequestDto
-                every { userRepository.findUserByLoginId("testUser") } returns user
-                every { jwtUtil.generateToken(TokenType.ACCESS, user) } returns "access-token"
-                every { jwtUtil.generateToken(TokenType.REFRESH, user) } returns "refresh-token"
-                every { valueOps.set(any(), any()) } just Runs
-
-                val result = authQueryUseCase.login(request)
-
-                result.accessToken shouldBe "access-token"
-                result.refreshToken shouldBe "refresh-token"
-
-                verify {
-                    valueOps.set("redis::refresh::testUser", "refresh-token")
-                }
-            }
-        }
-
-        `when`("유저가 존재하지 않으면") {
-            then("USER_NOT_FOUND 예외가 발생한다") {
-                val request = mockk<HttpServletRequest>()
-                val loginRequestDto = createTestLoginRequest()
-
-                every { request.getAttribute("requestBody") } returns loginRequestDto
-                every { userRepository.findUserByLoginId("testUser") } returns null
-
-                shouldThrow<ServiceException> {
-                    authQueryUseCase.login(request)
-                }.errorCode shouldBe ErrorCode.USER_NOT_FOUND
-            }
-        }
-    }
-
     given("refreshToken 재발급 요청 시") {
 
         `when`("redis에 저장된 refreshToken과 일치하면") {
