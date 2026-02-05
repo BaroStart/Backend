@@ -24,6 +24,14 @@ spring:
     show_sql: false
     open-in-view: false
 
+jwt:
+  secret: {JWT_SECRET}
+  issuer: {JWT_ISSUER}
+  token:
+    expire: {JWT_TOKEN_EXPIRE}
+  refresh:
+    expire: {JWT_REFRESH_EXPIRE}
+
 oci:
   tenant-id: ${OCI_TENANT_ID}
   user-id: ${OCI_USER_ID}
@@ -33,3 +41,4 @@ oci:
   bucket:
     name: ${OCI_BUCKET_NAME}
     namespace: ${OCI_BUCKET_NAMESPACE}
+

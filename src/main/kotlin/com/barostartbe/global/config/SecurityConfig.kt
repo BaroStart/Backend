@@ -1,7 +1,16 @@
 package com.barostartbe.global.config
 
+import com.barostartbe.domain.user.repository.UserRepository
+import com.barostartbe.global.security.form.CustomAuthenticationFilter
+import com.barostartbe.global.security.form.CustomAuthenticationManager
+import com.barostartbe.global.security.form.CustomAuthenticationProvider
+import com.barostartbe.global.security.form.CustomUserDetailService
+
+import com.barostartbe.global.security.jwt.JwtAuthenticationFilter
+import com.barostartbe.global.security.jwt.JwtUtil
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -10,25 +19,50 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.AuthenticationConverter
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.authentication.www.BasicAuthenticationConverter
+import tools.jackson.databind.json.JsonMapper
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-) {
+    val jwtUtil: JwtUtil,
+    val userRepository: UserRepository,
+    val userDetailService: CustomUserDetailService,
+    val objectMapper: JsonMapper,
+    val redisTemplate: RedisTemplate<String, Any>
+    ) {
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
+    fun customAuthenticationManager(): CustomAuthenticationManager = CustomAuthenticationManager(customAuthenticationProvider())
+
+    @Bean
+    fun customAuthenticationProvider(): CustomAuthenticationProvider = CustomAuthenticationProvider(userDetailService, passwordEncoder())
+
+    @Bean
+    fun authenticationConverter() : AuthenticationConverter = BasicAuthenticationConverter()
+
+    @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+
+        val whitelist = listOf<String>(
+            "/api/v1/login", "/api/v1/signup",
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
+        )
 
         http {
             httpBasic { disable() }
-            formLogin { disable() }
+            formLogin { disable()}
             cors { }
             csrf { disable() }
             sessionManagement { SessionCreationPolicy.STATELESS }
-
+            addFilterBefore<UsernamePasswordAuthenticationFilter>(JwtAuthenticationFilter(jwtUtil, userRepository, redisTemplate))
+            addFilterBefore<JwtAuthenticationFilter>(CustomAuthenticationFilter(customAuthenticationManager(), objectMapper, authenticationConverter()))
         }
 
         http {
@@ -37,15 +71,16 @@ class SecurityConfig(
                 // CORS preflight
                 authorize(HttpMethod.OPTIONS, "/**", permitAll)
 
-                // swagger
-                authorize("/v3/api-docs/**", permitAll)
-                authorize("/swagger-ui/**", permitAll)
+                whitelist.forEach { pattern ->
+                    authorize(pattern, permitAll)
+                }
 
-                //example
-                authorize("/api/v1/examples/**", permitAll)
+                authorize ("/mentor/**", hasRole("MENTOR"))
+                authorize ("/mentee/**", hasRole("MENTEE"))
+                authorize ("/admin/**", hasRole("ADMIN"))
 
                 // default
-                authorize(anyRequest, denyAll)
+                authorize(anyRequest, authenticated)
             }
         }
 
