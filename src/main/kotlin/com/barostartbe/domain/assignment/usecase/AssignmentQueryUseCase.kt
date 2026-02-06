@@ -52,17 +52,16 @@ class AssignmentQueryUseCase(
                 fileType = AssignmentFileType.MATERIAL
             )
             .map { assignmentFile ->
-                val downloadUrl = assignmentFile.filePath
-                    .takeIf { it.isNotBlank() }
-                    ?.let {
-                        getPreAuthenticatedUrl.execute(
-                            it
-                        ).url
-                }
+                val downloadUrl = assignmentFile.url
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { objectKeyOrPath ->
+                        getPreAuthenticatedUrl.execute(objectKeyOrPath).url
+                    }
+
                 AssignmentFileRes(
                     assignmentFileId = assignmentFile.id!!,
                     fileType = assignmentFile.fileType.name,
-                    downloadUrl = null
+                    downloadUrl = downloadUrl
                 )
             }
 
@@ -74,18 +73,16 @@ class AssignmentQueryUseCase(
                     fileType = AssignmentFileType.SUBMISSION
                 )
                 .map { assignmentFile ->
-                    val downloadUrl = assignmentFile.filePath
-                        .takeIf { it.isNotBlank() }
-                        ?.let {
-                            getPreAuthenticatedUrl.execute(
-                                it
-                            ).url
+                    val downloadUrl = assignmentFile.url
+                        ?.takeIf { it.isNotBlank() }
+                        ?.let { objectKeyOrPath ->
+                            getPreAuthenticatedUrl.execute(objectKeyOrPath).url
                         }
 
                     AssignmentFileRes(
                         assignmentFileId = assignmentFile.id!!,
                         fileType = assignmentFile.fileType.name,
-                        downloadUrl = null
+                        downloadUrl = downloadUrl
                     )
                 }
 

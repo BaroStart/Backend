@@ -16,7 +16,7 @@ class AssignmentFileDownloadUseCase(
             .orElseThrow { AssignmentFileNotFoundException() }
 
         return getPreAuthenticatedUrl
-            .execute(fileName = assignmentFile.filePath)
+            .execute(fileName = assignmentFile.url!!)
             .url
     }
 }
