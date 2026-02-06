@@ -24,11 +24,11 @@ class ToDo(
     var mentee: Mentee? = null,
 ) : BaseEntity() {
 
-    fun update(updateToDoReq: UpdateToDoReq) {
+    fun updateTitle(updateToDoReq: UpdateToDoReq) {
         title = updateToDoReq.title
     }
 
-    fun update(updateToDoStatusReq: UpdateToDoStatusReq) {
+    fun updateStatus(updateToDoStatusReq: UpdateToDoStatusReq) {
         status = updateToDoStatusReq.status
     }
 

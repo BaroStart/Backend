@@ -16,7 +16,7 @@ class ChangeToDoStatusUseCase(
 
     fun execute(updateToDoStatusReq: UpdateToDoStatusReq) {
         val entity = toDoRepository.findByIdOrNull(updateToDoStatusReq.id) ?: throw ToDoNotFoundException()
-        entity.update(updateToDoStatusReq)
+        entity.updateStatus(updateToDoStatusReq)
 
         // 기존 ToDoTime 삭제
         toDoTimeRepository.deleteAllByToDo_Id(entity.id!!)

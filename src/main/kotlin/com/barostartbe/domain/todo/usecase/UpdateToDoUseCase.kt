@@ -21,7 +21,7 @@ class UpdateToDoUseCase(
         // TODO: 다른 TODO와 과제랑 겹치는지 확인하는 로직 구축
 
         val entity = toDoRepository.findByIdOrNull(updateToDoReq.id) ?: throw ToDoNotFoundException()
-        entity.update(updateToDoReq)
+        entity.updateTitle(updateToDoReq)
 
         if (entity.status == Status.COMPLETED) {
             // 기존 ToDoTime 삭제
