@@ -1,6 +1,7 @@
 spring:
   application:
     name: BaroStart-BE
+
   datasource:
     username: ${DATABASE_USERNAME}
     url: ${DATABASE_URL}
@@ -12,7 +13,7 @@ spring:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       ssl:
-        enabled: true
+        enabled: ${SSL_ENABLED:true}
 
   jpa:
     hibernate:
@@ -24,6 +25,14 @@ spring:
     show_sql: false
     open-in-view: false
 
+jwt:
+  secret: { JWT_SECRET }
+  issuer: { JWT_ISSUER }
+  token:
+    expire: { JWT_TOKEN_EXPIRE }
+  refresh:
+    expire: { JWT_REFRESH_EXPIRE }
+
 oci:
   tenant-id: ${OCI_TENANT_ID}
   user-id: ${OCI_USER_ID}
@@ -33,3 +42,9 @@ oci:
   bucket:
     name: ${OCI_BUCKET_NAME}
     namespace: ${OCI_BUCKET_NAMESPACE}
+
+app:
+  server:
+    url: ${APP_SERVER_URL}
+  service:
+    url: ${APP_SERVICE_URL}
