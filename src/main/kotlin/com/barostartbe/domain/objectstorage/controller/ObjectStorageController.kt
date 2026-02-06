@@ -6,11 +6,6 @@ import com.barostartbe.domain.objectstorage.type.PreAuthPurpose
 import com.barostartbe.global.response.ApiResponse
 import com.barostartbe.global.response.type.SuccessCode
 import org.springframework.http.ResponseEntity
-<<<<<<< feat/#5
-import org.springframework.web.bind.annotation.RequestMapping
-=======
-import org.springframework.web.bind.annotation.RequestParam
->>>>>>> develop
 import org.springframework.web.bind.annotation.RestController
 
 

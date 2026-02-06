@@ -78,6 +78,12 @@ class SecurityConfig(
                 authorize ("/mentor/**", hasRole("MENTOR"))
                 authorize ("/mentee/**", hasRole("MENTEE"))
                 authorize ("/admin/**", hasRole("ADMIN"))
+                // 임시 - assginment
+                authorize("/api/v1/assignments/**", permitAll)
+
+                // 임시 - object storage & files
+                authorize("/api/v1/storages/**", permitAll)
+                authorize("/api/v1/files/**", permitAll)
 
                 // default
                 authorize(anyRequest, authenticated)
