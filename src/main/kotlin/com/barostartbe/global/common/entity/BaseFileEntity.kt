@@ -2,7 +2,6 @@ package com.barostartbe.global.common.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.MappedSuperclass
-import jakarta.ws.rs.Path
 
 @MappedSuperclass
 abstract class BaseFileEntity(
@@ -11,5 +10,5 @@ abstract class BaseFileEntity(
     val fileName: String? = null,
 
     @Column(length = 500, nullable = false)
-    val filePath: String
+    val url: String? = null,
 ) : BaseEntity()

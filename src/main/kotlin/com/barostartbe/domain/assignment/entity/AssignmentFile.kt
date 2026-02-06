@@ -20,5 +20,5 @@ class AssignmentFile(
 
 ) : BaseFileEntity(
     fileName = fileName,
-    filePath = filePath
+    url = filePath
 )
