@@ -1,7 +1,7 @@
 package com.barostartbe.domain.assignment.usecase
 
 import com.barostartbe.domain.assignment.entity.Assignment
-import com.barostartbe.domain.assignment.entity.enum.AssignmentFileUsage
+import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
@@ -17,44 +17,54 @@ import java.util.Optional
 
 class AssignmentQueryUseCaseTest : DescribeSpec({
 
+    // mocks
     val assignmentRepository = mockk<AssignmentRepository>(relaxed = true)
     val assignmentFileRepository = mockk<AssignmentFileRepository>(relaxed = true)
     val fileQueryUseCase = mockk<FileQueryUseCase>(relaxed = true)
     val getPreAuthenticatedUrl = mockk<GetPreAuthenticatedUrl>(relaxed = true)
 
+    // useCase
     val useCase = AssignmentQueryUseCase(
-        assignmentRepository,
-        assignmentFileRepository,
-        fileQueryUseCase,
-        getPreAuthenticatedUrl
+        assignmentRepository = assignmentRepository,
+        assignmentFileRepository = assignmentFileRepository,
+        getPreAuthenticatedUrl = getPreAuthenticatedUrl
     )
 
     beforeEach {
-        clearMocks(assignmentRepository, assignmentFileRepository, fileQueryUseCase, getPreAuthenticatedUrl)
+        clearMocks(
+            assignmentRepository,
+            assignmentFileRepository,
+            fileQueryUseCase,
+            getPreAuthenticatedUrl
+        )
     }
 
     describe("AssignmentQueryUseCase") {
 
         context("과제가 존재할 때") {
+
             val assignmentId = 1L
             val assignment = mockk<Assignment>(relaxed = true) {
                 every { id } returns assignmentId
             }
 
             it("과제 상세를 정상 조회한다") {
-                every { assignmentRepository.findById(assignmentId) } returns Optional.of(assignment)
 
                 every {
-                    assignmentFileRepository.findAllByAssignmentIdAndUsage(
-                        assignmentId = assignmentId,
-                        usage = AssignmentFileUsage.MATERIAL
+                    assignmentRepository.findById(assignmentId)
+                } returns Optional.of(assignment)
+
+                every {
+                    assignmentFileRepository.findAllByAssignmentIdAndFileType(
+                        assignmentId,
+                        AssignmentFileType.MATERIAL
                     )
                 } returns emptyList()
 
                 every {
-                    assignmentFileRepository.findAllByAssignmentIdAndUsage(
-                        assignmentId = assignmentId,
-                        usage = AssignmentFileUsage.SUBMISSION
+                    assignmentFileRepository.findAllByAssignmentIdAndFileType(
+                        assignmentId,
+                        AssignmentFileType.SUBMISSION
                     )
                 } returns emptyList()
 
@@ -67,14 +77,17 @@ class AssignmentQueryUseCaseTest : DescribeSpec({
         }
 
         context("과제가 존재하지 않을 때") {
+
             it("AssignmentNotFoundException을 던진다") {
-                every { assignmentRepository.findById(any()) } returns Optional.empty()
+
+                every {
+                    assignmentRepository.findById(any())
+                } returns Optional.empty()
+
                 shouldThrow<AssignmentNotFoundException> {
                     useCase.getAssignmentDetail(999L)
                 }
             }
         }
     }
-}){
-
-}
+})

@@ -1,6 +1,5 @@
 package com.barostartbe.domain.objectstorage.usecase
 
-import com.barostartbe.domain.objectstorage.type.PreAuthPurpose
 import com.oracle.bmc.objectstorage.ObjectStorage
 import com.oracle.bmc.objectstorage.model.PreauthenticatedRequest
 import com.oracle.bmc.objectstorage.responses.CreatePreauthenticatedRequestResponse
@@ -47,8 +46,7 @@ class ObjectStoragePreAuthenticatedUrlTest : DescribeSpec({
                 every { objectStorage.endpoint } returns endpoint
 
                 val result = useCase.execute(
-                    fileName = objectName,
-                    purpose = PreAuthPurpose.DOWNLOAD
+                    fileName = objectName
                 )
 
                 result.url shouldBe "$endpoint$accessUri"

@@ -2,11 +2,9 @@ package com.barostartbe.domain.assignment.usecase
 
 import com.barostartbe.domain.assignment.dto.request.AssignmentSubmitReq
 import com.barostartbe.domain.assignment.entity.Assignment
-import com.barostartbe.domain.assignment.entity.enum.AssignmentFileUsage
+import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
-import com.barostartbe.domain.file.usecase.FileCommandUseCase
-import com.barostartbe.domain.file.usecase.FileQueryUseCase
 import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.Runs
 import io.mockk.clearMocks
@@ -20,22 +18,16 @@ class AssignmentCommandUseCaseTest : DescribeSpec({
 
     val assignmentRepository = mockk<AssignmentRepository>(relaxed = true)
     val assignmentFileRepository = mockk<AssignmentFileRepository>(relaxed = true)
-    val fileCommandUseCase = mockk<FileCommandUseCase>(relaxed = true)
-    val fileQueryUseCase = mockk<FileQueryUseCase>(relaxed = true)
 
     val useCase = AssignmentCommandUseCase(
         assignmentRepository = assignmentRepository,
-        assignmentFileRepository = assignmentFileRepository,
-        fileCommandUseCase = fileCommandUseCase,
-        fileQueryUseCase = fileQueryUseCase
+        assignmentFileRepository = assignmentFileRepository
     )
 
     beforeEach {
         clearMocks(
             assignmentRepository,
-            assignmentFileRepository,
-            fileCommandUseCase,
-            fileQueryUseCase
+            assignmentFileRepository
         )
     }
 
@@ -51,10 +43,10 @@ class AssignmentCommandUseCaseTest : DescribeSpec({
 
             val submitReq = AssignmentSubmitReq(
                 assignmentId = assignmentId,
-                studyTime = 120,
+                startTime = null,
+                endTime = null,
                 memo = "열심히 함",
-                submittedAtAdjustMinutes = null,
-                files = emptyList()
+                fileUrls = emptyList()
             )
 
             it("기존 제출 파일을 삭제하고 과제를 제출 상태로 변경한다") {
@@ -64,9 +56,9 @@ class AssignmentCommandUseCaseTest : DescribeSpec({
                 } returns Optional.of(assignment)
 
                 every {
-                    assignmentFileRepository.deleteByAssignmentIdAndUsage(
+                    assignmentFileRepository.deleteByAssignmentIdAndFileType(
                         assignmentId,
-                        AssignmentFileUsage.SUBMISSION
+                        AssignmentFileType.SUBMISSION
                     )
                 } just Runs
 
@@ -79,9 +71,9 @@ class AssignmentCommandUseCaseTest : DescribeSpec({
                 }
 
                 verify(exactly = 1) {
-                    assignmentFileRepository.deleteByAssignmentIdAndUsage(
+                    assignmentFileRepository.deleteByAssignmentIdAndFileType(
                         assignmentId,
-                        AssignmentFileUsage.SUBMISSION
+                        AssignmentFileType.SUBMISSION
                     )
                 }
 
