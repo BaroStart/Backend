@@ -43,7 +43,11 @@ class CommentCommandUseCase (
         commentRepository.save(comment)
     }
 
-    fun deleteComment(commentId: Long) = commentRepository.deleteById(commentId)
+    fun deleteComment(commentId: Long) {
+        val comment = commentRepository.findByIdOrNull(commentId) ?: throw ServiceException(ErrorCode.NOT_FOUND)
+        subCommentRepository.deleteAllByComment(comment)
+        commentRepository.delete(comment)
+    }
 
     fun createSubComment(request: CreateSubCommentRequestDto): CreateSubCommentResponseDto {
 
