@@ -52,7 +52,13 @@ class SecurityConfig(
         val whitelist = listOf<String>(
             "/api/v1/login", "/api/v1/signup", "/api/v1/refresh/**",
             "/v3/api-docs/**",
-            "/swagger-ui/**"
+            "/swagger-ui/**",
+            // 임시
+            "/api/v1/assignments/**",
+            "/api/v1/storages/**",
+            "/api/v1/files/**"
+
+
         )
 
         http {
@@ -78,12 +84,6 @@ class SecurityConfig(
                 authorize ("/mentor/**", hasRole("MENTOR"))
                 authorize ("/mentee/**", hasRole("MENTEE"))
                 authorize ("/admin/**", hasRole("ADMIN"))
-                // 임시 - assginment
-                authorize("/api/v1/assignments/**", permitAll)
-
-                // 임시 - object storage & files
-                authorize("/api/v1/storages/**", permitAll)
-                authorize("/api/v1/files/**", permitAll)
 
                 // default
                 authorize(anyRequest, authenticated)
