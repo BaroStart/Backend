@@ -3,8 +3,11 @@ package com.barostartbe.domain.assignment.error
 import com.barostartbe.global.error.exception.ServiceException
 import com.barostartbe.global.response.type.ErrorCode
 
-class AssignmentNotFoundException :                             // 조회 실패
+class AssignmentNotFoundException :                             // 과제 조회 실패
     ServiceException(ErrorCode.ASSIGNMENT_NOT_FOUND)
+
+class AssignmentFileNotFoundException :                         // 과제 파일 조회 실패
+    ServiceException(ErrorCode.ASSIGNMENT_FILE_NOT_FOUND)
 
 class AssignmentFeedbackedException :                           // 피드백 완료 후 수정/삭제 불가
     ServiceException(ErrorCode.ASSIGNMENT_ALREADY_FEEDBACKED)

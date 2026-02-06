@@ -1,7 +1,7 @@
 package com.barostartbe.domain.assignment.repository
 
 import com.barostartbe.domain.assignment.entity.AssignmentFile
-import com.barostartbe.domain.assignment.entity.enum.AssignmentFileUsage
+import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -13,7 +13,7 @@ interface AssignmentFileRepository : JpaRepository<AssignmentFile, Long> {
     fun findAllByAssignmentId(assignmentId: Long): List<AssignmentFile>
 
     // 과제 파일의 용도(학습자료/과제 제출물)별 조회
-    fun findAllByAssignmentIdAndUsage(assignmentId: Long, usage: AssignmentFileUsage): List<AssignmentFile>
+    fun findAllByAssignmentIdAndFileType(assignmentId: Long, fileType: AssignmentFileType): List<AssignmentFile>
 
     /**
      * 제출 수정/재제출 시
@@ -24,12 +24,12 @@ interface AssignmentFileRepository : JpaRepository<AssignmentFile, Long> {
         """
         delete from AssignmentFile af
          where af.assignmentId = :assignmentId
-           and af.usage = :usage
+           and af.fileType = :fileType
         """
     )
-    fun deleteByAssignmentIdAndUsage(
+    fun deleteByAssignmentIdAndFileType(
         @Param("assignmentId") assignmentId: Long,
-        @Param("usage") usage: AssignmentFileUsage
+        @Param("fileType") fileType: AssignmentFileType
     )
 
     /**
@@ -40,7 +40,7 @@ interface AssignmentFileRepository : JpaRepository<AssignmentFile, Long> {
         """
         delete from AssignmentFile af
          where af.assignmentId = :assignmentId
-           and af.usage = 'SUBMISSION'
+           and af.fileType = 'SUBMISSION'
         """
     )
     fun deleteAllSubmissionFiles(@Param("assignmentId") assignmentId: Long)

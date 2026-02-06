@@ -33,5 +33,5 @@ data class AssignmentCreateReq(
     val content: String? = null,
 
     @Schema(description = "멘토가 첨부한 학습자료 fileId 목록")
-    val fileIds: List<Long> = emptyList()
+    val fileUrls: List<String> = emptyList()
 )

@@ -18,4 +18,7 @@ interface AssignmentRepository : JpaRepository<Assignment, Long> {
     fun findAllByMenteeIdAndSubject(menteeId: Long, subject: Subject): List<Assignment>
 
     fun findAllByMenteeIdAndSubjectAndStatus(menteeId: Long, subject: Subject, status: AssignmentStatus): List<Assignment>
+
+    // 멘토 기준 조회
+    fun findAllByMentorId(mentorId: Long): List<Assignment>
 }

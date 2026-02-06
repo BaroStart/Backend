@@ -41,8 +41,11 @@ class Assignment(
     @Column(columnDefinition = "TEXT")
     val content: String? = null,
 
-    @Column(name = "study_time")
-    var studyTime: Int = 0,
+    @Column(name = "start_time")
+    var startTime: LocalDateTime? = null,
+
+    @Column(name = "end_time")
+    var endTime: LocalDateTime? = null,
 
     @Column(columnDefinition = "TEXT")
     var memo: String? = null,
@@ -57,21 +60,21 @@ class Assignment(
         if (this.status != AssignmentStatus.SUBMITTED) {
             throw AssignmentNotSubmittedException()
         }
-
         this.status = AssignmentStatus.FEEDBACKED
     }
 
     // [멘티] 과제 제출 / 재제출
-    fun submit(studyTime: Int, memo: String?, submittedAt: LocalDateTime? = null) {
+    fun submit(startTime: LocalDateTime?, endTime: LocalDateTime?, memo: String?, submittedAt: LocalDateTime? = null) {
         if (this.status == AssignmentStatus.FEEDBACKED) {
             throw AssignmentFeedbackedException()
         }
 
-        // SUBMITTED 상태에서도 재제출 허용
-        this.studyTime = studyTime
+        // 시간 기반 제출
+        this.startTime = startTime
+        this.endTime = endTime
         this.memo = memo
         this.status = AssignmentStatus.SUBMITTED
-        this.submittedAt = submittedAt ?: LocalDateTime.now()   // null이면 현재 시간
+        this.submittedAt = submittedAt ?: LocalDateTime.now()
     }
 
     // [멘티] 제출 취소
@@ -81,7 +84,10 @@ class Assignment(
         }
 
         this.status = AssignmentStatus.NOT_SUBMIT
-        this.studyTime = 0
+
+        // 시간도 함께 롤백
+        this.startTime = null
+        this.endTime = null
         this.memo = null
         this.submittedAt = null
     }

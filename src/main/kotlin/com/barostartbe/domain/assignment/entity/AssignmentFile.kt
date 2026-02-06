@@ -1,7 +1,7 @@
 package com.barostartbe.domain.assignment.entity
 
-import com.barostartbe.domain.assignment.entity.enum.AssignmentFileUsage
-import com.barostartbe.global.common.entity.BaseEntity
+import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
+import com.barostartbe.global.common.entity.BaseFileEntity
 import jakarta.persistence.*
 
 @Entity
@@ -11,11 +11,14 @@ class AssignmentFile(
     @Column(name = "assignment_id", nullable = false)
     val assignmentId: Long,
 
-    @Column(name = "file_id", nullable = false)
-    val fileId: Long,
-
     @Enumerated(EnumType.STRING)
-    @Column(name = "file_usage",nullable = false)
-    val usage: AssignmentFileUsage      // MATERIAL / SUBMISSION
+    @Column(name = "file_type", nullable = false)
+    val fileType: AssignmentFileType,    // MATERIAL / SUBMISSION
 
-) : BaseEntity()
+    fileName: String,
+    filePath: String,
+
+) : BaseFileEntity(
+    fileName = fileName,
+    filePath = filePath
+)

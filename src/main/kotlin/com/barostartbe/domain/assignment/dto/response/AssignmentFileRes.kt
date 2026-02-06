@@ -8,11 +8,8 @@ data class AssignmentFileRes(
     @Schema(description = "과제-파일 매핑 ID")
     val assignmentFileId: Long,
 
-    @Schema(description = "파일 ID")
-    val fileId: Long,
-
     @Schema(description = "파일 사용 용도 (MATERIAL / SUBMISSION)")
-    val usage: String,
+    val fileType: String,
 
     @Schema(description = "다운로드 URL (Pre-Authenticated URL)")
     val downloadUrl: String?
