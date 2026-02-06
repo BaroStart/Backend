@@ -23,11 +23,13 @@ enum class ErrorCode(
 
     // Assignment
     ASSIGNMENT_NOT_FOUND(404, "ASSIGNMENT_NOT_FOUND", "과제를 찾을 수 없습니다."),
+    ASSIGNMENT_FILE_NOT_FOUND(404, "ASSIGNMENT_FILE_NOT_FOUND", "과제 파일을 찾을 수 없습니다."),
     ASSIGNMENT_ALREADY_FEEDBACKED(400, "ASSIGNMENT_ALREADY_FEEDBACKED", "피드백이 완료된 과제는 수정할 수 없습니다."),
     ASSIGNMENT_NOT_SUBMITTED(400, "ASSIGNMENT_NOT_SUBMITTED", "제출되지 않은 과제입니다."),
     ASSIGNMENT_PERMISSION_DENIED(403, "ASSIGNMENT_PERMISSION_DENIED", "해당 과제에 대한 권한이 없습니다."),
 
     // File
+    INVALID_FILE_URL(400, "INVALID_FILE_URL", "파일 URL 형식이 올바르지 않습니다."),
     FILE_NOT_FOUND(404, "FILE_NOT_FOUND", "파일을 찾을 수 없습니다."),
 
     // 공통
