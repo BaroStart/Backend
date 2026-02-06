@@ -48,8 +48,8 @@ class AssignmentMaterialQueryUseCase(
                 assignmentId = file.assignmentId,
                 assignmentTitle = assignment.title,
                 subject = assignment.subject,
-                fileName = file.fileName,
-                filePath = file.filePath
+                fileName = file.fileName ?: "",
+                filePath = file.url ?: ""
             )
         }
     }
