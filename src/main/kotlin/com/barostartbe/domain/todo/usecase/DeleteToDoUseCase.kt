@@ -15,7 +15,7 @@ class DeleteToDoUseCase(
     fun execute(id: Long) {
         val entity = toDoRepository.findByIdOrNull(id) ?: throw ToDoNotFoundException()
 
-        toDoTimeRepository.deleteByToDo_Id(entity.id!!)
+        toDoTimeRepository.deleteAllByToDo_Id(entity.id!!)
         toDoRepository.delete(entity)
     }
 }

@@ -19,7 +19,7 @@ class ChangeToDoStatusUseCase(
         entity.update(updateToDoStatusReq)
 
         // 기존 ToDoTime 삭제
-        toDoTimeRepository.deleteByToDo_Id(entity.id!!)
+        toDoTimeRepository.deleteAllByToDo_Id(entity.id!!)
 
         // 새로운 ToDoTime 목록 생성 및 저장
         updateToDoStatusReq.timeList?.let { timeList ->

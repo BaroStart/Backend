@@ -62,14 +62,14 @@ class ChangeToDoStatusUseCaseTest : DescribeSpec({
 
             it("시간 목록이 있으면 상태 변경과 함께 시간 정보가 업데이트된다") {
                 every { toDoRepository.findByIdOrNull(todoId) } returns toDo
-                every { toDoTimeRepository.deleteByToDo_Id(todoId) } just Runs
+                every { toDoTimeRepository.deleteAllByToDo_Id(todoId) } just Runs
                 every { toDoTimeRepository.saveAll(any<List<ToDoTime>>()) } returns listOf(toDoTime)
                 every { toDoRepository.save(any()) } returns toDo
 
                 changeToDoStatusUseCase.execute(updateToDoStatusReq)
 
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(todoId) }
-                verify(exactly = 1) { toDoTimeRepository.deleteByToDo_Id(todoId) }
+                verify(exactly = 1) { toDoTimeRepository.deleteAllByToDo_Id(todoId) }
                 verify(exactly = 1) { toDoTimeRepository.saveAll(any<List<ToDoTime>>()) }
                 verify(exactly = 1) { toDoRepository.save(any()) }
             }
@@ -81,13 +81,13 @@ class ChangeToDoStatusUseCaseTest : DescribeSpec({
                     timeList = null
                 )
                 every { toDoRepository.findByIdOrNull(todoId) } returns toDo
-                every { toDoTimeRepository.deleteByToDo_Id(todoId) } just Runs
+                every { toDoTimeRepository.deleteAllByToDo_Id(todoId) } just Runs
                 every { toDoRepository.save(any()) } returns toDo
 
                 changeToDoStatusUseCase.execute(changeReqWithoutTime)
 
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(todoId) }
-                verify(exactly = 1) { toDoTimeRepository.deleteByToDo_Id(todoId) }
+                verify(exactly = 1) { toDoTimeRepository.deleteAllByToDo_Id(todoId) }
                 verify(exactly = 0) { toDoTimeRepository.saveAll(any<List<ToDoTime>>()) }
                 verify(exactly = 1) { toDoRepository.save(any()) }
             }
@@ -116,14 +116,14 @@ class ChangeToDoStatusUseCaseTest : DescribeSpec({
                     timeList = multipleTimeSlots
                 )
                 every { toDoRepository.findByIdOrNull(todoId) } returns toDo
-                every { toDoTimeRepository.deleteByToDo_Id(todoId) } just Runs
+                every { toDoTimeRepository.deleteAllByToDo_Id(todoId) } just Runs
                 every { toDoTimeRepository.saveAll(any<List<ToDoTime>>()) } returns multipleTodoTimes
                 every { toDoRepository.save(any()) } returns toDo
 
                 changeToDoStatusUseCase.execute(changeReqWithMultipleTime)
 
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(todoId) }
-                verify(exactly = 1) { toDoTimeRepository.deleteByToDo_Id(todoId) }
+                verify(exactly = 1) { toDoTimeRepository.deleteAllByToDo_Id(todoId) }
                 verify(exactly = 1) {
                     toDoTimeRepository.saveAll(match<List<ToDoTime>> { it.size == 2 })
                 }
@@ -147,7 +147,7 @@ class ChangeToDoStatusUseCaseTest : DescribeSpec({
                 }
 
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(nonExistentId) }
-                verify(exactly = 0) { toDoTimeRepository.deleteByToDo_Id(any()) }
+                verify(exactly = 0) { toDoTimeRepository.deleteAllByToDo_Id(any()) }
                 verify(exactly = 0) { toDoRepository.save(any()) }
             }
         }

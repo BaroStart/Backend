@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface ToDoTimeRepository : JpaRepository<ToDoTime, Long> {
 
     fun findByToDo_Id(toDoId: Long): List<ToDoTime>
-    fun deleteByToDo_Id(toDoId: Long)
+    fun deleteAllByToDo_Id(toDoId: Long)
 }

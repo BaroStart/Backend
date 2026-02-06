@@ -61,14 +61,14 @@ class UpdateToDoUseCaseTest : DescribeSpec({
 
             it("할 일이 완료 상태이고 시간 목록이 있으면 성공적으로 수정된다") {
                 every { toDoRepository.findByIdOrNull(todoId) } returns completedToDo
-                every { toDoTimeRepository.deleteByToDo_Id(todoId) } just Runs
+                every { toDoTimeRepository.deleteAllByToDo_Id(todoId) } just Runs
                 every { toDoTimeRepository.saveAll(any<List<ToDoTime>>()) } returns listOf()
                 every { toDoRepository.save(any()) } returns completedToDo
 
                 updateToDoUseCase.execute(updateToDoReq)
 
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(todoId) }
-                verify(exactly = 1) { toDoTimeRepository.deleteByToDo_Id(todoId) }
+                verify(exactly = 1) { toDoTimeRepository.deleteAllByToDo_Id(todoId) }
                 verify(exactly = 1) { toDoTimeRepository.saveAll(any<List<ToDoTime>>()) }
                 verify(exactly = 1) { toDoRepository.save(any()) }
             }
@@ -80,13 +80,13 @@ class UpdateToDoUseCaseTest : DescribeSpec({
                     timeList = null
                 )
                 every { toDoRepository.findByIdOrNull(todoId) } returns completedToDo
-                every { toDoTimeRepository.deleteByToDo_Id(todoId) } just Runs
+                every { toDoTimeRepository.deleteAllByToDo_Id(todoId) } just Runs
                 every { toDoRepository.save(any()) } returns completedToDo
 
                 updateToDoUseCase.execute(updateReqWithoutTime)
 
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(todoId) }
-                verify(exactly = 1) { toDoTimeRepository.deleteByToDo_Id(todoId) }
+                verify(exactly = 1) { toDoTimeRepository.deleteAllByToDo_Id(todoId) }
                 verify(exactly = 0) { toDoTimeRepository.saveAll(any<List<ToDoTime>>()) }
                 verify(exactly = 1) { toDoRepository.save(any()) }
             }
@@ -125,7 +125,7 @@ class UpdateToDoUseCaseTest : DescribeSpec({
 
                 exception.errorCode shouldBe ErrorCode.TODO_NOT_COMPLETED
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(todoId) }
-                verify(exactly = 0) { toDoTimeRepository.deleteByToDo_Id(any()) }
+                verify(exactly = 0) { toDoTimeRepository.deleteAllByToDo_Id(any()) }
                 verify(exactly = 0) { toDoRepository.save(any()) }
             }
         }

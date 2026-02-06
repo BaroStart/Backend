@@ -44,13 +44,13 @@ class DeleteToDoUseCaseTest : DescribeSpec({
 
             it("할 일이 존재하면 연관된 시간 정보와 함께 성공적으로 삭제된다") {
                 every { toDoRepository.findByIdOrNull(todoId) } returns toDo
-                every { toDoTimeRepository.deleteByToDo_Id(todoId) } just Runs
+                every { toDoTimeRepository.deleteAllByToDo_Id(todoId) } just Runs
                 every { toDoRepository.delete(toDo) } just Runs
 
                 deleteToDoUseCase.execute(todoId)
 
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(todoId) }
-                verify(exactly = 1) { toDoTimeRepository.deleteByToDo_Id(todoId) }
+                verify(exactly = 1) { toDoTimeRepository.deleteAllByToDo_Id(todoId) }
                 verify(exactly = 1) { toDoRepository.delete(toDo) }
             }
 
@@ -58,7 +58,7 @@ class DeleteToDoUseCaseTest : DescribeSpec({
                 val deletionOrder = mutableListOf<String>()
 
                 every { toDoRepository.findByIdOrNull(todoId) } returns toDo
-                every { toDoTimeRepository.deleteByToDo_Id(todoId) } answers {
+                every { toDoTimeRepository.deleteAllByToDo_Id(todoId) } answers {
                     deletionOrder.add("ToDoTime")
                 }
                 every { toDoRepository.delete(toDo) } answers {
@@ -68,7 +68,7 @@ class DeleteToDoUseCaseTest : DescribeSpec({
                 deleteToDoUseCase.execute(todoId)
 
                 verifyOrder {
-                    toDoTimeRepository.deleteByToDo_Id(todoId)
+                    toDoTimeRepository.deleteAllByToDo_Id(todoId)
                     toDoRepository.delete(toDo)
                 }
             }
@@ -85,7 +85,7 @@ class DeleteToDoUseCaseTest : DescribeSpec({
                 }
 
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(nonExistentId) }
-                verify(exactly = 0) { toDoTimeRepository.deleteByToDo_Id(any()) }
+                verify(exactly = 0) { toDoTimeRepository.deleteAllByToDo_Id(any()) }
                 verify(exactly = 0) { toDoRepository.delete(any()) }
             }
         }
