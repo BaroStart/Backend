@@ -1,7 +1,7 @@
 package com.barostartbe.domain.todo.entity
 
 import com.barostartbe.domain.mentee.entity.Mentee
-import com.barostartbe.domain.todo.dto.request.ChangeToDoStatusReq
+import com.barostartbe.domain.todo.dto.request.UpdateToDoStatusReq
 import com.barostartbe.domain.todo.dto.request.CreateToDoReq
 import com.barostartbe.domain.todo.dto.request.UpdateToDoReq
 import com.barostartbe.domain.todo.entity.enums.Status
@@ -28,8 +28,8 @@ class ToDo(
         title = updateToDoReq.title
     }
 
-    fun update(changeToDoStatusReq: ChangeToDoStatusReq) {
-        status = changeToDoStatusReq.status
+    fun update(updateToDoStatusReq: UpdateToDoStatusReq) {
+        status = updateToDoStatusReq.status
     }
 
     companion object {

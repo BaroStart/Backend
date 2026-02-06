@@ -5,8 +5,8 @@ import com.barostartbe.domain.todo.entity.enums.Status
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 
-@Schema(description = "할 일 수정 요청 DTO")
-data class ChangeToDoStatusReq(
+@Schema(description = "할 일 상태 변경 요청 DTO")
+data class UpdateToDoStatusReq(
 
     @Schema(description = "할 일 ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "id는 필수입니다")

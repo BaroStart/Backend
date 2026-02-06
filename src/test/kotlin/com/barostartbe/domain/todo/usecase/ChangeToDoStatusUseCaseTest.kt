@@ -4,7 +4,7 @@ import com.barostartbe.domain.mentee.entity.Grade
 import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.mentee.entity.School
 import com.barostartbe.domain.todo.dto.base.TimeSlot
-import com.barostartbe.domain.todo.dto.request.ChangeToDoStatusReq
+import com.barostartbe.domain.todo.dto.request.UpdateToDoStatusReq
 import com.barostartbe.domain.todo.entity.ToDo
 import com.barostartbe.domain.todo.entity.ToDoTime
 import com.barostartbe.domain.todo.entity.enums.Status
@@ -54,7 +54,7 @@ class ChangeToDoStatusUseCaseTest : DescribeSpec({
                 startTime = LocalDateTime.of(2026, 2, 5, 10, 0),
                 endTime = LocalDateTime.of(2026, 2, 5, 11, 0)
             )
-            val changeToDoStatusReq = ChangeToDoStatusReq(
+            val updateToDoStatusReq = UpdateToDoStatusReq(
                 id = todoId,
                 status = Status.COMPLETED,
                 timeList = listOf(timeSlot)
@@ -66,7 +66,7 @@ class ChangeToDoStatusUseCaseTest : DescribeSpec({
                 every { toDoTimeRepository.saveAll(any<List<ToDoTime>>()) } returns listOf(toDoTime)
                 every { toDoRepository.save(any()) } returns toDo
 
-                changeToDoStatusUseCase.execute(changeToDoStatusReq)
+                changeToDoStatusUseCase.execute(updateToDoStatusReq)
 
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(todoId) }
                 verify(exactly = 1) { toDoTimeRepository.deleteByToDo_Id(todoId) }
@@ -75,7 +75,7 @@ class ChangeToDoStatusUseCaseTest : DescribeSpec({
             }
 
             it("시간 목록이 null이면 시간 정보는 업데이트하지 않고 상태만 변경된다") {
-                val changeReqWithoutTime = ChangeToDoStatusReq(
+                val changeReqWithoutTime = UpdateToDoStatusReq(
                     id = todoId,
                     status = Status.COMPLETED,
                     timeList = null
@@ -110,7 +110,7 @@ class ChangeToDoStatusUseCaseTest : DescribeSpec({
                         toDo = toDo
                     )
                 }
-                val changeReqWithMultipleTime = ChangeToDoStatusReq(
+                val changeReqWithMultipleTime = UpdateToDoStatusReq(
                     id = todoId,
                     status = Status.COMPLETED,
                     timeList = multipleTimeSlots
@@ -133,7 +133,7 @@ class ChangeToDoStatusUseCaseTest : DescribeSpec({
 
         context("존재하지 않는 할 일의 상태를 변경할 때") {
             val nonExistentId = 999L
-            val changeToDoStatusReq = ChangeToDoStatusReq(
+            val updateToDoStatusReq = UpdateToDoStatusReq(
                 id = nonExistentId,
                 status = Status.COMPLETED,
                 timeList = null
@@ -143,7 +143,7 @@ class ChangeToDoStatusUseCaseTest : DescribeSpec({
                 every { toDoRepository.findByIdOrNull(nonExistentId) } returns null
 
                 shouldThrow<ToDoNotFoundException> {
-                    changeToDoStatusUseCase.execute(changeToDoStatusReq)
+                    changeToDoStatusUseCase.execute(updateToDoStatusReq)
                 }
 
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(nonExistentId) }

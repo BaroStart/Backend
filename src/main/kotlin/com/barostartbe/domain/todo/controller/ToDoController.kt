@@ -1,6 +1,6 @@
 package com.barostartbe.domain.todo.controller
 
-import com.barostartbe.domain.todo.dto.request.ChangeToDoStatusReq
+import com.barostartbe.domain.todo.dto.request.UpdateToDoStatusReq
 import com.barostartbe.domain.todo.dto.request.CreateToDoReq
 import com.barostartbe.domain.todo.dto.request.UpdateToDoReq
 import com.barostartbe.domain.todo.dto.response.ToDoRes
@@ -39,8 +39,8 @@ class ToDoController(
         return ApiResponse.success(SuccessCode.REQUEST_OK)
     }
 
-    override fun changeToDoStatus(@RequestBody changeToDoStatusReq: ChangeToDoStatusReq): ResponseEntity<ApiResponse<Unit>> {
-        changeToDoStatusUseCase.execute(changeToDoStatusReq)
+    override fun changeToDoStatus(@RequestBody updateToDoStatusReq: UpdateToDoStatusReq): ResponseEntity<ApiResponse<Unit>> {
+        changeToDoStatusUseCase.execute(updateToDoStatusReq)
         return ApiResponse.success(SuccessCode.REQUEST_OK)
     }
 
