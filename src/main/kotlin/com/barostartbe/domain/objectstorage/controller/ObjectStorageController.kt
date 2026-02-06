@@ -5,12 +5,10 @@ import com.barostartbe.domain.objectstorage.usecase.GetPreAuthenticatedUrl
 import com.barostartbe.global.response.ApiResponse
 import com.barostartbe.global.response.type.SuccessCode
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/storages")
 class ObjectStorageController(
     private val getPreAuthenticatedUrl: GetPreAuthenticatedUrl
 ) : ObjectStorageApi {
