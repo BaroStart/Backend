@@ -34,9 +34,9 @@ class CommentCommandUseCase (
         return CreateCommentResponseDto(savedComment.id!!)
     }
 
-    fun updateComment(request: UpdateCommentRequestDto){
+    fun updateComment(commentId: Long, request: UpdateCommentRequestDto){
 
-        val comment = commentRepository.findByIdOrNull(request.commentId) ?: throw ServiceException(ErrorCode.NOT_FOUND)
+        val comment = commentRepository.findByIdOrNull(commentId) ?: throw ServiceException(ErrorCode.NOT_FOUND)
 
         comment.content = request.content
 
@@ -60,9 +60,9 @@ class CommentCommandUseCase (
         return CreateSubCommentResponseDto(savedSubComment.id!!)
     }
 
-    fun updateSubComment(request: UpdateSubCommentRequestDto){
+    fun updateSubComment(subCommentId: Long, request: UpdateSubCommentRequestDto){
 
-        val subComment = subCommentRepository.findByIdOrNull(request.subCommentId) ?: throw ServiceException(ErrorCode.NOT_FOUND)
+        val subComment = subCommentRepository.findByIdOrNull(subCommentId) ?: throw ServiceException(ErrorCode.NOT_FOUND)
 
         subComment.content = request.content
 

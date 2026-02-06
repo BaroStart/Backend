@@ -31,9 +31,9 @@ interface CommentApi {
     @Operation(summary = "코멘트 생성")
     fun createComment(@RequestBody request: CreateCommentRequestDto, @AuthenticationPrincipal user: User): ResponseEntity<ApiResponse<CreateCommentResponseDto>>
 
-    @PatchMapping("/comments")
+    @PatchMapping("/comments/{commentId}")
     @Operation(summary = "코멘트 수정")
-    fun updateComment(@RequestBody request: UpdateCommentRequestDto): ResponseEntity<ApiResponse<Unit>>
+    fun updateComment(@PathVariable commentId: Long, @RequestBody request: UpdateCommentRequestDto): ResponseEntity<ApiResponse<Unit>>
 
     @DeleteMapping("/comments/{commentId}")
     @Operation(summary = "코멘트 삭제")
@@ -47,15 +47,16 @@ interface CommentApi {
     @Operation(summary = "댓글 작성")
     fun createSubComment(@RequestBody request: CreateSubCommentRequestDto): ResponseEntity<ApiResponse<CreateSubCommentResponseDto>>
 
-    @PatchMapping("/sub-comments")
+    @PatchMapping("/sub-comments/{subCommentId}")
     @Operation(summary = "댓글 수정")
-    fun updateSubComment(@RequestBody request: UpdateSubCommentRequestDto): ResponseEntity<ApiResponse<Unit>>
+    fun updateSubComment(@PathVariable subCommentId: Long, @RequestBody request: UpdateSubCommentRequestDto): ResponseEntity<ApiResponse<Unit>>
 
     @DeleteMapping("/sub-comments/{subCommentId}")
     @Operation(summary = "댓글 삭제")
     fun deleteSubComment(@PathVariable subCommentId: Long): ResponseEntity<ApiResponse<Unit>>
 
     @GetMapping("/sub-comments")
+    @Operation(summary = "댓글 조회")
     fun getSubComments(@RequestParam commentId: Long) : ResponseEntity<ApiResponse<List<GetSubCommentResponseDto>>>
 
 }

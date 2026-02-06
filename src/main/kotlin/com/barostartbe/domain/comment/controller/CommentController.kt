@@ -14,7 +14,6 @@ import com.barostartbe.domain.user.entity.User
 import com.barostartbe.global.response.ApiResponse
 import com.barostartbe.global.response.type.SuccessCode
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -23,11 +22,11 @@ class CommentController(
     private val commentQueryUseCase: CommentQueryUseCase
 ): CommentApi {
 
-    override fun createComment(request: CreateCommentRequestDto, @AuthenticationPrincipal user: User): ResponseEntity<ApiResponse<CreateCommentResponseDto>>
+    override fun createComment(request: CreateCommentRequestDto, user: User): ResponseEntity<ApiResponse<CreateCommentResponseDto>>
         = ApiResponse.success(SuccessCode.CREATE_OK, commentCommandUseCase.createComment(user, request))
 
-    override fun updateComment(request: UpdateCommentRequestDto): ResponseEntity<ApiResponse<Unit>>{
-        commentCommandUseCase.updateComment(request)
+    override fun updateComment(commentId: Long, request: UpdateCommentRequestDto): ResponseEntity<ApiResponse<Unit>>{
+        commentCommandUseCase.updateComment(commentId, request)
         return ApiResponse.success(SuccessCode.REQUEST_OK)
     }
 
@@ -42,8 +41,8 @@ class CommentController(
     override fun createSubComment(request: CreateSubCommentRequestDto): ResponseEntity<ApiResponse<CreateSubCommentResponseDto>>
         = ApiResponse.success(SuccessCode.CREATE_OK, commentCommandUseCase.createSubComment(request))
 
-    override fun updateSubComment(request: UpdateSubCommentRequestDto): ResponseEntity<ApiResponse<Unit>> {
-        commentCommandUseCase.updateSubComment(request)
+    override fun updateSubComment(subCommentId: Long, request: UpdateSubCommentRequestDto): ResponseEntity<ApiResponse<Unit>> {
+        commentCommandUseCase.updateSubComment(subCommentId, request)
         return ApiResponse.success(SuccessCode.REQUEST_OK)
     }
 
