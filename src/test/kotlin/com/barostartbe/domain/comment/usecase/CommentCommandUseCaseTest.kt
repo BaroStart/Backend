@@ -152,7 +152,6 @@ class CommentCommandUseCaseTest : DescribeSpec({
     describe("createSubComment") {
         val request = CreateSubCommentRequestDto(
             commentId = 12L,
-            userId = 32L,
             subContent = "reply"
         )
 
@@ -163,54 +162,36 @@ class CommentCommandUseCaseTest : DescribeSpec({
                 every { id } returns 88L
             }
             val subCommentSlot = slot<SubComment>()
-            every { userRepository.findByIdOrNull(request.userId) } returns user
             every { commentRepository.findByIdOrNull(request.commentId) } returns comment
             every { subCommentRepository.save(capture(subCommentSlot)) } returns savedSubComment
 
-            val response = useCase.createSubComment(request)
+            val response = useCase.createSubComment(user, request)
 
             response.subCommentId shouldBe 88L
             subCommentSlot.captured.user shouldBe user
             subCommentSlot.captured.comment shouldBe comment
             subCommentSlot.captured.content shouldBe request.subContent
             verify(exactly = 1) {
-                userRepository.findByIdOrNull(request.userId)
                 commentRepository.findByIdOrNull(request.commentId)
                 subCommentRepository.save(any())
             }
-            confirmVerified(userRepository, commentRepository, subCommentRepository)
-        }
-
-        it("throws USER_NOT_FOUND when user does not exist") {
-            every { userRepository.findByIdOrNull(request.userId) } returns null
-
-            val exception = shouldThrow<ServiceException> {
-                useCase.createSubComment(request)
-            }
-
-            exception.errorCode shouldBe ErrorCode.USER_NOT_FOUND
-            verify(exactly = 1) { userRepository.findByIdOrNull(request.userId) }
-            verify { commentRepository wasNot Called }
-            verify { subCommentRepository wasNot Called }
-            confirmVerified(userRepository, commentRepository, subCommentRepository)
+            confirmVerified(commentRepository, subCommentRepository)
         }
 
         it("throws NOT_FOUND when comment does not exist") {
             val user = createMentee()
-            every { userRepository.findByIdOrNull(request.userId) } returns user
             every { commentRepository.findByIdOrNull(request.commentId) } returns null
 
             val exception = shouldThrow<ServiceException> {
-                useCase.createSubComment(request)
+                useCase.createSubComment(user, request)
             }
 
             exception.errorCode shouldBe ErrorCode.NOT_FOUND
             verify(exactly = 1) {
-                userRepository.findByIdOrNull(request.userId)
                 commentRepository.findByIdOrNull(request.commentId)
             }
             verify { subCommentRepository wasNot Called }
-            confirmVerified(userRepository, commentRepository, subCommentRepository)
+            confirmVerified(commentRepository, subCommentRepository)
         }
     }
 
