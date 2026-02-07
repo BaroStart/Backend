@@ -13,7 +13,6 @@ import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.mentee.entity.School
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.mentor.repository.MentorRepository
-import com.barostartbe.domain.user.entity.Role
 import com.barostartbe.global.error.exception.ServiceException
 import com.barostartbe.global.response.type.ErrorCode
 import io.kotest.assertions.throwables.shouldThrow
@@ -125,6 +124,20 @@ class CommentQueryUseCaseTest : DescribeSpec({
             verify(exactly = 1) { commentRepository.findByIdOrNull(commentId) }
             verify { subCommentRepository wasNot Called }
             confirmVerified(commentRepository, subCommentRepository)
+        }
+    }
+
+    describe("hasMoreThanTenComments") {
+        val menteeId = 1L
+
+        it("returns true when comments count is more than 10") {
+            every { commentRepository.countByMentee_Id(menteeId) } returns 11
+            useCase.hasMoreThanTenComments(menteeId) shouldBe true
+        }
+
+        it("returns false when comments count is 10 or less") {
+            every { commentRepository.countByMentee_Id(menteeId) } returns 10
+            useCase.hasMoreThanTenComments(menteeId) shouldBe false
         }
     }
 }) {

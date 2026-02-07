@@ -4,6 +4,7 @@ import com.barostartbe.domain.auth.dto.LoginRequestDto
 import com.barostartbe.domain.auth.dto.SignupRequestDto
 import com.barostartbe.domain.auth.dto.TokenPairResponseDto
 import com.barostartbe.domain.badge.usecse.MenteeBadgeCommandUseCase
+import com.barostartbe.domain.user.entity.Role
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.domain.user.repository.AccessLogRepository
 import com.barostartbe.domain.user.repository.UserRepository
@@ -32,10 +33,12 @@ class AuthCommandUseCaseTest : DescribeSpec({
         menteeBadgeCommandUseCase
     )
 
-    beforeEach { clearMocks(authQueryUseCase, userRepository, accessLogRepository) }
+    beforeEach {
+        clearMocks(authQueryUseCase, userRepository, accessLogRepository, menteeBadgeCommandUseCase)
+    }
 
     describe("AuthCommandUseCase") {
-        context("회원가입을 진행할 때"){
+        context("회원가입을 진행할 때") {
             val loginId = "loginId"
             val request = SignupRequestDto(
                 loginId = loginId,
@@ -49,8 +52,8 @@ class AuthCommandUseCaseTest : DescribeSpec({
                 university = null
             )
 
-            it("이미 회원가입을 했을 경우 오류를 발생시킨다."){
-                every { userRepository.existsUserByLoginId(loginId)} returns true
+            it("이미 회원가입을 했을 경우 오류를 발생시킨다.") {
+                every { userRepository.existsUserByLoginId(loginId) } returns true
 
                 shouldThrow<ServiceException> {
                     authCommandUseCase.createUser(request)
@@ -64,7 +67,7 @@ class AuthCommandUseCaseTest : DescribeSpec({
             val loginId = "loginId"
             val loginRequestDto = LoginRequestDto(loginId = loginId, password = "password")
 
-            it("정상적으로 로그인하면 토큰을 반환한다.") {
+            it("멘티가 정상적으로 로그인하면 토큰을 반환하고 뱃지를 업데이트한다.") {
                 val servletRequest = mockk<HttpServletRequest>()
                 val user = mockk<User>()
                 val userId = 1L
@@ -74,6 +77,7 @@ class AuthCommandUseCaseTest : DescribeSpec({
                 every { userRepository.findUserByLoginId(loginId) } returns user
                 every { user.id } returns userId
                 every { user.loginId } returns loginId
+                every { user.role } returns Role.MENTEE
                 every { accessLogRepository.save(any()) } returns mockk()
                 every { authQueryUseCase.generateTokenPairAndSaveRefreshTokenInRedis(loginId) } returns tokenPair
 
@@ -84,6 +88,29 @@ class AuthCommandUseCaseTest : DescribeSpec({
                 verify(exactly = 1) {
                     accessLogRepository.save(withArg { it.userId shouldBe userId })
                 }
+                verify(exactly = 1) { menteeBadgeCommandUseCase.updateBadgeForMentee(userId) }
+                verify(exactly = 1) { authQueryUseCase.generateTokenPairAndSaveRefreshTokenInRedis(loginId) }
+            }
+
+            it("멘토가 정상적으로 로그인하면 토큰을 반환하고 뱃지는 업데이트하지 않는다.") {
+                val servletRequest = mockk<HttpServletRequest>()
+                val user = mockk<User>()
+                val userId = 2L
+                val tokenPair = TokenPairResponseDto(userId, "access", "refresh")
+
+                every { servletRequest.getAttribute("requestBody") } returns loginRequestDto
+                every { userRepository.findUserByLoginId(loginId) } returns user
+                every { user.id } returns userId
+                every { user.loginId } returns loginId
+                every { user.role } returns Role.MENTOR
+                every { accessLogRepository.save(any()) } returns mockk()
+                every { authQueryUseCase.generateTokenPairAndSaveRefreshTokenInRedis(loginId) } returns tokenPair
+
+                val result = authCommandUseCase.login(servletRequest)
+
+                result shouldBe tokenPair
+                verify(exactly = 1) { userRepository.findUserByLoginId(loginId) }
+                verify(exactly = 0) { menteeBadgeCommandUseCase.updateBadgeForMentee(any()) }
                 verify(exactly = 1) { authQueryUseCase.generateTokenPairAndSaveRefreshTokenInRedis(loginId) }
             }
 
