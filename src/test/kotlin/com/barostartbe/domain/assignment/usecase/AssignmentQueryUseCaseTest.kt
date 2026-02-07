@@ -27,8 +27,7 @@ class AssignmentQueryUseCaseTest : DescribeSpec({
     // useCase
     val useCase = AssignmentQueryUseCase(
         assignmentRepository = assignmentRepository,
-        assignmentFileRepository = assignmentFileRepository,
-        getPreAuthenticatedUrl = getPreAuthenticatedUrl
+        assignmentFileRepository = assignmentFileRepository
     )
 
     beforeEach {
