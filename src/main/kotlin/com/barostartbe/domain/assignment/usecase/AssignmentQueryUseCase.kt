@@ -104,7 +104,6 @@ class AssignmentQueryUseCase(
     fun checkCompletedAssignmentExists(menteeId: Long): Boolean =
         assignmentRepository.existsByMentee_IdAndStatusNot(menteeId, AssignmentStatus.NOT_SUBMIT)
 
-    fun is7DaysAssignmentCompletedStreak(menteeId: Long): Boolean {
-        return assignmentRepository.findMaxConsecutivePerfectDays(menteeId) >= 7
-    }
+    fun is7DaysAssignmentCompletedStreak(menteeId: Long): Boolean =
+        assignmentRepository.findMaxConsecutivePerfectDays(menteeId) >= 7
 }
