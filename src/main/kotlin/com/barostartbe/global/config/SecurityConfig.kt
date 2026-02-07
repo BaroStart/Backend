@@ -49,10 +49,12 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
 
-        val whitelist = listOf<String>(
+        val whitelist = listOf(
             "/api/v1/login", "/api/v1/signup", "/api/v1/refresh/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
+            "/api/sse/**",
+
             // 임시
             "/api/v1/assignments/**",
             "/api/v1/storages/**",
