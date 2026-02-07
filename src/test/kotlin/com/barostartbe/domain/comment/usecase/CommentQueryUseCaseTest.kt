@@ -41,10 +41,10 @@ class CommentQueryUseCaseTest : DescribeSpec({
 
     beforeTest { clearAllMocks() }
 
-    describe("getAllCommentsForMentor") {
+    describe("멘토의 모든 댓글 조회") {
         val mentorId = 11L
 
-        it("returns all comments for mentees mapped to the mentor") {
+        it("멘토와 매핑된 멘티들의 모든 댓글을 반환한다") {
             val mentor = createMentor()
             val menteeA = createMentee(loginId = "menteeA", nickname = "mentee-a", name = "A")
             val menteeB = createMentee(loginId = "menteeB", nickname = "mentee-b", name = "B")
@@ -71,7 +71,7 @@ class CommentQueryUseCaseTest : DescribeSpec({
             confirmVerified(mentorRepository, mentorMenteeMappingRepository, commentRepository)
         }
 
-        it("throws USER_NOT_FOUND when mentor is absent") {
+        it("멘토가 없으면 예외를 던진다") {
             every { mentorRepository.findByIdOrNull(mentorId) } returns null
 
             val exception = shouldThrow<ServiceException> {
@@ -86,10 +86,10 @@ class CommentQueryUseCaseTest : DescribeSpec({
         }
     }
 
-    describe("getAllSubComments") {
+    describe("모든 대댓글 조회") {
         val commentId = 22L
 
-        it("returns sub-comments for the given comment") {
+        it("주어진 댓글의 대댓글들을 반환한다") {
             val mentee = createMentee()
             val comment = Comment(mentee = mentee, content = "parent")
             val mentorResponder = createMentor(loginId = "mentor2", nickname = "mentor2", name = "Mentor2")
@@ -113,7 +113,7 @@ class CommentQueryUseCaseTest : DescribeSpec({
             confirmVerified(commentRepository, subCommentRepository)
         }
 
-        it("throws NOT_FOUND when the comment does not exist") {
+        it("댓글이 존재하지 않으면 예외를 던진다") {
             every { commentRepository.findByIdOrNull(commentId) } returns null
 
             val exception = shouldThrow<ServiceException> {
@@ -127,15 +127,15 @@ class CommentQueryUseCaseTest : DescribeSpec({
         }
     }
 
-    describe("hasMoreThanTenComments") {
+    describe("댓글 10개 초과 확인") {
         val menteeId = 1L
 
-        it("returns true when comments count is more than 10") {
+        it("댓글 수가 10개를 초과하면 true를 반환한다") {
             every { commentRepository.countByMentee_Id(menteeId) } returns 11
             useCase.hasMoreThanTenComments(menteeId) shouldBe true
         }
 
-        it("returns false when comments count is 10 or less") {
+        it("댓글 수가 10개 이하이면 false를 반환한다") {
             every { commentRepository.countByMentee_Id(menteeId) } returns 10
             useCase.hasMoreThanTenComments(menteeId) shouldBe false
         }
