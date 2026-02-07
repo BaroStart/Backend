@@ -20,7 +20,7 @@ class AuthController(
     val authQueryUseCase: AuthQueryUseCase,
 ) : AuthApi {
 
-    override fun login(request: HttpServletRequest, @io.swagger.v3.oas.annotations.parameters.RequestBody body: LoginRequestDto): ResponseEntity<ApiResponse<TokenPairResponseDto>> = ApiResponse.success(SuccessCode.REQUEST_OK, authCommandUseCase.login(request))
+    override fun login(@io.swagger.v3.oas.annotations.parameters.RequestBody body: LoginRequestDto, request: HttpServletRequest): ResponseEntity<ApiResponse<TokenPairResponseDto>> = ApiResponse.success(SuccessCode.REQUEST_OK, authCommandUseCase.login(request))
 
     override fun signup(@RequestBody request: SignupRequestDto): ResponseEntity<ApiResponse<SignupResponseDto>>
         =  ApiResponse.success(SuccessCode.CREATE_OK, authCommandUseCase.createUser(request))
