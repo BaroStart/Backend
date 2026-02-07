@@ -41,5 +41,5 @@ interface ToDoRepository : JpaRepository<ToDo, Long> {
             GROUP BY DATE_SUB(log_date, INTERVAL rnk DAY)
         ) streaks
     """, nativeQuery = true)
-    fun findMaxConsecutivePerfectDays(@Param("menteeId") menteeId: Long): Int
+    fun findMaxConsecutivePerfectDays(@Param("menteeId") menteeId: Long): Long
 }

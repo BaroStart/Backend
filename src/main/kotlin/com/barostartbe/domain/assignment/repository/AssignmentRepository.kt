@@ -55,5 +55,5 @@ interface AssignmentRepository : JpaRepository<Assignment, Long> {
         ) streaks
     """, nativeQuery = true
     )
-    fun findMaxConsecutivePerfectDays(@Param("menteeId") menteeId: Long): Int
+    fun findMaxConsecutivePerfectDays(@Param("menteeId") menteeId: Long): Long
 }

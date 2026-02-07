@@ -21,5 +21,5 @@ interface AccessLogRepository : JpaRepository<AccessLog, Long> {
             GROUP BY DATE_SUB(log_date, INTERVAL rnk DAY)
         ) streaks
     """, nativeQuery = true)
-    fun findMaxConsecutiveDays(@Param("userId") userId: Long): Int
+    fun findMaxConsecutiveDays(@Param("userId") userId: Long): Long
 }
