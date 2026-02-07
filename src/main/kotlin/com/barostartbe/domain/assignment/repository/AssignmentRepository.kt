@@ -9,7 +9,7 @@ import java.time.LocalDate
 interface AssignmentRepository : JpaRepository<Assignment, Long> {
 
     // 멘티 기준 조회
-    fun findAllByMenteeId(menteeId: Long): List<Assignment>
+    fun findAllByMentee_Id(menteeId: Long): List<Assignment>
 
     fun findAllByMenteeIdAndStatus(menteeId: Long, status: AssignmentStatus): List<Assignment>
 

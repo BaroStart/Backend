@@ -4,15 +4,20 @@ import com.barostartbe.domain.assignment.dto.request.AssignmentCreateReq
 import com.barostartbe.domain.assignment.dto.request.AssignmentSubmitReq
 import com.barostartbe.domain.assignment.dto.response.AssignmentCreateRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMaterialRes
+import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeListRes
+import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeDetailRes
 import com.barostartbe.domain.assignment.entity.enum.Subject
 import com.barostartbe.domain.assignment.usecase.AssignmentCommandUseCase
 import com.barostartbe.domain.assignment.usecase.AssignmentFileDownloadUseCase
 import com.barostartbe.domain.assignment.usecase.AssignmentMaterialQueryUseCase
 import com.barostartbe.domain.assignment.usecase.AssignmentQueryUseCase
+import com.barostartbe.domain.user.entity.User
 import com.barostartbe.global.response.ApiResponse
 import com.barostartbe.global.response.type.SuccessCode
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
 
 
 @RestController
@@ -23,39 +28,27 @@ class AssignmentController(
     private val assignmentMaterialQueryUseCase: AssignmentMaterialQueryUseCase
 ) : AssignmentApi {
 
-    @PostMapping("/mentees/{menteeId}/assignments")
-    override fun createAssignment(@PathVariable menteeId: Long, @RequestBody req: AssignmentCreateReq
-    ): ResponseEntity<ApiResponse<AssignmentCreateRes>> =
-        ApiResponse.success(
-            SuccessCode.CREATE_OK,
-            assignmentCommandUseCase.createAssignment(menteeId, req)
-        )
+    override fun createAssignment(@AuthenticationPrincipal mentor: User, @PathVariable menteeId: Long, @RequestBody req: AssignmentCreateReq): ResponseEntity<ApiResponse<AssignmentCreateRes>> =
+        ApiResponse.success(SuccessCode.CREATE_OK, assignmentCommandUseCase.createAssignment(mentorId = mentor.id!!, menteeId = menteeId, req = req))
 
-    override fun submitAssignment(assignmentId: Long, req: AssignmentSubmitReq): ResponseEntity<ApiResponse<Unit>> {
-        assignmentCommandUseCase.submitAssignment(req.copy(assignmentId = assignmentId))
-        return ApiResponse.success(SuccessCode.REQUEST_OK)
-    }
+    override fun getMenteeAssignments(mentee: User, subject: Subject?, dueDate: LocalDate?): ResponseEntity<ApiResponse<List<AssignmentMenteeListRes>>> {
+        val menteeId = mentee.id!!
+        return ApiResponse.success(SuccessCode.REQUEST_OK, assignmentQueryUseCase.getAssignmentsByMentee(menteeId = menteeId, subject = subject, dueDate = dueDate)) }
+
+    override fun getMenteeAssignmentDetail(@AuthenticationPrincipal mentee: User, assignmentId: Long): ResponseEntity<ApiResponse<AssignmentMenteeDetailRes>> {
+        val menteeId = mentee.id!!
+        return ApiResponse.success(SuccessCode.REQUEST_OK, assignmentQueryUseCase.getAssignmentDetailByMentee(assignmentId = assignmentId, menteeId = menteeId)) }
+
+    override fun submitAssignment(@AuthenticationPrincipal mentee: User, assignmentId: Long, req: AssignmentSubmitReq): ResponseEntity<ApiResponse<Unit>> {
+        assignmentCommandUseCase.submitAssignment(menteeId = mentee.id!!, assignmentId = assignmentId, req = req)
+        return ApiResponse.success(SuccessCode.REQUEST_OK) }
 
     override fun getAssignmentFileDownloadUrl(assignmentFileId: Long): ResponseEntity<ApiResponse<String>> =
-        ApiResponse.success(
-            SuccessCode.REQUEST_OK,
-            assignmentFileDownloadUseCase.execute(assignmentFileId)
-        )
+        ApiResponse.success(SuccessCode.REQUEST_OK, assignmentFileDownloadUseCase.execute(assignmentFileId))
 
-    override fun getAssignments() =
-        ApiResponse.success(SuccessCode.REQUEST_OK, assignmentQueryUseCase.getAssignments())
-
-    override fun getAssignmentDetail(assignmentId: Long) =
-        ApiResponse.success(SuccessCode.REQUEST_OK, assignmentQueryUseCase.getAssignmentDetail(assignmentId))
-
-    override fun getAllMaterials(subject: Subject?): ResponseEntity<ApiResponse<List<AssignmentMaterialRes>>> {
-        // TODO: SecurityContext에서 mentorId 추출
-        val mentorId = 1L
-
-        val materials = assignmentMaterialQueryUseCase.getAllMaterialsByMentor(
-            mentorId = mentorId,
-            subject = subject
-        )
+    override fun getAllMaterials(@AuthenticationPrincipal mentor: User, subject: Subject?): ResponseEntity<ApiResponse<List<AssignmentMaterialRes>>> {
+        val mentorId = mentor.id!!
+        val materials = assignmentMaterialQueryUseCase.getAllMaterialsByMentor(mentorId = mentorId, subject = subject)
 
         return ApiResponse.success(SuccessCode.REQUEST_OK, materials)
     }

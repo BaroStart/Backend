@@ -23,7 +23,7 @@ interface AssignmentFileRepository : JpaRepository<AssignmentFile, Long> {
     @Query(
         """
         delete from AssignmentFile af
-         where af.assignmentId = :assignmentId
+         where af.assignment.id = :assignmentId
            and af.fileType = :fileType
         """
     )
@@ -39,7 +39,7 @@ interface AssignmentFileRepository : JpaRepository<AssignmentFile, Long> {
     @Query(
         """
         delete from AssignmentFile af
-         where af.assignmentId = :assignmentId
+         where af.assignment.id = :assignmentId
            and af.fileType = 'SUBMISSION'
         """
     )

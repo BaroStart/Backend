@@ -1,16 +1,17 @@
 package com.barostartbe.domain.assignment.usecase
 
-import com.barostartbe.domain.assignment.dto.response.AssignmentDetailRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentFileRes
-import com.barostartbe.domain.assignment.dto.response.AssignmentListRes
+import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeDetailRes
+import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeListRes
 import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
-import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
 import com.barostartbe.domain.assignment.entity.enum.Subject
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
 import com.barostartbe.domain.objectstorage.usecase.GetPreAuthenticatedUrl
 import com.barostartbe.global.annotation.QueryUseCase
+import com.barostartbe.global.error.exception.ServiceException
+import com.barostartbe.global.response.type.ErrorCode
 import java.time.LocalDate
 
 @QueryUseCase
@@ -19,77 +20,87 @@ class AssignmentQueryUseCase(
     private val assignmentFileRepository: AssignmentFileRepository,
     private val getPreAuthenticatedUrl: GetPreAuthenticatedUrl
 ) {
-
-    fun getAssignments(
+    // [멘티] 과제 목록 조회
+    fun getAssignmentsByMentee(
+        menteeId: Long,
         subject: Subject? = null,
-        status: AssignmentStatus? = null,
         dueDate: LocalDate? = null
-    ): List<AssignmentListRes> {
+    ): List<AssignmentMenteeListRes> {
 
-        val assignments = assignmentRepository.findAll()    // TODO SECURITY
+        val assignments = assignmentRepository.findAllByMentee_Id(menteeId)
 
         return assignments
             .asSequence()
             .filter { subject == null || it.subject == subject }
-            .filter { status == null || it.status == status }
-            .filter { dueDate == null || it.dueDate == dueDate }
-            .map { AssignmentListRes.from(it) }
+            .filter { dueDate == null || it.dueDate.toLocalDate() == dueDate }
+            .map { AssignmentMenteeListRes.from(it) }
             .toList()
     }
 
 
-    fun getAssignmentDetail(assignmentId: Long): AssignmentDetailRes {
+    // [멘티] 과제 상세 조회
+    fun getAssignmentDetailByMentee(
+        assignmentId: Long,
+        menteeId: Long
+    ): AssignmentMenteeDetailRes {
 
         val assignment = assignmentRepository.findById(assignmentId)
             .orElseThrow { AssignmentNotFoundException() }
 
-        // TODO SECURITY: 로그인 사용자 권한 검증
+        // 멘티 본인 과제만 조회
+        if (assignment.mentee.id != menteeId) {
+            throw ServiceException(ErrorCode.ASSIGNMENT_PERMISSION_DENIED)
+        }
 
-        // 학습자료 (멘토)
+        // 학습 자료 (멘토 업로드)
         val materials = assignmentFileRepository
             .findAllByAssignmentIdAndFileType(
                 assignmentId = assignmentId,
                 fileType = AssignmentFileType.MATERIAL
             )
-            .map { assignmentFile ->
-                val downloadUrl = assignmentFile.url
+            .map { file ->
+                val downloadUrl = file.url
                     ?.takeIf { it.isNotBlank() }
-                    ?.let { objectKeyOrPath ->
-                        getPreAuthenticatedUrl.execute(objectKeyOrPath).url
-                    }
+                    ?.let { getPreAuthenticatedUrl.execute(it).url }
 
                 AssignmentFileRes(
-                    assignmentFileId = assignmentFile.id!!,
-                    fileType = assignmentFile.fileType.name,
+                    assignmentFileId = file.id!!,
+                    fileType = file.fileType.name,
                     downloadUrl = downloadUrl
                 )
             }
 
-
-        // 제출물 (멘티)
+        // 제출물 (멘티 업로드)
         val submissions = assignmentFileRepository
-                .findAllByAssignmentIdAndFileType(
-                    assignmentId = assignmentId,
-                    fileType = AssignmentFileType.SUBMISSION
+            .findAllByAssignmentIdAndFileType(
+                assignmentId = assignmentId,
+                fileType = AssignmentFileType.SUBMISSION
+            )
+            .map { file ->
+                val downloadUrl = file.url
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { getPreAuthenticatedUrl.execute(it).url }
+
+                AssignmentFileRes(
+                    assignmentFileId = file.id!!,
+                    fileType = file.fileType.name,
+                    downloadUrl = downloadUrl
                 )
-                .map { assignmentFile ->
-                    val downloadUrl = assignmentFile.url
-                        ?.takeIf { it.isNotBlank() }
-                        ?.let { objectKeyOrPath ->
-                            getPreAuthenticatedUrl.execute(objectKeyOrPath).url
-                        }
+            }
 
-                    AssignmentFileRes(
-                        assignmentFileId = assignmentFile.id!!,
-                        fileType = assignmentFile.fileType.name,
-                        downloadUrl = downloadUrl
-                    )
-                }
-
-        return AssignmentDetailRes.from(
-            assignment = assignment,
+        return AssignmentMenteeDetailRes(
+            assignmentId = assignment.id!!,
+            title = assignment.title,
+            subject = assignment.subject,
+            dueDate = assignment.dueDate,
+            goal = assignment.goal,
+            content = assignment.content,
             materials = materials,
+            submittedAt = assignment.submittedAt,
+            memo = assignment.memo,
             submissions = submissions
         )
     }
+
+    fun getAssignmentDetail(assignmentId: Long) {}
 }

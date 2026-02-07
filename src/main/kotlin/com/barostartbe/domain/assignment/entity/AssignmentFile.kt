@@ -8,8 +8,9 @@ import jakarta.persistence.*
 @Table(name = "assignment_file")
 class AssignmentFile(
 
-    @Column(name = "assignment_id", nullable = false)
-    val assignmentId: Long,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignment_id", nullable = false)
+    val assignment: Assignment,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "file_type", nullable = false)

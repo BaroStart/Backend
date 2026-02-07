@@ -5,21 +5,23 @@ import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
 import com.barostartbe.domain.assignment.entity.enum.Subject
 import com.barostartbe.domain.assignment.error.AssignmentFeedbackedException
 import com.barostartbe.domain.assignment.error.AssignmentNotSubmittedException
-
+import com.barostartbe.domain.mentor.entity.Mentor
+import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.global.common.entity.BaseEntity
 import jakarta.persistence.*
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "assignments")
 class Assignment(
 
-    @Column(name = "mentor_id", nullable = false)
-    val mentorId: Long,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mentor_id", nullable = false)
+    val mentor: Mentor,
 
-    @Column(name = "mentee_id", nullable = false)
-    val menteeId: Long,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mentee_id", nullable = false)
+    val mentee: Mentee,
 
     @Column(nullable = false, length = 100)
     val title: String,
@@ -33,7 +35,7 @@ class Assignment(
     var status: AssignmentStatus = AssignmentStatus.NOT_SUBMIT,
 
     @Column(name = "due_date", nullable = false)
-    val dueDate: LocalDate,
+    val dueDate: LocalDateTime,
 
     @Column(columnDefinition = "TEXT")
     val goal: String? = null,
@@ -95,13 +97,13 @@ class Assignment(
     companion object {
         // [멘토] 과제 생성
         fun create(
-            mentorId: Long,
-            menteeId: Long,
+            mentor: Mentor,
+            mentee: Mentee,
             req: AssignmentCreateReq
         ): Assignment =
             Assignment(
-                mentorId = mentorId,
-                menteeId = menteeId,
+                mentor = mentor,
+                mentee = mentee,
                 title = req.title,
                 subject = req.subject,
                 dueDate = req.dueDate,
