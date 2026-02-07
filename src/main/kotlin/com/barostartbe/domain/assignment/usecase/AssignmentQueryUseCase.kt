@@ -4,6 +4,7 @@ import com.barostartbe.domain.assignment.dto.response.AssignmentFileRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeDetailRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeListRes
 import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
+import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
 import com.barostartbe.domain.assignment.entity.enum.Subject
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
@@ -17,8 +18,7 @@ import java.time.LocalDate
 @QueryUseCase
 class AssignmentQueryUseCase(
     private val assignmentRepository: AssignmentRepository,
-    private val assignmentFileRepository: AssignmentFileRepository,
-    private val getPreAuthenticatedUrl: GetPreAuthenticatedUrl
+    private val assignmentFileRepository: AssignmentFileRepository
 ) {
     // [멘티] 과제 목록 조회
     fun getAssignmentsByMentee(
@@ -33,7 +33,9 @@ class AssignmentQueryUseCase(
             .asSequence()
             .filter { subject == null || it.subject == subject }
             .filter { dueDate == null || it.dueDate.toLocalDate() == dueDate }
-            .map { AssignmentMenteeListRes.from(it) }
+            .map { assignment ->
+                AssignmentMenteeListRes.from(assignment)
+            }
             .toList()
     }
 
@@ -89,14 +91,13 @@ class AssignmentQueryUseCase(
             title = assignment.title,
             subject = assignment.subject,
             dueDate = assignment.dueDate,
-            goal = assignment.goal,
+            goal = assignment.assignmentGoal?.name,
             content = assignment.content,
+            seolStudyContext = assignment.seolStudyContext,
             materials = materials,
             submittedAt = assignment.submittedAt,
             memo = assignment.memo,
             submissions = submissions
         )
     }
-
-    fun getAssignmentDetail(assignmentId: Long) {}
 }

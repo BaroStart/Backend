@@ -32,7 +32,6 @@ interface AssignmentApi {
     @Operation(summary = "[멘토] 과제 생성", description = "멘토가 멘티에게 과제를 등록합니다.")
     fun createAssignment(
         @AuthenticationPrincipal mentor: User,
-        @PathVariable menteeId: Long,
         @RequestBody @Valid req: AssignmentCreateReq
     ): ResponseEntity<ApiResponse<AssignmentCreateRes>>
 

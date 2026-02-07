@@ -26,7 +26,11 @@ data class AssignmentCreateReq(
     @field:NotNull(message = "dueAt는 필수입니다")
     val dueDate: LocalDateTime,
 
-    @Schema(description = "과제 목표(보완점/목표 텍스트)", example = "오답 원인 분석 및 재풀이", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    @Schema(description = "선택한 과제 목표 ID", example = "3")
+    @field:NotNull(message = "goalId는 필수입니다")
+    val goalId: Long? = null,
+
+    @Schema(description = "멘토가 입력한 과제 목표(텍스트)", example = "오답 원인 분석 및 재풀이", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     @field:Size(max = 1000, message = "goal은 1000자를 초과할 수 없습니다")
     val goal: String? = null,
 
