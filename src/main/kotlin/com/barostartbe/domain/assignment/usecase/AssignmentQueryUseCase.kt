@@ -106,4 +106,7 @@ class AssignmentQueryUseCase(
 
     fun is7DaysAssignmentCompletedStreak(menteeId: Long): Boolean =
         assignmentRepository.findMaxConsecutivePerfectDays(menteeId) >= 7
+
+    // TODO: 과목별 및 누적 학습 시간 조회 기능 구현 (국어, 영어, 수학 50시간 이상, 전체 100시간)
+    // TODO: 공부시간이 25분 넘는 과제가 25개가 넘는지 확인하는 기능 구현
 }
