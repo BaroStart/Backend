@@ -3,6 +3,7 @@ package com.barostartbe.domain.auth.usecase
 import com.barostartbe.domain.auth.dto.LoginRequestDto
 import com.barostartbe.domain.auth.dto.SignupRequestDto
 import com.barostartbe.domain.auth.dto.TokenPairResponseDto
+import com.barostartbe.domain.badge.usecse.MenteeBadgeCommandUseCase
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.domain.user.repository.AccessLogRepository
 import com.barostartbe.domain.user.repository.UserRepository
@@ -22,11 +23,13 @@ class AuthCommandUseCaseTest : DescribeSpec({
     val authQueryUseCase = mockk<AuthQueryUseCase>(relaxed = true)
     val userRepository = mockk<UserRepository>(relaxed = true)
     val accessLogRepository = mockk<AccessLogRepository>(relaxed = true)
+    val menteeBadgeCommandUseCase = mockk<MenteeBadgeCommandUseCase>(relaxed = true)
     val authCommandUseCase = AuthCommandUseCase(
         authQueryUseCase,
         userRepository,
         accessLogRepository,
-        BCryptPasswordEncoder()
+        BCryptPasswordEncoder(),
+        menteeBadgeCommandUseCase
     )
 
     beforeEach { clearMocks(authQueryUseCase, userRepository, accessLogRepository) }
