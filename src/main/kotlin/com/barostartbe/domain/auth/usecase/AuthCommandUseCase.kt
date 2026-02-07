@@ -4,7 +4,7 @@ import com.barostartbe.domain.auth.dto.LoginRequestDto
 import com.barostartbe.domain.auth.dto.SignupRequestDto
 import com.barostartbe.domain.auth.dto.SignupResponseDto
 import com.barostartbe.domain.auth.dto.TokenPairResponseDto
-import com.barostartbe.domain.badge.usecse.MenteeBadgeCommandUseCase
+import com.barostartbe.domain.badge.usecase.MenteeBadgeCommandUseCase
 import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.user.entity.AccessLog
