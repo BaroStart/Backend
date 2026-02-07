@@ -60,8 +60,6 @@ class AssignmentQueryUseCase(
             )
             .map { file ->
                 val downloadUrl = file.url
-                    ?.takeIf { it.isNotBlank() }
-                    ?.let { getPreAuthenticatedUrl.execute(it).url }
 
                 AssignmentFileRes(
                     assignmentFileId = file.id!!,
@@ -78,8 +76,6 @@ class AssignmentQueryUseCase(
             )
             .map { file ->
                 val downloadUrl = file.url
-                    ?.takeIf { it.isNotBlank() }
-                    ?.let { getPreAuthenticatedUrl.execute(it).url }
 
                 AssignmentFileRes(
                     assignmentFileId = file.id!!,

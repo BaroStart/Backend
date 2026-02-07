@@ -17,9 +17,9 @@ class AssignmentFile(
     val fileType: AssignmentFileType,    // MATERIAL / SUBMISSION
 
     fileName: String,
-    filePath: String,
+    fileUrl: String,
 
-) : BaseFileEntity(
+    ) : BaseFileEntity(
     fileName = fileName,
-    url = filePath
+    url = fileUrl
 )

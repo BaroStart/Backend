@@ -12,6 +12,7 @@ import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
 import com.barostartbe.domain.mentee.repository.MenteeRepository
 import com.barostartbe.domain.mentor.repository.MentorRepository
+import com.barostartbe.domain.objectstorage.usecase.GetPreAuthenticatedUrl
 import com.barostartbe.global.annotation.CommandUseCase
 import com.barostartbe.global.error.exception.ServiceException
 import com.barostartbe.global.response.type.ErrorCode
@@ -24,7 +25,8 @@ class AssignmentCommandUseCase(
     private val assignmentFileRepository: AssignmentFileRepository,
     private val mentorRepository: MentorRepository,
     private val menteeRepository: MenteeRepository,
-    private val mentorMenteeMappingRepository: MentorMenteeMappingRepository
+    private val mentorMenteeMappingRepository: MentorMenteeMappingRepository,
+    private val getPreAuthenticatedUrl: GetPreAuthenticatedUrl
 ) {
 
     // [멘토] 과제 생성
@@ -67,7 +69,7 @@ class AssignmentCommandUseCase(
                     assignment = assignment,
                     fileType = AssignmentFileType.MATERIAL,
                     fileName = parsed.fileName,
-                    filePath = parsed.filePath
+                    fileUrl = getPreAuthenticatedUrl.execute(parsed.filePath).url
                 )
             )
         }
@@ -109,7 +111,7 @@ class AssignmentCommandUseCase(
                     assignment = assignment,
                     fileType = AssignmentFileType.SUBMISSION,
                     fileName = parsed.fileName,
-                    filePath = parsed.filePath
+                    fileUrl = getPreAuthenticatedUrl.execute(parsed.filePath).url
                 )
             )
         }
