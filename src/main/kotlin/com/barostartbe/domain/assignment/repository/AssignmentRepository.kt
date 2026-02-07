@@ -1,6 +1,7 @@
 package com.barostartbe.domain.assignment.repository
 
 import com.barostartbe.domain.assignment.entity.Assignment
+import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -27,8 +28,6 @@ interface AssignmentRepository : JpaRepository<Assignment, Long> {
     fun findAllByMentorId(mentorId: Long): List<Assignment>
 
     // 상태에 따른 과제 존재 여부 확인
-    fun existsByStatusAndMentee_id(status: AssignmentStatus, menteeId: Long): Boolean
-
     fun existsByMentee_IdAndStatusNot(menteeId: Long, status: AssignmentStatus): Boolean
 
     @Query(
