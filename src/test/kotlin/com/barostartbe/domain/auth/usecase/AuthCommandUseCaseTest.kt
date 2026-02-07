@@ -3,7 +3,7 @@ package com.barostartbe.domain.auth.usecase
 import com.barostartbe.domain.auth.dto.LoginRequestDto
 import com.barostartbe.domain.auth.dto.SignupRequestDto
 import com.barostartbe.domain.auth.dto.TokenPairResponseDto
-import com.barostartbe.domain.badge.usecse.MenteeBadgeCommandUseCase
+import com.barostartbe.domain.badge.usecase.MenteeBadgeCommandUseCase
 import com.barostartbe.domain.user.entity.Role
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.domain.user.repository.AccessLogRepository

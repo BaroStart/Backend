@@ -1,4 +1,4 @@
-package com.barostartbe.domain.badge.usecse
+package com.barostartbe.domain.badge.usecase
 
 import com.barostartbe.domain.assignment.usecase.AssignmentQueryUseCase
 import com.barostartbe.domain.badge.entity.MenteeBadgeMapping
