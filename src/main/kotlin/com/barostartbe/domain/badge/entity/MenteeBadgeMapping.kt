@@ -16,4 +16,13 @@ class MenteeBadgeMapping(
     @ManyToOne(fetch = FetchType.LAZY)
     val badge: Badge
 ) : BaseEntity() {
+
+    companion object {
+        fun of(mentee: Mentee, badge: Badge): MenteeBadgeMapping {
+            return MenteeBadgeMapping(
+                mentee = mentee,
+                badge = badge
+            )
+        }
+    }
 }
