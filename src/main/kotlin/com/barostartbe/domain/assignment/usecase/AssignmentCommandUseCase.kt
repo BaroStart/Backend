@@ -7,8 +7,10 @@ import com.barostartbe.domain.assignment.dto.response.AssignmentCreateRes
 import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
 import com.barostartbe.domain.assignment.entity.Assignment
 import com.barostartbe.domain.assignment.entity.AssignmentFile
+import com.barostartbe.domain.assignment.entity.AssignmentGoal
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
+import com.barostartbe.domain.assignment.repository.AssignmentGoalRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
 import com.barostartbe.domain.mentee.repository.MenteeRepository
 import com.barostartbe.domain.mentor.repository.MentorRepository
@@ -23,6 +25,7 @@ import java.time.LocalDateTime
 class AssignmentCommandUseCase(
     private val assignmentRepository: AssignmentRepository,
     private val assignmentFileRepository: AssignmentFileRepository,
+    private val assignmentGoalRepository: AssignmentGoalRepository,
     private val mentorRepository: MentorRepository,
     private val menteeRepository: MenteeRepository,
     private val mentorMenteeMappingRepository: MentorMenteeMappingRepository,
@@ -42,21 +45,18 @@ class AssignmentCommandUseCase(
             .findByMentorAndMentee(mentor, mentee)
             ?: throw ServiceException(ErrorCode.UNMATCHED_PAIR)
 
-        // 설 스터디 컬럼 context 병합
-        val mergedContent = buildString {
-            req.seolStudyColumn?.let {
-                append("[SeolStudy Column]\n")
-                append(it)
-                append("\n\n")
-            }
-            req.content?.let { append(it) }
-        }.ifBlank { null } // 둘 다 없으면 null
+        // 과제 목표 조회
+        val assignmentGoal: AssignmentGoal =
+            assignmentGoalRepository.findById(req.goalId!!)
+                .orElseThrow { ServiceException(ErrorCode.NOT_FOUND) }
+
 
         val assignment = assignmentRepository.save(
             Assignment.create(
                 mentor = mentor,
                 mentee = mentee,
-                req = req.copy(content = mergedContent)
+                assignmentGoal = assignmentGoal,
+                req = req
             )
         )
 
@@ -90,8 +90,8 @@ class AssignmentCommandUseCase(
         }
 
         assignment.submit(
-            startTime = null,
-            endTime = LocalDateTime.now(),
+            startTime = req.timeSlot.startTime,
+            endTime = req.timeSlot.endTime,
             memo = req.memo,
             submittedAt = LocalDateTime.now()
         )
