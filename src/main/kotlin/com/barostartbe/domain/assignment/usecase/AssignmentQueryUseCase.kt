@@ -4,6 +4,7 @@ import com.barostartbe.domain.assignment.dto.response.AssignmentFileRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeDetailRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeListRes
 import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
+import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
 import com.barostartbe.domain.assignment.entity.enum.Subject
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
@@ -99,4 +100,7 @@ class AssignmentQueryUseCase(
     }
 
     fun getAssignmentDetail(assignmentId: Long) {}
+
+    fun checkCompletedAssignmentExists(menteeId: Long): Boolean =
+    assignmentRepository.existsByStatusAndMentee_id(AssignmentStatus.SUBMITTED, menteeId)
 }
