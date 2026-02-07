@@ -41,6 +41,8 @@ enum class ErrorCode(
     // 공통
     USER_NOT_FOUND(404, "USER_NOT_FOUND", "유저를 찾을 수 없습니다."),
 
+    MENTEE_NOT_FOUND(404, "MENTEE_NOT_FOUND", "멘티를 찾을 수 없습니다."),
+
     NOT_FOUND(404, "NOT_FOUND", "엔티티를 찾을 수 없습니다."),
 
     TODO_NOT_FOUND(404, "TODO_NOT_FOUND", "할일을 찾을 수 없습니다."),
