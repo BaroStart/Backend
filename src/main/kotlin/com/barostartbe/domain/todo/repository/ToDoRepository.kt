@@ -1,6 +1,7 @@
 package com.barostartbe.domain.todo.repository
 
 import com.barostartbe.domain.todo.entity.ToDo
+import com.barostartbe.domain.todo.entity.enums.Status
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -20,6 +21,8 @@ interface ToDoRepository : JpaRepository<ToDo, Long> {
         @Param("menteeId") menteeId: Long,
         @Param("date") date: LocalDate
     ): List<ToDo>
+
+    fun findAllByMentee_IdAndStatus(menteeId: Long, status: Status): List<ToDo>
 
     @Query(value = """
         SELECT COALESCE(MAX(streak), 0)
