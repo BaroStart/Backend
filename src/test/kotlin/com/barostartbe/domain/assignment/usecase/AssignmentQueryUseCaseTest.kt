@@ -2,6 +2,7 @@ package com.barostartbe.domain.assignment.usecase
 
 import com.barostartbe.domain.assignment.entity.Assignment
 import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
+import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
@@ -102,6 +103,32 @@ class AssignmentQueryUseCaseTest : DescribeSpec({
                         menteeId = 1L
                     )
                 }
+            }
+        }
+
+        context("완료된 과제 존재 여부 확인") {
+            val menteeId = 1L
+            it("완료된 과제가 있으면 true를 반환한다") {
+                every { assignmentRepository.existsByMentee_IdAndStatusNot(menteeId, AssignmentStatus.NOT_SUBMIT) } returns true
+                useCase.checkCompletedAssignmentExists(menteeId) shouldBe true
+            }
+
+            it("완료된 과제가 없으면 false를 반환한다") {
+                every { assignmentRepository.existsByMentee_IdAndStatusNot(menteeId, AssignmentStatus.NOT_SUBMIT) } returns false
+                useCase.checkCompletedAssignmentExists(menteeId) shouldBe false
+            }
+        }
+
+        context("7일 연속 과제 완료 스트릭 확인") {
+            val menteeId = 1L
+            it("스트릭이 7일 이상이면 true를 반환한다") {
+                every { assignmentRepository.findMaxConsecutivePerfectDays(menteeId) } returns 7
+                useCase.is7DaysAssignmentCompletedStreak(menteeId) shouldBe true
+            }
+
+            it("스트릭이 7일 미만이면 false를 반환한다") {
+                every { assignmentRepository.findMaxConsecutivePerfectDays(menteeId) } returns 6
+                useCase.is7DaysAssignmentCompletedStreak(menteeId) shouldBe false
             }
         }
     }
