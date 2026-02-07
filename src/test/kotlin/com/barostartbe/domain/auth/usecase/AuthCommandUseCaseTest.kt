@@ -64,8 +64,8 @@ class AuthCommandUseCaseTest : DescribeSpec({
             it("정상적으로 로그인하면 토큰을 반환한다.") {
                 val servletRequest = mockk<HttpServletRequest>()
                 val user = mockk<User>()
-                val tokenPair = TokenPairResponseDto("access", "refresh")
                 val userId = 1L
+                val tokenPair = TokenPairResponseDto(userId, "access", "refresh")
 
                 every { servletRequest.getAttribute("requestBody") } returns loginRequestDto
                 every { userRepository.findUserByLoginId(loginId) } returns user
