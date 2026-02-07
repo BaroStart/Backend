@@ -25,9 +25,7 @@ class AssignmentMaterialQueryUseCase(
         val assignments = assignmentRepository.findAllByMentorId(mentorId)
             .filter { subject == null || it.subject == subject }
 
-        if (assignments.isEmpty()) {
-            return emptyList()
-        }
+        if (assignments.isEmpty()) { return emptyList() }
 
         val assignmentMap = assignments.associateBy { it.id!! }
         val assignmentIds = assignments.map { it.id!! }
@@ -41,15 +39,16 @@ class AssignmentMaterialQueryUseCase(
         }
 
         return materials.mapNotNull { file ->
-            val assignment = assignmentMap[file.assignmentId] ?: return@mapNotNull null
+            val assignmentId = file.assignment.id!!
+            val assignment = assignmentMap[assignmentId]
+                ?: return@mapNotNull null
 
             AssignmentMaterialRes(
-                assignmentFileId = file.id!!,
-                assignmentId = file.assignmentId,
+                assignmentId = assignmentId,
                 assignmentTitle = assignment.title,
                 subject = assignment.subject,
                 fileName = file.fileName ?: "",
-                filePath = file.url ?: ""
+                fileUrl = file.url ?: ""
             )
         }
     }
