@@ -45,7 +45,7 @@ interface CommentApi {
 
     @PostMapping("/sub-comments")
     @Operation(summary = "댓글 작성")
-    fun createSubComment(@RequestBody request: CreateSubCommentRequestDto): ResponseEntity<ApiResponse<CreateSubCommentResponseDto>>
+    fun createSubComment(@RequestBody request: CreateSubCommentRequestDto, @AuthenticationPrincipal user: User): ResponseEntity<ApiResponse<CreateSubCommentResponseDto>>
 
     @PatchMapping("/sub-comments/{subCommentId}")
     @Operation(summary = "댓글 수정")

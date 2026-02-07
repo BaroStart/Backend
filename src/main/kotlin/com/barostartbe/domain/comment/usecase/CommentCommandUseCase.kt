@@ -49,9 +49,8 @@ class CommentCommandUseCase (
         commentRepository.delete(comment)
     }
 
-    fun createSubComment(request: CreateSubCommentRequestDto): CreateSubCommentResponseDto {
+    fun createSubComment(user: User, request: CreateSubCommentRequestDto): CreateSubCommentResponseDto {
 
-        val user = userRepository.findByIdOrNull(request.userId) ?: throw ServiceException(ErrorCode.USER_NOT_FOUND)
         val comment = commentRepository.findByIdOrNull(request.commentId) ?: throw ServiceException(
             ErrorCode.NOT_FOUND)
 

@@ -38,8 +38,8 @@ class CommentController(
     override fun getComment(mentorId: Long): ResponseEntity<ApiResponse<List<GetCommentResponseDto>>>
         = ApiResponse.success(SuccessCode.REQUEST_OK, commentQueryUseCase.getAllCommentsForMentor(mentorId))
 
-    override fun createSubComment(request: CreateSubCommentRequestDto): ResponseEntity<ApiResponse<CreateSubCommentResponseDto>>
-        = ApiResponse.success(SuccessCode.CREATE_OK, commentCommandUseCase.createSubComment(request))
+    override fun createSubComment(request: CreateSubCommentRequestDto, user: User): ResponseEntity<ApiResponse<CreateSubCommentResponseDto>>
+        = ApiResponse.success(SuccessCode.CREATE_OK, commentCommandUseCase.createSubComment(user, request))
 
     override fun updateSubComment(subCommentId: Long, request: UpdateSubCommentRequestDto): ResponseEntity<ApiResponse<Unit>> {
         commentCommandUseCase.updateSubComment(subCommentId, request)
