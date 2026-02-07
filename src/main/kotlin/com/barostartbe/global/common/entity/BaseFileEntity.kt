@@ -9,6 +9,6 @@ abstract class BaseFileEntity(
     @Column
     val fileName: String? = null,
 
-    @Column(length = 500)
+    @Column(length = 500, nullable = false)
     val url: String? = null,
 ) : BaseEntity()

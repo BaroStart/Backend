@@ -11,15 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 
-
-@RequestMapping("api/v1/storages")
+@RequestMapping("/api/v1/storages")
 @Tag(name = "Object Storage API", description = "OCI Object Storage 관리 API")
 interface ObjectStorageApi {
 
     @Operation(
         summary = "Pre-Authenticated Url 발급",
-        description = "OCI Object Storage에 파일 업로드를 위한 Pre-Authenticated Url을 발급합니다."
-    )
+        description = "OCI Object Storage에 파일 업로드를 위한 Pre-Authenticated Url을 발급합니다.")
     @PostMapping("/pre-authenticated-url")
     fun getPreAuthenticatedUrl(
         @NotBlank
