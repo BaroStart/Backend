@@ -1,5 +1,6 @@
 package com.barostartbe.domain.assignment.repository
 
+import com.barostartbe.domain.assignment.entity.Assignment
 import com.barostartbe.domain.assignment.entity.AssignmentFile
 import com.barostartbe.domain.assignment.entity.enums.AssignmentFileType
 import org.springframework.data.jpa.repository.JpaRepository
@@ -44,4 +45,7 @@ interface AssignmentFileRepository : JpaRepository<AssignmentFile, Long> {
         """
     )
     fun deleteAllSubmissionFiles(@Param("assignmentId") assignmentId: Long)
+
+    // 과제, 파일 타입 기준 파일 전체 조회
+    fun findAllByAssignmentAndFileType(assignment: Assignment, fileType: AssignmentFileType): List<AssignmentFile>
 }

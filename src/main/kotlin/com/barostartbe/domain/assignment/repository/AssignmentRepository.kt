@@ -19,6 +19,9 @@ interface AssignmentRepository : JpaRepository<Assignment, Long> {
 
     fun existsByMentee_IdAndStatusNot(menteeId: Long, status: AssignmentStatus): Boolean
 
+    // 멘토 ID, 상태 목록 기준 최신 제출일 내림차순 조회
+    fun findAllByMentorIdAndStatusInOrderBySubmittedAtDesc(mentorId: Long, status: List<AssignmentStatus>): List<Assignment>
+
     @Query(
         """
         SELECT COUNT(a)
