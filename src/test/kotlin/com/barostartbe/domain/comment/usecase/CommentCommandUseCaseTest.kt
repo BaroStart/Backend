@@ -44,10 +44,10 @@ class CommentCommandUseCaseTest : DescribeSpec({
         clearAllMocks()
     }
 
-    describe("createComment") {
+    describe("댓글 생성") {
         val request = CreateCommentRequestDto(content = "new comment")
 
-        it("saves a comment when the user is a mentee") {
+        it("사용자가 멘티라면 댓글을 저장한다") {
             val mentee = createMentee()
             val savedComment = mockk<Comment> {
                 every { id } returns 10L
@@ -64,7 +64,7 @@ class CommentCommandUseCaseTest : DescribeSpec({
             confirmVerified(commentRepository)
         }
 
-        it("throws NO_AUTH when the user is not a mentee") {
+        it("사용자가 멘티가 아니면 권한 없음 예외를 던진다") {
             val user = User(
                 loginId = "mentor1",
                 password = "pw",
@@ -82,11 +82,11 @@ class CommentCommandUseCaseTest : DescribeSpec({
         }
     }
 
-    describe("updateComment") {
+    describe("댓글 수정") {
         val commentId = 5L
         val request = UpdateCommentRequestDto(content = "updated content")
 
-        it("updates existing comment content") {
+        it("기존 댓글 내용을 수정한다") {
             val mentee = createMentee()
             val comment = Comment(mentee, "original content")
             every { commentRepository.findByIdOrNull(commentId) } returns comment
@@ -102,7 +102,7 @@ class CommentCommandUseCaseTest : DescribeSpec({
             confirmVerified(commentRepository)
         }
 
-        it("throws NOT_FOUND when comment does not exist") {
+        it("댓글이 존재하지 않으면 예외를 던진다") {
             every { commentRepository.findByIdOrNull(commentId) } returns null
 
             val exception = shouldThrow<ServiceException> {
@@ -115,10 +115,10 @@ class CommentCommandUseCaseTest : DescribeSpec({
         }
     }
 
-    describe("deleteComment") {
+    describe("댓글 삭제") {
         val commentId = 7L
 
-        it("deletes comment and its sub-comments when found") {
+        it("댓글이 존재하면 댓글과 대댓글을 삭제한다") {
             val mentee = createMentee()
             val comment = Comment(mentee, "to delete")
             every { commentRepository.findByIdOrNull(commentId) } returns comment
@@ -135,7 +135,7 @@ class CommentCommandUseCaseTest : DescribeSpec({
             confirmVerified(commentRepository, subCommentRepository)
         }
 
-        it("throws NOT_FOUND when comment is missing") {
+        it("댓글이 없으면 예외를 던진다") {
             every { commentRepository.findByIdOrNull(commentId) } returns null
 
             val exception = shouldThrow<ServiceException> {
@@ -149,13 +149,13 @@ class CommentCommandUseCaseTest : DescribeSpec({
         }
     }
 
-    describe("createSubComment") {
+    describe("대댓글 생성") {
         val request = CreateSubCommentRequestDto(
             commentId = 12L,
             subContent = "reply"
         )
 
-        it("saves sub-comment when user and comment exist") {
+        it("사용자와 댓글이 존재하면 대댓글을 저장한다") {
             val user = createMentee()
             val comment = Comment(user, "parent")
             val savedSubComment = mockk<SubComment> {
@@ -178,7 +178,7 @@ class CommentCommandUseCaseTest : DescribeSpec({
             confirmVerified(commentRepository, subCommentRepository)
         }
 
-        it("throws NOT_FOUND when comment does not exist") {
+        it("댓글이 존재하지 않으면 예외를 던진다") {
             val user = createMentee()
             every { commentRepository.findByIdOrNull(request.commentId) } returns null
 
@@ -195,11 +195,11 @@ class CommentCommandUseCaseTest : DescribeSpec({
         }
     }
 
-    describe("updateSubComment") {
+    describe("대댓글 수정") {
         val subCommentId = 55L
         val request = UpdateSubCommentRequestDto(content = "edited reply")
 
-        it("updates existing sub-comment content") {
+        it("기존 대댓글 내용을 수정한다") {
             val user = createMentee()
             val comment = Comment(user, "parent")
             val subComment = SubComment(comment, user, "old reply")
@@ -216,7 +216,7 @@ class CommentCommandUseCaseTest : DescribeSpec({
             confirmVerified(subCommentRepository)
         }
 
-        it("throws NOT_FOUND when sub-comment is missing") {
+        it("대댓글이 없으면 예외를 던진다") {
             every { subCommentRepository.findByIdOrNull(subCommentId) } returns null
 
             val exception = shouldThrow<ServiceException> {
@@ -229,10 +229,10 @@ class CommentCommandUseCaseTest : DescribeSpec({
         }
     }
 
-    describe("deleteSubComment") {
+    describe("대댓글 삭제") {
         val subCommentId = 21L
 
-        it("delegates deletion to repository") {
+        it("대댓글을 삭제한다") {
             every { subCommentRepository.deleteById(subCommentId) } just Runs
 
             useCase.deleteSubComment(subCommentId)

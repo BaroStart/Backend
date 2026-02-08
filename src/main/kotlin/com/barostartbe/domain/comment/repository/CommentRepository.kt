@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface CommentRepository: JpaRepository<Comment, Long> {
     fun findAllByMenteeIn(mentee: List<Mentee>): List<Comment>
+    fun countByMentee_Id(menteeId: Long): Long
 }

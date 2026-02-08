@@ -4,6 +4,7 @@ import com.barostartbe.domain.assignment.dto.response.AssignmentFileRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeDetailRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeListRes
 import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
+import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
 import com.barostartbe.domain.assignment.entity.enum.Subject
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
@@ -99,4 +100,14 @@ class AssignmentQueryUseCase(
     }
 
     fun getAssignmentDetail(assignmentId: Long) {}
+
+    fun checkCompletedAssignmentExists(menteeId: Long): Boolean =
+        assignmentRepository.existsByMentee_IdAndStatusNot(menteeId, AssignmentStatus.NOT_SUBMIT)
+
+    fun is7DaysAssignmentCompletedStreak(menteeId: Long): Boolean =
+        assignmentRepository.findMaxConsecutivePerfectDays(menteeId) >= 7
+
+    // TODO: 과목별 및 누적 학습 시간 조회 기능 구현 (국어, 영어, 수학 50시간 이상, 전체 100시간)
+    // TODO: 공부시간이 25분 넘는 과제가 25개가 넘는지 확인하는 기능 구현
+    // TODO: 공부시간이 6~9시인 과제의 개수를 구하는 기능 구현 (endTime이 9시 이후인 경우 제외)
 }

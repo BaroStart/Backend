@@ -12,7 +12,7 @@ enum class ErrorCode(
     UNMATCHED_PAIR(400, "UNMATCHED_PAIR", "매칭되지 않은 멘토, 멘티 쌍입니다."),
 
     NO_AUTH(403, "NO_AUTH", "권한이 없습니다."),
-  
+
     TODO_NOT_COMPLETED(400, "TODO_NOT_COMPLETED", "할일이 완료되지 않았습니다."),
 
     PASSWORD_MISMATCH(403, "PASSWORD_MISMATCH", "패스워드가 일치하지 않습니다."),
@@ -36,6 +36,8 @@ enum class ErrorCode(
 
     // 공통
     USER_NOT_FOUND(404, "USER_NOT_FOUND", "유저를 찾을 수 없습니다."),
+
+    MENTEE_NOT_FOUND(404, "MENTEE_NOT_FOUND", "멘티를 찾을 수 없습니다."),
 
     NOT_FOUND(404, "NOT_FOUND", "엔티티를 찾을 수 없습니다."),
 
