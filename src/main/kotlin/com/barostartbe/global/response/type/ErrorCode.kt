@@ -50,6 +50,10 @@ enum class ErrorCode(
 
     FILE_NOT_FOUND(404, "FILE_NOT_FOUND", "파일을 찾을 수 없습니다."),
 
+    // Notification
+    NOTIFICATION_NOT_FOUND(404, "NOTIFICATION_NOT_FOUND", "알림을 찾을 수 없습니다."),
+    NOTIFICATION_READ_FORBIDDEN(403, "NOTIFICATION_READ_FORBIDDEN", "알림을 읽을 권한이 없습니다."),
+
     INVALID_FILE(400, "INVALID_FILE", "유효하지 않은 파일입니다."),
 
     // Feedback Template

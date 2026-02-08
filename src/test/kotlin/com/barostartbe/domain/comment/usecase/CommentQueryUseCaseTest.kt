@@ -13,6 +13,7 @@ import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.mentee.entity.School
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.mentor.repository.MentorRepository
+import com.barostartbe.domain.user.entity.User
 import com.barostartbe.global.error.exception.ServiceException
 import com.barostartbe.global.response.type.ErrorCode
 import io.kotest.assertions.throwables.shouldThrow
@@ -26,6 +27,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.springframework.data.repository.findByIdOrNull
+import java.time.LocalDateTime
 
 class CommentQueryUseCaseTest : DescribeSpec({
     val mentorMenteeMappingRepository = mockk<MentorMenteeMappingRepository>()
@@ -45,13 +47,14 @@ class CommentQueryUseCaseTest : DescribeSpec({
         val mentorId = 11L
 
         it("멘토와 매핑된 멘티들의 모든 댓글을 반환한다") {
+            val now = LocalDateTime.now()
             val mentor = createMentor()
             val menteeA = createMentee(loginId = "menteeA", nickname = "mentee-a", name = "A")
             val menteeB = createMentee(loginId = "menteeB", nickname = "mentee-b", name = "B")
             val mappingA = MentorMenteeMapping(mentor = mentor, mentee = menteeA)
             val mappingB = MentorMenteeMapping(mentor = mentor, mentee = menteeB)
-            val commentA = Comment(mentee = menteeA, content = "comment-a")
-            val commentB = Comment(mentee = menteeB, content = "comment-b")
+            val commentA = Comment(mentee = menteeA, content = "comment-a").apply { createdAt = now }
+            val commentB = Comment(mentee = menteeB, content = "comment-b").apply { createdAt = now }
 
             every { mentorRepository.findByIdOrNull(mentorId) } returns mentor
             every { mentorMenteeMappingRepository.findAllByMentor(mentor) } returns listOf(mappingA, mappingB)
@@ -90,20 +93,25 @@ class CommentQueryUseCaseTest : DescribeSpec({
         val commentId = 22L
 
         it("주어진 댓글의 대댓글들을 반환한다") {
+            val now = LocalDateTime.now()
             val mentee = createMentee()
-            val comment = Comment(mentee = mentee, content = "parent")
+            val comment = Comment(mentee = mentee, content = "parent").apply { createdAt = now }
             val mentorResponder = createMentor(loginId = "mentor2", nickname = "mentor2", name = "Mentor2")
             val menteeResponder = mentee
             val subCommentA = mockk<SubComment>()
             val subCommentB = mockk<SubComment>()
+            
             every { subCommentA.id } returns 1L
             every { subCommentA.user } returns mentorResponder
             every { subCommentA.content } returns "reply-mentor"
             every { subCommentA.comment } returns comment
+            every { subCommentA.createdAt } returns now
+            
             every { subCommentB.id } returns 2L
             every { subCommentB.user } returns menteeResponder
             every { subCommentB.content } returns "reply-mentee"
             every { subCommentB.comment } returns comment
+            every { subCommentB.createdAt } returns now
 
             every { commentRepository.findByIdOrNull(commentId) } returns comment
             every { subCommentRepository.findAllByComment(comment) } returns listOf(subCommentA, subCommentB)
@@ -151,11 +159,12 @@ class CommentQueryUseCaseTest : DescribeSpec({
 }) {
     companion object {
         private fun createMentee(
+            id: Long? = null,
             loginId: String = "mentee-login",
             nickname: String = "mentee-nick",
             name: String = "Mentee"
         ): Mentee {
-            return Mentee(
+            val mentee = Mentee(
                 loginId = loginId,
                 password = "password",
                 name = name,
@@ -164,20 +173,33 @@ class CommentQueryUseCaseTest : DescribeSpec({
                 school = School.NORMAL,
                 hopeMajor = "CS"
             )
+            if (id != null) {
+                val idField = User::class.java.getDeclaredField("id")
+                idField.isAccessible = true
+                idField.set(mentee, id)
+            }
+            return mentee
         }
 
         private fun createMentor(
+            id: Long? = null,
             loginId: String = "mentor-login",
             nickname: String = "mentor-nick",
             name: String = "Mentor"
         ): Mentor {
-            return Mentor(
+            val mentor = Mentor(
                 loginId = loginId,
                 password = "password",
                 name = name,
                 nickname = nickname,
                 university = "Uni"
             )
+            if (id != null) {
+                val idField = User::class.java.getDeclaredField("id")
+                idField.isAccessible = true
+                idField.set(mentor, id)
+            }
+            return mentor
         }
     }
 }

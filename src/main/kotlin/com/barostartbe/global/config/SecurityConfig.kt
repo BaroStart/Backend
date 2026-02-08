@@ -49,17 +49,17 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
 
-        val whitelist = listOf<String>(
+        val whitelist = listOf(
             "/api/v1/login", "/api/v1/signup", "/api/v1/refresh/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
+            "/api/sse/**",
+
             // 임시
             "/api/v1/assignments/**",
             "/api/v1/storages/**",
             "/api/v1/files/**",
             "/api/v1/feedback-templates/**"
-
-
         )
 
         http {
@@ -84,7 +84,7 @@ class SecurityConfig(
 
                 authorize ("/mentor/**", hasRole("MENTOR"))
                 authorize ("/mentee/**", hasRole("MENTEE"))
-                authorize ("/admin/**", hasRole("ADMIN"))
+//                authorize ("/admin/**", hasRole("ADMIN"))
 
                 // default
 //                authorize(anyRequest, authenticated)
