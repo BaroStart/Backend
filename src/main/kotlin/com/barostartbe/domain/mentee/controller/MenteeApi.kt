@@ -1,6 +1,8 @@
 package com.barostartbe.domain.mentee.controller
 
 import com.barostartbe.domain.mentee.dto.GetMenteeBasicInfoResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeDashboardResponseDto
+import com.barostartbe.domain.mentee.dto.GetMentoMainDashboardResponseDto
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.global.response.ApiResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -10,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 
 @RequestMapping("/api/v1")
 @Tag(name = "Mentee API", description = "멘티 정보를 crud 할 수 있는 api")
@@ -18,4 +21,17 @@ interface MenteeApi {
     @GetMapping("/mentee/{menteeId}")
     @Operation(summary = "멘티 정보 조회", description = "멘티 이름, 활동정보, 평균 점수 등 자세한 정보들을 조회하는 api")
     fun getMenteeInfo(@PathVariable menteeId: Long, @AuthenticationPrincipal mentor: User): ResponseEntity<ApiResponse<GetMenteeBasicInfoResponseDto>>
+
+    @GetMapping("/mentee/{menteeId}/dashboard")
+    @Operation(summary = "멘티 대시보드", description = "멘토 페이지에서 멘티 상세보기의 대시보드")
+    fun getMenteeDetailsDashboard(
+        @PathVariable menteeId: Long,
+        @RequestParam searchType: String,
+        @RequestParam date: String?,
+        @AuthenticationPrincipal mentor: User
+    ) : ResponseEntity<ApiResponse<GetMenteeDashboardResponseDto>>
+
+    @GetMapping("/mentor/{mentorId}/dashboard")
+    @Operation(summary = "맨토 대시보드", description = "멘토 페이지에서 멘토 대시보드")
+    fun getMentorMainDashboard(@PathVariable mentorId: Long) : ResponseEntity<ApiResponse<GetMentoMainDashboardResponseDto>>
 }
