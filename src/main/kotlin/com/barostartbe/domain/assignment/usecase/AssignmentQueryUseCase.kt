@@ -3,9 +3,9 @@ package com.barostartbe.domain.assignment.usecase
 import com.barostartbe.domain.assignment.dto.response.AssignmentFileRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeDetailRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeListRes
-import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
-import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.AssignmentFileType
+import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository

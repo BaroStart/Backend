@@ -6,7 +6,7 @@ import com.barostartbe.domain.assignment.dto.response.AssignmentCreateRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMaterialRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeDetailRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeListRes
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.global.response.ApiResponse
 import io.swagger.v3.oas.annotations.Operation

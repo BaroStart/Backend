@@ -1,6 +1,6 @@
 package com.barostartbe.domain.assignmenttemplate.controller
 
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.assignmenttemplate.dto.request.AssignmentTemplateCreateReq
 import com.barostartbe.domain.assignmenttemplate.dto.request.AssignmentTemplateUpdateReq
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateDetailRes
