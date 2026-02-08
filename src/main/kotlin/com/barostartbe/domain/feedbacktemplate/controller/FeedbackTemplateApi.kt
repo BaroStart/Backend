@@ -1,6 +1,6 @@
 package com.barostartbe.domain.feedbacktemplate.controller
 
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.feedbacktemplate.dto.request.FeedbackTemplateCreateReq
 import com.barostartbe.domain.feedbacktemplate.dto.request.FeedbackTemplateUpdateReq
 import com.barostartbe.domain.feedbacktemplate.dto.response.FeedbackTemplateListRes

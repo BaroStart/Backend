@@ -6,7 +6,7 @@ import com.barostartbe.domain.assignment.dto.response.AssignmentCreateRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMaterialRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeListRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeDetailRes
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.assignment.usecase.AssignmentCommandUseCase
 import com.barostartbe.domain.assignment.usecase.AssignmentFileDownloadUseCase
 import com.barostartbe.domain.assignment.usecase.AssignmentMaterialQueryUseCase

@@ -1,8 +1,8 @@
 package com.barostartbe.domain.assignment.usecase
 
 import com.barostartbe.domain.assignment.dto.response.AssignmentMaterialRes
-import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.AssignmentFileType
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
 import com.barostartbe.global.annotation.QueryUseCase

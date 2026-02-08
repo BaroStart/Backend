@@ -1,6 +1,6 @@
 package com.barostartbe.domain.assignment.dto.response
 
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import io.swagger.v3.oas.annotations.media.Schema
 
 @Schema(description = "[멘토] 학습자료 목록 조회 dto")

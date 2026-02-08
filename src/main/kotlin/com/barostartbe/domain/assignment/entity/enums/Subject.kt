@@ -1,4 +1,4 @@
-package com.barostartbe.domain.assignment.entity.enum
+package com.barostartbe.domain.assignment.entity.enums
 
 enum class Subject {
     KOREAN,

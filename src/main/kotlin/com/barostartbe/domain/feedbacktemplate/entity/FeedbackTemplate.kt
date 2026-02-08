@@ -1,6 +1,6 @@
 package com.barostartbe.domain.feedbacktemplate.entity
 
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.global.common.entity.BaseEntity
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*

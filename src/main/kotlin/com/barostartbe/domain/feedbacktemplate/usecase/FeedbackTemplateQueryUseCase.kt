@@ -1,6 +1,6 @@
 package com.barostartbe.domain.feedbacktemplate.usecase
 
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.feedbacktemplate.dto.response.FeedbackTemplateListRes
 import com.barostartbe.domain.feedbacktemplate.entity.FeedbackTemplate
 import com.barostartbe.domain.feedbacktemplate.repository.FeedbackTemplateRepository

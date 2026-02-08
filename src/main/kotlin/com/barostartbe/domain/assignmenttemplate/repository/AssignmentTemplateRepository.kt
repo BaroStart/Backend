@@ -1,6 +1,6 @@
 package com.barostartbe.domain.assignmenttemplate.repository
 
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplate
 import com.barostartbe.domain.mentor.entity.Mentor
 import org.springframework.data.jpa.repository.JpaRepository

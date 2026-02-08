@@ -1,6 +1,6 @@
 package com.barostartbe.domain.feedbacktemplate.repository
 
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.feedbacktemplate.entity.FeedbackTemplate
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query

@@ -3,7 +3,7 @@ package com.barostartbe.domain.feedbacktemplate.usecase
 import com.barostartbe.domain.feedbacktemplate.dto.request.FeedbackTemplateCreateReq
 import com.barostartbe.domain.feedbacktemplate.entity.FeedbackTemplate
 import com.barostartbe.domain.feedbacktemplate.repository.FeedbackTemplateRepository
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
