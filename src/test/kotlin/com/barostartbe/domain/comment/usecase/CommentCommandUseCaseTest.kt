@@ -33,6 +33,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.test.util.ReflectionTestUtils
 
 class CommentCommandUseCaseTest : DescribeSpec({
     val commentRepository = mockk<CommentRepository>()
@@ -58,13 +59,15 @@ class CommentCommandUseCaseTest : DescribeSpec({
 
         it("사용자가 멘티라면 댓글을 저장하고 멘토들에게 알림을 보낸다") {
             val mentee = createMentee()
-            val mentor = createMentor(id = 1L)
+            val mentor = createMentor()
             val mapping = MentorMenteeMapping(mentor = mentor, mentee = mentee)
             
             val savedComment = mockk<Comment> {
                 every { id } returns 10L
             }
             val commentSlot = slot<Comment>()
+
+            ReflectionTestUtils.setField(mentor, "id", 1L)
             
             every { commentRepository.save(capture(commentSlot)) } returns savedComment
             every { mentorMenteeMappingRepository.findAllByMentee(mentee) } returns listOf(mapping)
@@ -177,7 +180,7 @@ class CommentCommandUseCaseTest : DescribeSpec({
 
         it("사용자가 멘티라면 대댓글을 저장하고 멘토들에게 알림을 보낸다") {
             val mentee = createMentee()
-            val mentor = createMentor(id = 1L)
+            val mentor = createMentor()
             val mapping = MentorMenteeMapping(mentor = mentor, mentee = mentee)
             val parentMentee = createMentee(loginId = "parent")
             val comment = Comment(parentMentee, "parent")
@@ -185,6 +188,8 @@ class CommentCommandUseCaseTest : DescribeSpec({
                 every { id } returns 88L
             }
             val subCommentSlot = slot<SubComment>()
+
+            ReflectionTestUtils.setField(mentor, "id", 1L)
             
             every { commentRepository.findByIdOrNull(request.commentId) } returns comment
             every { subCommentRepository.save(capture(subCommentSlot)) } returns savedSubComment
@@ -209,12 +214,14 @@ class CommentCommandUseCaseTest : DescribeSpec({
 
         it("사용자가 멘토라면 대댓글을 저장하고 멘티에게 알림을 보낸다") {
             val mentor = createMentor()
-            val mentee = createMentee(id = 10L)
+            val mentee = createMentee()
             val comment = Comment(mentee, "parent")
             val savedSubComment = mockk<SubComment> {
                 every { id } returns 99L
             }
             val subCommentSlot = slot<SubComment>()
+
+            ReflectionTestUtils.setField(mentee, "id", 1L)
 
             every { commentRepository.findByIdOrNull(request.commentId) } returns comment
             every { subCommentRepository.save(capture(subCommentSlot)) } returns savedSubComment
@@ -298,8 +305,8 @@ class CommentCommandUseCaseTest : DescribeSpec({
     }
 }) {
     companion object {
+
         private fun createMentee(
-            id: Long? = null,
             loginId: String = "mentee1",
             nickname: String = "mentee-nick"
         ): Mentee {
@@ -312,16 +319,11 @@ class CommentCommandUseCaseTest : DescribeSpec({
                 school = School.NORMAL,
                 hopeMajor = "CS"
             )
-            if (id != null) {
-                val idField = User::class.java.getDeclaredField("id")
-                idField.isAccessible = true
-                idField.set(mentee, id)
-            }
+
             return mentee
         }
 
         private fun createMentor(
-            id: Long? = null,
             loginId: String = "mentor1",
             nickname: String = "mentor-nick"
         ): Mentor {
@@ -332,11 +334,7 @@ class CommentCommandUseCaseTest : DescribeSpec({
                 nickname = nickname,
                 university = "Uni"
             )
-            if (id != null) {
-                val idField = User::class.java.getDeclaredField("id")
-                idField.isAccessible = true
-                idField.set(mentor, id)
-            }
+
             return mentor
         }
     }
