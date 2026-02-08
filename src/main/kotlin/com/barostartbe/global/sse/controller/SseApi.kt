@@ -18,10 +18,10 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 @Tag(name = "SSE API", description = "실시간 알림 관리 API")
 interface SseApi {
 
-    @GetMapping(value = ["/subscribe"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    @Operation(summary = "SSE 구독", description = "실시간 알림을 구독합니다.")
+    @GetMapping("/subscribe", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    @Operation(summary = "SSE 구독", description = "SSE를 구독합니다. (알림은, user_{user_id})")
     fun subscribe(
-        @Parameter(description = "구독할 토픽 목록 (쉼표 구분)", example = "assignment,todo")
+        @Parameter(description = "구독할 토픽 목록 (쉼표 구분)", example = "assignment,todo,user_1")
         @RequestParam(required = false) topics: String?,
         request: HttpServletRequest,
         response: HttpServletResponse

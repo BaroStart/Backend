@@ -9,12 +9,13 @@ enum class Type(
 
     // mentee
     FEEDBACK_RECEIVED("피드백 수신"),
-    UNSUBMIT_ASSIGNMENT("미제출 과제"),
+    NEW_ASSIGNMENT("새 과제 배정"),
+    UNSUBMIT_ASSIGNMENT("마감된 과제 미제출"),
     DEADLINE_ASSIGNMENT("과제 마감 임박"),
     NEW_BADGE("새 뱃지 획득"),
     NEW_COMMENT("새로운 코멘트"),
 
     // common
-    SYSTEM("시스템"),
+    NOTICE("공지사항"),
     ETC("기타")
 }
