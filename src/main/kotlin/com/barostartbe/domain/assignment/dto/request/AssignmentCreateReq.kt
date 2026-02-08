@@ -26,12 +26,10 @@ data class AssignmentCreateReq(
     @field:NotNull(message = "dueAt는 필수입니다")
     val dueDate: LocalDateTime,
 
-    @Schema(description = "선택한 과제 템플릿 ID(선택 안하면 null)", example = "1", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    val templateId: Long? = null,
-
-    @Schema(description = "멘토가 직접 입력한 과제 목표", example = "오답 원인 분석 및 재풀이")
-    @field:Size(max = 1000, message = "goalText는 1000자를 초과할 수 없습니다")
-    val goalText: String? = null,
+    @Schema(description = "선택한 과제 템플릿 이름 (과제 목표)", example = "미적분 오답 정리 템플릿", requiredMode = Schema.RequiredMode.REQUIRED)
+    @field:NotBlank(message = "templateName은 필수입니다")
+    @field:Size(max = 100, message = "templateName은 100자를 초과할 수 없습니다")
+    val templateName: String,
 
     @Schema(description = "과제 내용", example = "미적분 문제집 3단원 1~20번 풀이", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     @field:Size(max = 3000, message = "content는 3000자를 초과할 수 없습니다")

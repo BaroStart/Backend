@@ -19,8 +19,8 @@ data class AssignmentMenteeDetailRes(
     @Schema(description = "마감 일시")
     val dueDate: LocalDateTime,
 
-    @Schema(description = "과제 목표")
-    val goal: String?,
+    @Schema(description = "과제 템플릿 이름 (과제 목표)")
+    val templateName: String,
 
     @Schema(description = "과제 내용")
     val content: String?,
