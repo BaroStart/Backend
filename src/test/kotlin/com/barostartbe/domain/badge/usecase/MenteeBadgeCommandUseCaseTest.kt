@@ -97,7 +97,7 @@ class MenteeBadgeCommandUseCaseTest : DescribeSpec({
                     every { name } returns "7일 연속 출석"
                 }
                 every { badgeRepository.findAll() } returns listOf(badge)
-                every { accessLogQueryUseCase.getMaxConsecutiveDays(menteeId) } returns 7
+                every { accessLogQueryUseCase.getCurrentConsecutiveDays(menteeId) } returns 7
 
                 menteeBadgeCommandUseCase.updateBadgeForMentee(menteeId)
 
@@ -112,7 +112,7 @@ class MenteeBadgeCommandUseCaseTest : DescribeSpec({
                     every { name } returns "30일 연속 출석"
                 }
                 every { badgeRepository.findAll() } returns listOf(badge)
-                every { accessLogQueryUseCase.getMaxConsecutiveDays(menteeId) } returns 30
+                every { accessLogQueryUseCase.getCurrentConsecutiveDays(menteeId) } returns 30
 
                 menteeBadgeCommandUseCase.updateBadgeForMentee(menteeId)
 
