@@ -1,9 +1,9 @@
 package com.barostartbe.domain.todo.entity
 
 import com.barostartbe.domain.mentee.entity.Mentee
-import com.barostartbe.domain.todo.dto.request.UpdateToDoStatusReq
 import com.barostartbe.domain.todo.dto.request.CreateToDoReq
 import com.barostartbe.domain.todo.dto.request.UpdateToDoReq
+import com.barostartbe.domain.todo.dto.request.UpdateToDoStatusReq
 import com.barostartbe.domain.todo.entity.enums.Status
 import com.barostartbe.global.common.entity.BaseEntity
 import jakarta.persistence.*
@@ -33,14 +33,22 @@ class ToDo(
 
     fun updateTitle(updateToDoReq: UpdateToDoReq) {
         title = updateToDoReq.title
-        startTime = updateToDoReq.startTime
-        endTime = updateToDoReq.endTime
+
+        if (status == Status.COMPLETED) {
+            startTime = updateToDoReq.startTime
+            endTime = updateToDoReq.endTime
+        }
     }
 
     fun updateStatus(updateToDoStatusReq: UpdateToDoStatusReq) {
         status = updateToDoStatusReq.status
         startTime = updateToDoStatusReq.startTime
         endTime = updateToDoStatusReq.endTime
+
+        if (status == Status.NOT_COMPLETED) {
+            startTime = null
+            endTime = null
+        }
     }
 
     companion object {

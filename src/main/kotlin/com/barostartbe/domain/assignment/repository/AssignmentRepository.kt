@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 interface AssignmentRepository : JpaRepository<Assignment, Long> {
 
@@ -88,4 +89,19 @@ interface AssignmentRepository : JpaRepository<Assignment, Long> {
     """, nativeQuery = true
     )
     fun findMaxConsecutivePerfectDays(@Param("menteeId") menteeId: Long): Int
+
+    @Query(
+        """
+        SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END
+        FROM Assignment a
+        WHERE a.mentee.id = :menteeId
+            AND a.startTime >= :startTime
+            AND a.endTime <= :endTime
+        """
+    )
+    fun existsByMenteeIdAndTimeRange(
+        @Param("menteeId") menteeId: Long,
+        @Param("startTime") startTime: LocalDateTime,
+        @Param("endTime") endTime: LocalDateTime
+    ): Boolean
 }
