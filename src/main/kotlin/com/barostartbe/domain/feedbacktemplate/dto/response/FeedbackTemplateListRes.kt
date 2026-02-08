@@ -34,7 +34,7 @@ data class FeedbackTemplateListRes(
                 id = entity.id!!,
                 name = entity.name,
                 subject = entity.subject,
-                preview = entity.content.take(50),  // 목록 내 내용 미리보기
+                preview = entity.content,
                 createdAt = entity.createdAt!!,
                 usageCount = entity.usageCount
             )
