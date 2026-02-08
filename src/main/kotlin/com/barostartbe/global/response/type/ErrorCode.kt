@@ -66,6 +66,8 @@ enum class ErrorCode(
 
     MENTEE_NOT_FOUND(404, "MENTEE_NOT_FOUND", "멘티를 찾을 수 없습니다."),
 
+    MENTOR_NOT_FOUND(404, "MENTOR_NOT_FOUND", "멘토를 찾을 수 없습니다."),
+
     NOT_FOUND(404, "NOT_FOUND", "엔티티를 찾을 수 없습니다."),
 
     TODO_NOT_FOUND(404, "TODO_NOT_FOUND", "할일을 찾을 수 없습니다."),
