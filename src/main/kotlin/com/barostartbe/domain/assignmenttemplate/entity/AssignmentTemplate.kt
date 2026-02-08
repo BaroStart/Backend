@@ -25,7 +25,7 @@ class AssignmentTemplate(
 
     // 템플릿 설명
     @Column(columnDefinition = "TEXT")
-    var description: String,
+    var description: String? = null,
 
     // 과제 이름
     @Column(nullable = false, length = 100)
@@ -33,15 +33,15 @@ class AssignmentTemplate(
 
     // 과제 내용 (과제 생성 시 content로 복사)
     @Column(columnDefinition = "TEXT", nullable = false)
-    var content: String,
+    var content: String? = null,
 
 ) : BaseEntity() {
     // 템플릿 수정
     fun update(
         name: String,
-        description: String,
+        description: String?,
         title: String,
-        content: String
+        content: String?
     ) {
         this.name = name
         this.description = description
