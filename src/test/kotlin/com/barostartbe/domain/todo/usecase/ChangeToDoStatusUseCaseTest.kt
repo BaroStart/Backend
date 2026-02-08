@@ -54,7 +54,7 @@ class ChangeToDoStatusUseCaseTest : DescribeSpec({
 
                 changeToDoStatusUseCase.execute(updateToDoStatusReq, user)
 
-                verify(exactly = 1) { toDoValidator.validateTimeConflict(user.id!!, updateToDoStatusReq.startTime!!, updateToDoStatusReq.endTime!!) }
+                verify(exactly = 1) { toDoValidator.validateTimeConflict(1L, updateToDoStatusReq.startTime!!, updateToDoStatusReq.endTime!!) }
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(todoId) }
                 verify(exactly = 1) { toDo.updateStatus(updateToDoStatusReq) }
                 verify(exactly = 1) { toDoRepository.save(any()) }
