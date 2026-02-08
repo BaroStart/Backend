@@ -1,6 +1,6 @@
 package com.barostartbe.domain.assignmenttemplate.usecase
 
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateFileListRes
 import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateFileRepository
 import com.barostartbe.domain.mentor.entity.Mentor

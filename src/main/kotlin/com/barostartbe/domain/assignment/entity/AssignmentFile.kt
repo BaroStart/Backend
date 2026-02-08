@@ -1,6 +1,6 @@
 package com.barostartbe.domain.assignment.entity
 
-import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
+import com.barostartbe.domain.assignment.entity.enums.AssignmentFileType
 import com.barostartbe.global.common.entity.BaseFileEntity
 import jakarta.persistence.*
 

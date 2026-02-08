@@ -4,14 +4,12 @@ import com.barostartbe.domain.admin.repository.MentorMenteeMappingRepository
 import com.barostartbe.domain.assignment.dto.request.AssignmentCreateReq
 import com.barostartbe.domain.assignment.dto.request.AssignmentSubmitReq
 import com.barostartbe.domain.assignment.dto.response.AssignmentCreateRes
-import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
+import com.barostartbe.domain.assignment.entity.enums.AssignmentFileType
 import com.barostartbe.domain.assignment.entity.Assignment
 import com.barostartbe.domain.assignment.entity.AssignmentFile
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
-import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplate
-import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateRepository
 import com.barostartbe.domain.mentee.repository.MenteeRepository
 import com.barostartbe.domain.mentor.repository.MentorRepository
 import com.barostartbe.domain.objectstorage.usecase.GetPreAuthenticatedUrl
