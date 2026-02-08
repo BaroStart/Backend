@@ -32,7 +32,6 @@ interface AssignmentApi {
     @Operation(summary = "[멘토] 과제 생성", description = "멘토가 멘티에게 과제를 등록합니다.")
     fun createAssignment(
         @AuthenticationPrincipal mentor: User,
-        @PathVariable menteeId: Long,
         @RequestBody @Valid req: AssignmentCreateReq
     ): ResponseEntity<ApiResponse<AssignmentCreateRes>>
 
@@ -67,7 +66,7 @@ interface AssignmentApi {
 
     // 과제 파일 다운로드 URL 조회
     @GetMapping("/files/{assignmentFileId}/download")
-    @Operation(summary = "과제 파일 다운로드 URL 조회", description = "과제에 첨부된 파일의 다운로드 URL을 발급합니다.")
+    @Operation(summary = "과제 파일 다운로드 URL 조회", description = "과제에 첨부된 파일의 다운로드 URL을 발급합니다.(assignmentFileId는 과제 파일 식별자입니다.)")
     fun getAssignmentFileDownloadUrl(
         @PathVariable assignmentFileId: Long
     ): ResponseEntity<ApiResponse<String>>

@@ -25,14 +25,37 @@ enum class ErrorCode(
 
     // Assignment
     ASSIGNMENT_NOT_FOUND(404, "ASSIGNMENT_NOT_FOUND", "과제를 찾을 수 없습니다."),
+
     ASSIGNMENT_FILE_NOT_FOUND(404, "ASSIGNMENT_FILE_NOT_FOUND", "과제 파일을 찾을 수 없습니다."),
+
     ASSIGNMENT_ALREADY_FEEDBACKED(400, "ASSIGNMENT_ALREADY_FEEDBACKED", "피드백이 완료된 과제는 수정할 수 없습니다."),
+
     ASSIGNMENT_NOT_SUBMITTED(400, "ASSIGNMENT_NOT_SUBMITTED", "제출되지 않은 과제입니다."),
+
     ASSIGNMENT_PERMISSION_DENIED(403, "ASSIGNMENT_PERMISSION_DENIED", "해당 과제에 대한 권한이 없습니다."),
+
+    // Assignment Template
+    ASSIGNMENT_TEMPLATE_NOT_FOUND(404, "ASSIGNMENT_TEMPLATE_NOT_FOUND", "과제 템플릿을 찾을 수 없습니다."),
+
+    ASSIGNMENT_TEMPLATE_PERMISSION_DENIED(403, "ASSIGNMENT_TEMPLATE_PERMISSION_DENIED", "해당 과제 템플릿에 대한 권한이 없습니다."),
+
+    ASSIGNMENT_TEMPLATE_FILE_NOT_FOUND(404, "ASSIGNMENT_TEMPLATE_FILE_NOT_FOUND", "과제 템플릿 파일을 찾을 수 없습니다."),
+
+    ASSIGNMENT_TEMPLATE_INVALID_UPDATE(400, "ASSIGNMENT_TEMPLATE_INVALID_UPDATE", "과제 템플릿 수정 요청이 올바르지 않습니다."),
+
+    ASSIGNMENT_GOAL_NOT_FOUND(404, "ASSIGNMENT_GOAL_NOT_FOUND", "과제 목표를 찾을 수 없습니다."),
 
     // File
     INVALID_FILE_URL(400, "INVALID_FILE_URL", "파일 URL 형식이 올바르지 않습니다."),
+
     FILE_NOT_FOUND(404, "FILE_NOT_FOUND", "파일을 찾을 수 없습니다."),
+
+    // Feedback Template
+    FEEDBACK_TEMPLATE_NOT_FOUND(404, "FEEDBACK_TEMPLATE_NOT_FOUND", "피드백 템플릿을 찾을 수 없습니다."),
+
+    FEEDBACK_TEMPLATE_NAME_DUPLICATED(409, "FEEDBACK_TEMPLATE_NAME_DUPLICATED", "이미 존재하는 피드백 템플릿 이름입니다."),
+
+    FEEDBACK_TEMPLATE_DELETE_FORBIDDEN(400, "FEEDBACK_TEMPLATE_DELETE_FORBIDDEN", "사용 중인 피드백 템플릿은 삭제할 수 없습니다."),
 
     // 공통
     USER_NOT_FOUND(404, "USER_NOT_FOUND", "유저를 찾을 수 없습니다."),
@@ -41,6 +64,7 @@ enum class ErrorCode(
 
     TODO_NOT_FOUND(404, "TODO_NOT_FOUND", "할일을 찾을 수 없습니다."),
 
+    INVALID_REQUEST(400, "INVALID_REQUEST", "요청 값이 올바르지 않습니다."),
 
     INTERNAL_SERVER_ERROR(500, "INTERNAL_SERVER_ERROR", "서버 오류가 발생했습니다."),
 }

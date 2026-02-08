@@ -1,0 +1,91 @@
+package com.barostartbe.domain.assignmenttemplate.usecase
+
+import com.barostartbe.domain.assignment.entity.AssignmentGoal
+import com.barostartbe.domain.assignment.repository.AssignmentGoalRepository
+import com.barostartbe.domain.assignmenttemplate.dto.request.AssignmentTemplateCreateReq
+import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateFileRes
+import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplate
+import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplateFile
+import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateFileRepository
+import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateRepository
+import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignmenttemplate.usecase.AssignmentTemplateCreateUseCase
+import com.barostartbe.domain.mentor.entity.Mentor
+import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.assertions.throwables.shouldNotThrowAny
+import io.mockk.*
+import java.util.*
+
+class AssignmentTemplateCreateUseCaseTest : DescribeSpec({
+
+    // --- mocks ---
+    val assignmentTemplateRepository = mockk<AssignmentTemplateRepository>()
+    val assignmentTemplateFileRepository = mockk<AssignmentTemplateFileRepository>(relaxed = true)
+    val assignmentGoalRepository = mockk<AssignmentGoalRepository>()
+
+    val useCase = AssignmentTemplateCreateUseCase(
+        assignmentTemplateRepository,
+        assignmentTemplateFileRepository,
+        assignmentGoalRepository
+    )
+
+    beforeEach {
+        clearAllMocks()
+    }
+
+    describe("AssignmentTemplateCreateUseCase.execute") {
+
+        it("과제 템플릿을 정상적으로 생성한다") {
+            // given
+            val mentor = mockk<Mentor>()
+
+            val req = AssignmentTemplateCreateReq(
+                subject = Subject.KOREAN,
+                name = "국어 독해",
+                description = "독해 연습 템플릿",
+                title = "독해 과제",
+                content = "본문 분석"
+            )
+
+            val files = listOf(
+                AssignmentTemplateFileRes(
+                    fileName = "sample.pdf",
+                    url = "https://example.com/sample.pdf"
+                )
+            )
+
+            val savedGoal = mockk<AssignmentGoal>()
+            val savedTemplate = mockk<AssignmentTemplate> {
+                every { id } returns 1L
+                every { subject } returns req.subject
+                every { name } returns req.name
+                every { description } returns req.description
+                every { title } returns req.title
+                every { content } returns req.content
+            }
+
+            every {
+                assignmentGoalRepository.save(any<AssignmentGoal>())
+            } returns savedGoal
+
+            every {
+                assignmentTemplateRepository.save(any<AssignmentTemplate>())
+            } returns savedTemplate
+
+            every {
+                assignmentTemplateFileRepository.saveAll(any<List<AssignmentTemplateFile>>())
+            } returns emptyList()
+
+            // when / then
+            val result = shouldNotThrowAny {
+                useCase.execute(mentor, req, files)
+            }
+
+            result.id shouldBe 1L
+            result.subject shouldBe req.subject
+            result.files.size shouldBe 1
+            result.files.first().fileName shouldBe "sample.pdf"
+        }
+    }
+})

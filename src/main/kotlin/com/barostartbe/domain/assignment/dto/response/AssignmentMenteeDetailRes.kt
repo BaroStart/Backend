@@ -28,6 +28,9 @@ data class AssignmentMenteeDetailRes(
     @Schema(description = "학습자료 목록")
     val materials: List<AssignmentFileRes>,
 
+    @Schema(description = "설스터디 가이드")
+    val seolStudyContext: String?,
+
     @Schema(description = "제출 완료 시간")
     val submittedAt: LocalDateTime?,
 
