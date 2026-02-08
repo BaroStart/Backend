@@ -7,7 +7,6 @@ import com.barostartbe.domain.todo.entity.ToDo
 import com.barostartbe.domain.todo.entity.enums.Status
 import com.barostartbe.domain.todo.error.ToDoNotFoundException
 import com.barostartbe.domain.todo.repository.ToDoRepository
-import com.barostartbe.domain.todo.repository.ToDoTimeRepository
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.*
@@ -16,11 +15,10 @@ import org.springframework.data.repository.findByIdOrNull
 class DeleteToDoUseCaseTest : DescribeSpec({
 
     val toDoRepository = mockk<ToDoRepository>(relaxed = true)
-    val toDoTimeRepository = mockk<ToDoTimeRepository>(relaxed = true)
-    val deleteToDoUseCase = DeleteToDoUseCase(toDoRepository, toDoTimeRepository)
+    val deleteToDoUseCase = DeleteToDoUseCase(toDoRepository)
 
     beforeEach {
-        clearMocks(toDoRepository, toDoTimeRepository)
+        clearMocks(toDoRepository)
     }
 
     describe("DeleteToDoUseCase") {
@@ -42,35 +40,14 @@ class DeleteToDoUseCaseTest : DescribeSpec({
                 every { this@mockk.mentee } returns mentee
             }
 
-            it("할 일이 존재하면 연관된 시간 정보와 함께 성공적으로 삭제된다") {
+            it("할 일이 존재하면 성공적으로 삭제된다") {
                 every { toDoRepository.findByIdOrNull(todoId) } returns toDo
-                every { toDoTimeRepository.deleteAllByToDo_Id(todoId) } just Runs
                 every { toDoRepository.delete(toDo) } just Runs
 
                 deleteToDoUseCase.execute(todoId)
 
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(todoId) }
-                verify(exactly = 1) { toDoTimeRepository.deleteAllByToDo_Id(todoId) }
                 verify(exactly = 1) { toDoRepository.delete(toDo) }
-            }
-
-            it("시간 정보가 먼저 삭제된 후 할 일이 삭제된다") {
-                val deletionOrder = mutableListOf<String>()
-
-                every { toDoRepository.findByIdOrNull(todoId) } returns toDo
-                every { toDoTimeRepository.deleteAllByToDo_Id(todoId) } answers {
-                    deletionOrder.add("ToDoTime")
-                }
-                every { toDoRepository.delete(toDo) } answers {
-                    deletionOrder.add("ToDo")
-                }
-
-                deleteToDoUseCase.execute(todoId)
-
-                verifyOrder {
-                    toDoTimeRepository.deleteAllByToDo_Id(todoId)
-                    toDoRepository.delete(toDo)
-                }
             }
         }
 
@@ -85,7 +62,6 @@ class DeleteToDoUseCaseTest : DescribeSpec({
                 }
 
                 verify(exactly = 1) { toDoRepository.findByIdOrNull(nonExistentId) }
-                verify(exactly = 0) { toDoTimeRepository.deleteAllByToDo_Id(any()) }
                 verify(exactly = 0) { toDoRepository.delete(any()) }
             }
         }
