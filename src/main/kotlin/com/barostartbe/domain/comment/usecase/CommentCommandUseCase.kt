@@ -88,7 +88,7 @@ class CommentCommandUseCase(
         if (user.role == Role.MENTOR) {
             sendNotificationUseCase.execute(
                 SendNotificationRequest(
-                    receiverId = comment.mentee.id!!,
+                    receiverId = comment.mentee!!.id!!,
                     title = Type.NEW_COMMENT.titleFormat,
                     message = Type.NEW_COMMENT.messageFormat.format(user.name),
                 )
