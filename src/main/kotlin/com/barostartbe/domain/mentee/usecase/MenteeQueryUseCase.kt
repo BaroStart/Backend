@@ -1,6 +1,8 @@
 package com.barostartbe.domain.mentee.usecase
 
 import com.barostartbe.domain.admin.repository.MentorMenteeMappingRepository
+import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
+import com.barostartbe.domain.assignment.repository.AssignmentRepository
 import com.barostartbe.domain.mentee.dto.GetMenteeInfoResponseDto
 import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.mentee.repository.MenteeRepository
@@ -13,6 +15,8 @@ import com.barostartbe.global.response.type.ErrorCode
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.repository.findByIdOrNull
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
@@ -22,6 +26,7 @@ class MenteeQueryUseCase(
     val menteeRepository: MenteeRepository,
     val accessLogRepository: AccessLogRepository,
     val mentorMenteeMappingRepository: MentorMenteeMappingRepository,
+    val assignmentRepository: AssignmentRepository,
     val redisTemplate: RedisTemplate<String, Any>
 ) {
     fun getMenteeInfo(mentorId: Long, menteeId: Long): GetMenteeInfoResponseDto {
@@ -43,7 +48,11 @@ class MenteeQueryUseCase(
         val mentoringStartDate = getMentoringStartDate(mentor, mentee)
 
         // 총공부시간
+        val totalStudyTimeToHour = getTotalStudyTime(mentee)
+
         // 숙제달성율
+        val assignmentCompleteRate= getAssignmentCompleteRate(mentee)
+
         // 평균점수
 
         return GetMenteeInfoResponseDto(
@@ -51,8 +60,26 @@ class MenteeQueryUseCase(
             menteeGrade = menteeGrade,
             isActive = isActive,
             lastAccess = lastAccess,
-            mentoringStartDate = mentoringStartDate
+            mentoringStartDate = mentoringStartDate,
+            totalStudyTime = totalStudyTimeToHour,
+            assignmentCompleteRate = assignmentCompleteRate,
         )
+    }
+
+    fun getAssignmentCompleteRate(mentee: Mentee): Int {
+        val totalMenteeAssignment = assignmentRepository.findAllByMentee_Id(mentee.id!!)
+
+        val totalAssignmentCount = totalMenteeAssignment.size
+        val submittedAssignmentCount = totalMenteeAssignment.count { it.status == AssignmentStatus.SUBMITTED }
+
+        return ((submittedAssignmentCount.toFloat()/totalAssignmentCount) * 100).toInt()
+    }
+
+    fun getTotalStudyTime(mentee: Mentee): Int{
+        val totalStudyTimeToSeconds = assignmentRepository.findAllByMentee_Id(mentee.id!!)
+            .sumOf { it.endTime!!.toEpochSecond(ZoneOffset.UTC) - it.startTime!!.toEpochSecond(ZoneOffset.UTC)
+        }
+        return (totalStudyTimeToSeconds / (60 * 60)).toInt()
     }
 
     fun getLastAccessTime(menteeId: Long): Int {

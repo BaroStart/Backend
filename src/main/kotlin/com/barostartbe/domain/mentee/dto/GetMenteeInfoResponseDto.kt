@@ -6,7 +6,7 @@ data class GetMenteeInfoResponseDto(
     val isActive: Int,
     val lastAccess: Int,
     val mentoringStartDate: String,
-    val totalStudyTime: Int? = null,
-    val assignmentAchieveRate: Int? = null,
+    val totalStudyTime: Int,
+    val assignmentCompleteRate: Int,
     val averageScore: Float? = null
 )
