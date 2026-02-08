@@ -1,7 +1,7 @@
 package com.barostartbe.domain.assignment.repository
 
 import com.barostartbe.domain.assignment.entity.AssignmentFile
-import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
+import com.barostartbe.domain.assignment.entity.enums.AssignmentFileType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query

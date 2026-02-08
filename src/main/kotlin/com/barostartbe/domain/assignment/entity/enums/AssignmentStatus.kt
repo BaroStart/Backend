@@ -1,4 +1,4 @@
-package com.barostartbe.domain.assignment.entity.enum
+package com.barostartbe.domain.assignment.entity.enums
 
 enum class AssignmentStatus {
     NOT_SUBMIT,             // 과제 등록만 된 상태

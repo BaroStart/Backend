@@ -36,4 +36,6 @@ class CommentQueryUseCase(
             .toList()
     }
 
+    fun hasMoreThanTenComments(menteeId: Long): Boolean =
+        commentRepository.countByMentee_Id(menteeId) > 10
 }

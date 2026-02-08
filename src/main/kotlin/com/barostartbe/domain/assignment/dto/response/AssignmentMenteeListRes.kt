@@ -1,8 +1,8 @@
 package com.barostartbe.domain.assignment.dto.response
 
 import com.barostartbe.domain.assignment.entity.Assignment
-import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
 
