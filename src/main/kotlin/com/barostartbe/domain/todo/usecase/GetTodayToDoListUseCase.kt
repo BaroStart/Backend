@@ -14,7 +14,7 @@ class GetTodayToDoListUseCase(
 
     fun execute(menteeId: Long): List<ToDoRes> = toDoRepository.findAllByMenteeIdAndCreatedDate(menteeId, LocalDate.now())
         .map {
-            val timeList = toDoTimeRepository.findByToDo_Id(it.id!!)
+            val timeList = toDoTimeRepository.findAllByToDo_Id(it.id!!)
             ToDoRes.from(it, timeList)
         }
         .toMutableList()

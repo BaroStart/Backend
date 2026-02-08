@@ -80,9 +80,9 @@ class GetTodayToDoListUseCaseTest : DescribeSpec({
                 val timeList3 = emptyList<ToDoTime>()
 
                 every { toDoRepository.findAllByMenteeIdAndCreatedDate(menteeId, LocalDate.now()) } returns todoList
-                every { toDoTimeRepository.findByToDo_Id(1L) } returns timeList1
-                every { toDoTimeRepository.findByToDo_Id(2L) } returns timeList2
-                every { toDoTimeRepository.findByToDo_Id(3L) } returns timeList3
+                every { toDoTimeRepository.findAllByToDo_Id(1L) } returns timeList1
+                every { toDoTimeRepository.findAllByToDo_Id(2L) } returns timeList2
+                every { toDoTimeRepository.findAllByToDo_Id(3L) } returns timeList3
 
                 val result = getTodayToDoListUseCase.execute(menteeId)
 
@@ -98,9 +98,9 @@ class GetTodayToDoListUseCaseTest : DescribeSpec({
                 result[2].timeList.shouldBeEmpty()
 
                 verify(exactly = 1) { toDoRepository.findAllByMenteeIdAndCreatedDate(menteeId, LocalDate.now()) }
-                verify(exactly = 1) { toDoTimeRepository.findByToDo_Id(1L) }
-                verify(exactly = 1) { toDoTimeRepository.findByToDo_Id(2L) }
-                verify(exactly = 1) { toDoTimeRepository.findByToDo_Id(3L) }
+                verify(exactly = 1) { toDoTimeRepository.findAllByToDo_Id(1L) }
+                verify(exactly = 1) { toDoTimeRepository.findAllByToDo_Id(2L) }
+                verify(exactly = 1) { toDoTimeRepository.findAllByToDo_Id(3L) }
             }
 
             it("할 일이 하나도 없으면 빈 리스트를 반환한다") {
@@ -110,7 +110,7 @@ class GetTodayToDoListUseCaseTest : DescribeSpec({
 
                 result.shouldBeEmpty()
                 verify(exactly = 1) { toDoRepository.findAllByMenteeIdAndCreatedDate(menteeId, LocalDate.now()) }
-                verify(exactly = 0) { toDoTimeRepository.findByToDo_Id(any()) }
+                verify(exactly = 0) { toDoTimeRepository.findAllByToDo_Id(any()) }
             }
 
             it("할 일에 여러 시간 슬롯이 있으면 모두 포함하여 반환한다") {
@@ -139,7 +139,7 @@ class GetTodayToDoListUseCaseTest : DescribeSpec({
                 )
 
                 every { toDoRepository.findAllByMenteeIdAndCreatedDate(menteeId, LocalDate.now()) } returns listOf(todo)
-                every { toDoTimeRepository.findByToDo_Id(1L) } returns timeList
+                every { toDoTimeRepository.findAllByToDo_Id(1L) } returns timeList
 
                 val result = getTodayToDoListUseCase.execute(menteeId)
 
@@ -148,7 +148,7 @@ class GetTodayToDoListUseCaseTest : DescribeSpec({
                 result[0].status shouldBe Status.COMPLETED
                 result[0].timeList?.shouldHaveSize(3)
                 verify(exactly = 1) { toDoRepository.findAllByMenteeIdAndCreatedDate(menteeId, LocalDate.now()) }
-                verify(exactly = 1) { toDoTimeRepository.findByToDo_Id(1L) }
+                verify(exactly = 1) { toDoTimeRepository.findAllByToDo_Id(1L) }
             }
         }
     }

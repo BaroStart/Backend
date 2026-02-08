@@ -55,9 +55,9 @@ class ToDoQueryUseCaseTest : DescribeSpec({
                 )
 
                 every { toDoRepository.findAllByMentee_IdAndStatus(menteeId, Status.COMPLETED) } returns listOf(todo1, todo2, todo3)
-                every { toDoTimeRepository.findByToDo_Id(1L) } returns time1
-                every { toDoTimeRepository.findByToDo_Id(2L) } returns time2
-                every { toDoTimeRepository.findByToDo_Id(3L) } returns time3
+                every { toDoTimeRepository.findAllByToDo_Id(1L) } returns time1
+                every { toDoTimeRepository.findAllByToDo_Id(2L) } returns time2
+                every { toDoTimeRepository.findAllByToDo_Id(3L) } returns time3
 
                 toDoQueryUseCase.getStudyBetweenSixAndNineCount(menteeId) shouldBe 1
             }
@@ -96,8 +96,8 @@ class ToDoQueryUseCaseTest : DescribeSpec({
                 )
 
                 every { toDoRepository.findAllByMentee_IdAndStatus(menteeId, Status.COMPLETED) } returns listOf(todo1, todo2)
-                every { toDoTimeRepository.findByToDo_Id(1L) } returns time1
-                every { toDoTimeRepository.findByToDo_Id(2L) } returns time2
+                every { toDoTimeRepository.findAllByToDo_Id(1L) } returns time1
+                every { toDoTimeRepository.findAllByToDo_Id(2L) } returns time2
 
                 toDoQueryUseCase.getCompletedOver25MinutesCount(menteeId) shouldBe 1
             }

@@ -20,7 +20,7 @@ class ToDoQueryUseCase(
         val completedToDos = toDoRepository.findAllByMentee_IdAndStatus(menteeId, Status.COMPLETED)
         
         return completedToDos.count { todo ->
-            val totalMinutes = toDoTimeRepository.findByToDo_Id(todo.id!!)
+            val totalMinutes = toDoTimeRepository.findAllByToDo_Id(todo.id!!)
                 .sumOf { Duration.between(it.startTime, it.endTime).toMinutes() }
             totalMinutes >= 20
         }.toLong()
@@ -30,7 +30,7 @@ class ToDoQueryUseCase(
         val completedToDos = toDoRepository.findAllByMentee_IdAndStatus(menteeId, Status.COMPLETED)
 
         return completedToDos.count { todo ->
-            val timeList = toDoTimeRepository.findByToDo_Id(todo.id!!)
+            val timeList = toDoTimeRepository.findAllByToDo_Id(todo.id!!)
             timeList.isNotEmpty() && timeList.all {
                 val start = it.startTime.toLocalTime()
                 val end = it.endTime.toLocalTime()

@@ -104,7 +104,7 @@ class MenteeQueryUseCase(
             .map { GetMenteeNotCompletedAssignmentResponseDto.from(it) }
         val todoList = toDoRepository.findAllByMenteeAndCreatedAtAfter(mentee, startDate)
             .flatMap { todo ->
-                toDoTimeRepository.findByToDo_Id(todo.id!!)
+                toDoTimeRepository.findAllByToDo_Id(todo.id!!)
                     .map { timeSlot ->
                         GetMenteeTodoDashboardResponseDto.of(todo, timeSlot)
                     }
@@ -130,7 +130,7 @@ class MenteeQueryUseCase(
             .map { GetMenteeNotCompletedAssignmentResponseDto.from(it) }
         val todoList = toDoRepository.findAllByMenteeIdAndCreatedDate(mentee.id, checkDate)
             .flatMap { todo ->
-                toDoTimeRepository.findByToDo_Id(todo.id!!)
+                toDoTimeRepository.findAllByToDo_Id(todo.id!!)
                     .map { timeSlot ->
                         GetMenteeTodoDashboardResponseDto.of(todo, timeSlot)
                     }
@@ -157,11 +157,46 @@ class MenteeQueryUseCase(
     }
 
     fun getTotalStudyTime(mentee: Mentee): Int{
-        val totalStudyTimeToSeconds = assignmentRepository.findAllByMentee_Id(mentee.id!!)
+        val totalAssignmentTimeToSeconds = assignmentRepository.findAllByMentee_Id(mentee.id!!)
             .filter { it.status != AssignmentStatus.NOT_SUBMIT }
             .sumOf { it.endTime!!.toEpochSecond(ZoneOffset.UTC) - it.startTime!!.toEpochSecond(ZoneOffset.UTC)
         }
-        return (totalStudyTimeToSeconds / (60 * 60)).toInt()
+        val totalTodoTimeToSeconds = toDoRepository.findAllByMentee(mentee)
+            .sumOf { todo ->
+                toDoTimeRepository.findAllByToDo_Id(todo.id!!)
+                    .sumOf { timeSlot ->
+                        timeSlot.endTime.toEpochSecond(ZoneOffset.UTC) - timeSlot.startTime.toEpochSecond(ZoneOffset.UTC)
+                    }
+            }
+
+        return ((totalAssignmentTimeToSeconds + totalTodoTimeToSeconds) / (60 * 60)).toInt()
+    }
+
+    fun getCalendarTotalStudyTime(mentee: Mentee) : Map<String, Int>{
+        val result = mutableMapOf<String, Int>()
+        val assignmentMap: Map<String, Long> = assignmentRepository.findAllByMentee_Id(mentee.id!!)
+            .filter { it.status != AssignmentStatus.NOT_SUBMIT }
+            .groupBy { it.startTime!!.toLocalDate().toString() }
+            .map { it.key to it.value.sumOf {
+                it.startTime!!.toEpochSecond(ZoneOffset.UTC) - it.endTime!!.toEpochSecond(ZoneOffset.UTC)
+            } }
+            .toMap()
+        val todoMap = toDoRepository.findAllByMentee(mentee)
+            .groupBy { it.createdAt!!.toLocalDate().toString() }
+            .map { it.key to it.value.sumOf { todo ->
+                toDoTimeRepository.findAllByToDo_Id(todo.id!!)
+                    .sumOf { timeSlot ->
+                        timeSlot.endTime.toEpochSecond(ZoneOffset.UTC) - timeSlot.startTime.toEpochSecond(ZoneOffset.UTC)
+                    }
+            } }
+            .toMap()
+        val today = LocalDate.now()
+        for (day in 1 .. today.dayOfMonth){
+            val date = LocalDate.of(today.year, today.month, day).toString()
+            val totalStudyHours = ((assignmentMap.getOrDefault(date, 0) + todoMap.getOrDefault(date, 0)) / (60 * 60)).toInt()
+            result[date] = totalStudyHours
+        }
+        return result
     }
 
     fun getLastAccessTime(menteeId: Long): Int {

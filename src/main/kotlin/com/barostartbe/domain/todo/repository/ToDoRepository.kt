@@ -24,6 +24,8 @@ interface ToDoRepository : JpaRepository<ToDo, Long> {
         @Param("date") date: LocalDate
     ): List<ToDo>
 
+    fun findAllByMentee(mentee: Mentee): List<ToDo>
+
     fun findAllByMentee_IdAndStatus(menteeId: Long, status: Status): List<ToDo>
 
     @Query(value = """
