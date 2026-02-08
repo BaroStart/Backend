@@ -28,8 +28,8 @@ class AssignmentController(
     private val assignmentMaterialQueryUseCase: AssignmentMaterialQueryUseCase
 ) : AssignmentApi {
 
-    override fun createAssignment(@AuthenticationPrincipal mentor: User, @PathVariable menteeId: Long, @RequestBody req: AssignmentCreateReq): ResponseEntity<ApiResponse<AssignmentCreateRes>> =
-        ApiResponse.success(SuccessCode.CREATE_OK, assignmentCommandUseCase.createAssignment(mentorId = mentor.id!!, menteeId = menteeId, req = req))
+    override fun createAssignment(@AuthenticationPrincipal mentor: User, @RequestBody req: AssignmentCreateReq): ResponseEntity<ApiResponse<AssignmentCreateRes>> =
+        ApiResponse.success(SuccessCode.CREATE_OK, assignmentCommandUseCase.createAssignment(mentorId = mentor.id!!, menteeId = req.menteeId, req = req))
 
     override fun getMenteeAssignments(mentee: User, subject: Subject?, dueDate: LocalDate?): ResponseEntity<ApiResponse<List<AssignmentMenteeListRes>>> {
         val menteeId = mentee.id!!

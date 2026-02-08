@@ -5,6 +5,7 @@ import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
 import com.barostartbe.domain.assignment.entity.enum.Subject
 import com.barostartbe.domain.assignment.error.AssignmentFeedbackedException
 import com.barostartbe.domain.assignment.error.AssignmentNotSubmittedException
+import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplate
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.global.common.entity.BaseEntity
@@ -23,22 +24,26 @@ class Assignment(
     @JoinColumn(name = "mentee_id", nullable = false)
     val mentee: Mentee,
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "template_id")
+    val assignmentTemplate: AssignmentTemplate? = null,
+
+    @Column(name = "goal_text", columnDefinition = "TEXT", nullable = false)
+    val goalText: String,
+
     @Column(nullable = false, length = 100)
     val title: String,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val subject: Subject,
+    val subject: Subject,                   // 국, 영, 수, 사, 과
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var status: AssignmentStatus = AssignmentStatus.NOT_SUBMIT,
 
-    @Column(name = "due_date", nullable = false)
-    val dueDate: LocalDateTime,
-
-    @Column(columnDefinition = "TEXT")
-    val goal: String? = null,
+    @Column(name = "date", nullable = false)
+    val dueDate: LocalDateTime,             // 마감일시
 
     @Column(columnDefinition = "TEXT")
     val content: String? = null,
@@ -53,7 +58,10 @@ class Assignment(
     var memo: String? = null,
 
     @Column(name = "submitted_at")
-    var submittedAt: LocalDateTime? = null
+    var submittedAt: LocalDateTime? = null,
+
+    @Column(name = "seol_study_context", columnDefinition = "TEXT")
+    var seolStudyContext: String? = null
 
 ) : BaseEntity() {
 
@@ -95,20 +103,25 @@ class Assignment(
     }
 
     companion object {
+
         // [멘토] 과제 생성
         fun create(
             mentor: Mentor,
             mentee: Mentee,
+            assignmentTemplate: AssignmentTemplate?,
+            goalText: String,
             req: AssignmentCreateReq
         ): Assignment =
             Assignment(
                 mentor = mentor,
                 mentee = mentee,
+                assignmentTemplate = assignmentTemplate,
+                goalText = goalText,
                 title = req.title,
                 subject = req.subject,
                 dueDate = req.dueDate,
-                goal = req.goal,
-                content = req.content
+                content = req.content,
+                seolStudyContext = req.seolStudyColumn
             )
     }
 }

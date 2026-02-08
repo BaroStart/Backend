@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 @Schema(description = "[멘토] 과제 생성 요청 DTO")
 data class AssignmentCreateReq(
-    @Schema(description = "대상 멘티 ID", example = "12", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "대상 멘티 ID", example = "2", requiredMode = Schema.RequiredMode.REQUIRED)
     @field:NotNull(message = "menteeId는 필수입니다")
     val menteeId: Long,
 
@@ -26,9 +26,12 @@ data class AssignmentCreateReq(
     @field:NotNull(message = "dueAt는 필수입니다")
     val dueDate: LocalDateTime,
 
-    @Schema(description = "과제 목표(보완점/목표 텍스트)", example = "오답 원인 분석 및 재풀이", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @field:Size(max = 1000, message = "goal은 1000자를 초과할 수 없습니다")
-    val goal: String? = null,
+    @Schema(description = "선택한 과제 템플릿 ID(선택 안하면 null)", example = "1", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    val templateId: Long? = null,
+
+    @Schema(description = "멘토가 직접 입력한 과제 목표", example = "오답 원인 분석 및 재풀이")
+    @field:Size(max = 1000, message = "goalText는 1000자를 초과할 수 없습니다")
+    val goalText: String? = null,
 
     @Schema(description = "과제 내용", example = "미적분 문제집 3단원 1~20번 풀이", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     @field:Size(max = 3000, message = "content는 3000자를 초과할 수 없습니다")

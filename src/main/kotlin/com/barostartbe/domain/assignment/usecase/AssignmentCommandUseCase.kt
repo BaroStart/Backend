@@ -10,6 +10,8 @@ import com.barostartbe.domain.assignment.entity.AssignmentFile
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
+import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplate
+import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateRepository
 import com.barostartbe.domain.mentee.repository.MenteeRepository
 import com.barostartbe.domain.mentor.repository.MentorRepository
 import com.barostartbe.domain.objectstorage.usecase.GetPreAuthenticatedUrl
@@ -23,6 +25,7 @@ import java.time.LocalDateTime
 class AssignmentCommandUseCase(
     private val assignmentRepository: AssignmentRepository,
     private val assignmentFileRepository: AssignmentFileRepository,
+    private val assignmentTemplateRepository: AssignmentTemplateRepository,
     private val mentorRepository: MentorRepository,
     private val menteeRepository: MenteeRepository,
     private val mentorMenteeMappingRepository: MentorMenteeMappingRepository,
@@ -42,21 +45,26 @@ class AssignmentCommandUseCase(
             .findByMentorAndMentee(mentor, mentee)
             ?: throw ServiceException(ErrorCode.UNMATCHED_PAIR)
 
-        // 설 스터디 컬럼 context 병합
-        val mergedContent = buildString {
-            req.seolStudyColumn?.let {
-                append("[SeolStudy Column]\n")
-                append(it)
-                append("\n\n")
+        // 과제 목표 조회
+        val assignmentTemplate: AssignmentTemplate? =
+            req.templateId?.let {
+                assignmentTemplateRepository.findById(it)
+                    .orElseThrow { ServiceException(ErrorCode.NOT_FOUND) }
             }
-            req.content?.let { append(it) }
-        }.ifBlank { null } // 둘 다 없으면 null
+
+        // 과제 목표 텍스트 결정
+        val goalText: String =
+            assignmentTemplate?.name
+                ?: req.goalText
+                ?: throw ServiceException(ErrorCode.INVALID_REQUEST)
 
         val assignment = assignmentRepository.save(
             Assignment.create(
                 mentor = mentor,
                 mentee = mentee,
-                req = req.copy(content = mergedContent)
+                assignmentTemplate = assignmentTemplate,
+                goalText = goalText,
+                req = req
             )
         )
 
@@ -90,8 +98,8 @@ class AssignmentCommandUseCase(
         }
 
         assignment.submit(
-            startTime = null,
-            endTime = LocalDateTime.now(),
+            startTime = req.timeSlot.startTime,
+            endTime = req.timeSlot.endTime,
             memo = req.memo,
             submittedAt = LocalDateTime.now()
         )

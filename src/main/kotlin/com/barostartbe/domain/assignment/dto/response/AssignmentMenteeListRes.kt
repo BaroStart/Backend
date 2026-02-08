@@ -18,6 +18,9 @@ data class AssignmentMenteeListRes(
     @Schema(description = "과제명")
     val title: String,
 
+    @Schema(description = "과제 설명")
+    val content: String?,
+
     @Schema(description = "제출 여부")
     val status: AssignmentStatus,
 
@@ -33,8 +36,9 @@ data class AssignmentMenteeListRes(
                 assignmentId = assignment.id!!,
                 subject = assignment.subject,
                 title = assignment.title,
+                content = assignment.content,
                 status = assignment.status,
-                goal = assignment.goal,
+                goal = assignment.goalText,
                 submittedAt = assignment.submittedAt
             )
     }
