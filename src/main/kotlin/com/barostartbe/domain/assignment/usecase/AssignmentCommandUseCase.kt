@@ -25,7 +25,6 @@ import java.time.LocalDateTime
 class AssignmentCommandUseCase(
     private val assignmentRepository: AssignmentRepository,
     private val assignmentFileRepository: AssignmentFileRepository,
-    private val assignmentTemplateRepository: AssignmentTemplateRepository,
     private val mentorRepository: MentorRepository,
     private val menteeRepository: MenteeRepository,
     private val mentorMenteeMappingRepository: MentorMenteeMappingRepository,
@@ -46,24 +45,13 @@ class AssignmentCommandUseCase(
             ?: throw ServiceException(ErrorCode.UNMATCHED_PAIR)
 
         // 과제 목표 조회
-        val assignmentTemplate: AssignmentTemplate? =
-            req.templateId?.let {
-                assignmentTemplateRepository.findById(it)
-                    .orElseThrow { ServiceException(ErrorCode.NOT_FOUND) }
-            }
-
-        // 과제 목표 텍스트 결정
-        val goalText: String =
-            assignmentTemplate?.name
-                ?: req.goalText
-                ?: throw ServiceException(ErrorCode.INVALID_REQUEST)
+        val templateName: String = req.templateName
 
         val assignment = assignmentRepository.save(
             Assignment.create(
                 mentor = mentor,
                 mentee = mentee,
-                assignmentTemplate = assignmentTemplate,
-                goalText = goalText,
+                templateName = templateName,
                 req = req
             )
         )

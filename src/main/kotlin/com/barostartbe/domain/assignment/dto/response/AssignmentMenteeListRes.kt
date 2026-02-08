@@ -24,8 +24,8 @@ data class AssignmentMenteeListRes(
     @Schema(description = "제출 여부")
     val status: AssignmentStatus,
 
-    @Schema(description = "과제 목표")
-    val goal: String?,
+    @Schema(description = "과제 템플릿명(과제 목표)")
+    val templateName: String,
 
     @Schema(description = "제출 완료 시간 (미제출 시 null)")
     val submittedAt: LocalDateTime?
@@ -38,7 +38,7 @@ data class AssignmentMenteeListRes(
                 title = assignment.title,
                 content = assignment.content,
                 status = assignment.status,
-                goal = assignment.goalText,
+                templateName = assignment.templateName,
                 submittedAt = assignment.submittedAt
             )
     }
