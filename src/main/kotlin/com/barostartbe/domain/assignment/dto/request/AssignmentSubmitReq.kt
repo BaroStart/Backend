@@ -1,10 +1,10 @@
 package com.barostartbe.domain.assignment.dto.request
 
-import com.barostartbe.domain.todo.dto.base.TimeSlot
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import java.time.LocalDateTime
 
 @Schema(description = "[멘티] 과제 제출 요청 DTO")
 data class AssignmentSubmitReq(
@@ -13,10 +13,11 @@ data class AssignmentSubmitReq(
     @field:NotNull
     val assignmentId: Long,
 
-    @Schema(description = "학습 시간 구간", requiredMode = Schema.RequiredMode.REQUIRED)
-    @field:NotNull
-    @field:Valid
-    val timeSlot: TimeSlot,
+    @Schema(description = "시작 시간", example = "2023-10-01T10:00:00", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    val startTime: LocalDateTime?,
+
+    @Schema(description = "종료 시간", example = "2023-10-01T11:00:00", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    val endTime: LocalDateTime?,
 
     @Schema(description = "메모(선택)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     @field:Size(max = 500, message = "memo는 500자를 초과할 수 없습니다")

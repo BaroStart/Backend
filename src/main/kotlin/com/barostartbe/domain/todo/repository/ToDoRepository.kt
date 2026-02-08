@@ -24,6 +24,30 @@ interface ToDoRepository : JpaRepository<ToDo, Long> {
 
     fun findAllByMentee_IdAndStatus(menteeId: Long, status: Status): List<ToDo>
 
+    @Query(
+        """
+        SELECT COUNT(t)
+        FROM ToDo t
+        WHERE t.mentee.id = :menteeId
+            AND t.status = 'COMPLETED'
+            AND FUNCTION('TIMESTAMPDIFF', MINUTE, t.startTime, t.endTime) >= 25
+        """
+    )
+    fun countCompletedOver25Minutes(@Param("menteeId") menteeId: Long): Long
+
+    @Query(
+        """
+        SELECT COUNT(t)
+        FROM ToDo t
+        WHERE t.mentee.id = :menteeId
+            AND t.status = 'COMPLETED'
+            AND FUNCTION('TIME', t.startTime) >= '06:00:00'
+            AND FUNCTION('TIME', t.endTime) <= '09:00:00'
+            AND FUNCTION('DATE', t.startTime) = FUNCTION('DATE', t.endTime)
+        """
+    )
+    fun countStudyBetweenSixAndNine(@Param("menteeId") menteeId: Long): Long
+
     @Query(value = """
         SELECT COALESCE(MAX(streak), 0)
         FROM (

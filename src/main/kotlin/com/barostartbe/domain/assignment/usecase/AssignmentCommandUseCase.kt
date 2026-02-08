@@ -103,8 +103,8 @@ class AssignmentCommandUseCase(
         }
 
         assignment.submit(
-            startTime = req.timeSlot.startTime,
-            endTime = req.timeSlot.endTime,
+            startTime = req.startTime,
+            endTime = req.endTime,
             memo = req.memo,
             submittedAt = LocalDateTime.now()
         )
