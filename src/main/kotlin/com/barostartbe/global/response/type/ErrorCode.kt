@@ -47,7 +47,6 @@ enum class ErrorCode(
 
     // File
     INVALID_FILE_URL(400, "INVALID_FILE_URL", "파일 URL 형식이 올바르지 않습니다."),
-
     FILE_NOT_FOUND(404, "FILE_NOT_FOUND", "파일을 찾을 수 없습니다."),
 
     // Notification
