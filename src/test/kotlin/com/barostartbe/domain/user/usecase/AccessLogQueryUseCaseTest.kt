@@ -18,9 +18,9 @@ class AccessLogQueryUseCaseTest : DescribeSpec({
     describe("AccessLogQueryUseCase") {
         val menteeId = 1L
 
-        it("최대 연속 출석 일수를 반환한다") {
-            every { accessLogRepository.findMaxConsecutiveDays(menteeId) } returns 10
-            accessLogQueryUseCase.getMaxConsecutiveDays(menteeId) shouldBe 10
+        it("현재 연속 출석 일수를 반환한다") {
+            every { accessLogRepository.findCurrentConsecutiveDays(menteeId) } returns 10
+            accessLogQueryUseCase.getCurrentConsecutiveDays(menteeId) shouldBe 10
         }
     }
 })
