@@ -14,18 +14,6 @@ interface AssignmentRepository : JpaRepository<Assignment, Long> {
     // 멘티 기준 조회
     fun findAllByMentee_Id(menteeId: Long): List<Assignment>
 
-    fun findAllByMenteeIdAndStatus(menteeId: Long, status: AssignmentStatus): List<Assignment>
-
-    fun findAllByMenteeIdAndDueDate(menteeId: Long, dueDate: LocalDate): List<Assignment>
-
-    fun findAllByMenteeIdAndSubject(menteeId: Long, subject: Subject): List<Assignment>
-
-    fun findAllByMenteeIdAndSubjectAndStatus(
-        menteeId: Long,
-        subject: Subject,
-        status: AssignmentStatus
-    ): List<Assignment>
-
     // 멘토 기준 조회
     fun findAllByMentorId(mentorId: Long): List<Assignment>
 
@@ -89,6 +77,19 @@ interface AssignmentRepository : JpaRepository<Assignment, Long> {
     """, nativeQuery = true
     )
     fun findMaxConsecutivePerfectDays(@Param("menteeId") menteeId: Long): Int
+
+    @Query("SELECT a FROM Assignment a WHERE a.mentee.id = :menteeId AND a.status != 'NOT_SUBMIT' AND DATE(a.startTime) = :date")
+    fun findAllByMenteeIdAndStartTimeDate(
+        @Param("menteeId") menteeId: Long,
+        @Param("date") date: LocalDate
+    ): List<Assignment>
+
+    @Query("SELECT a FROM Assignment a WHERE a.mentee.id = :menteeId AND DATE(a.createdAt) <= :endDate AND DATE(a.dueDate) >= :startDate")
+    fun findAllByMenteeIdAndDateOverlapping(
+        @Param("menteeId") menteeId: Long,
+        @Param("startDate") startDate: LocalDate,
+        @Param("endDate") endDate: LocalDate
+    ): List<Assignment>
 
     @Query(
         """

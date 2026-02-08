@@ -3,6 +3,7 @@ package com.barostartbe.domain.mentee.usecase
 import com.barostartbe.domain.admin.repository.MentorMenteeMappingRepository
 import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
+import com.barostartbe.domain.mentee.dto.CalendarResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeInfoResponseDto
 import com.barostartbe.domain.mentee.dto.TaskInfoResponseDto
 import com.barostartbe.domain.mentee.entity.Mentee
@@ -77,15 +78,39 @@ class MenteeQueryUseCase(
         return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(mapping.createdAt)
     }
 
-    fun getTimeTable(menteeId: Long, date : LocalDate): List<TaskInfoResponseDto> {
-        val assignments = assignmentRepository.findAllByMentee_Id(menteeId)
-            .filter { it.status != AssignmentStatus.NOT_SUBMIT && it.startTime?.toLocalDate() == date }
+    fun getTimeTable(menteeId: Long, date: LocalDate): List<TaskInfoResponseDto> {
+        val assignments = assignmentRepository.findAllByMenteeIdAndStartTimeDate(menteeId, date)
             .map { TaskInfoResponseDto.createAssignment(it) }
 
-        val todos = toDoRepository.findAllByMentee_IdAndStatus(menteeId, Status.COMPLETED)
-            .filter { it.startTime?.toLocalDate() == date }
+        val todos = toDoRepository.findAllCompletedByMenteeIdAndStartTimeDate(menteeId, date)
             .map { TaskInfoResponseDto.createToDo(it) }
 
         return (assignments + todos).sortedBy { it.startTime }
+    }
+
+    fun getCalendar(menteeId: Long, year: Int, month: Int): List<CalendarResponseDto> {
+        val startDate = LocalDate.of(year, month, 1)
+        val endDate = startDate.withDayOfMonth(startDate.lengthOfMonth())
+
+
+        val assignments = assignmentRepository.findAllByMenteeIdAndDateOverlapping(menteeId, startDate, endDate)
+
+        val todos = toDoRepository.findAllByMenteeIdAndCreatedAtBetween(menteeId, startDate, endDate)
+
+        val todoDates = todos.mapNotNull { it.createdAt?.toLocalDate() }.toSet()
+
+        return (0 until startDate.lengthOfMonth()).map { i ->
+            val date = startDate.plusDays(i.toLong())
+
+            val hasAssignment = assignments.any {
+                val createdAt = it.createdAt?.toLocalDate()
+                val dueDate = it.dueDate.toLocalDate()
+                createdAt != null && !date.isBefore(createdAt) && !date.isAfter(dueDate)
+            }
+
+            val hasToDo = todoDates.contains(date)
+
+            CalendarResponseDto(date, hasAssignment, hasToDo)
+        }
     }
 }

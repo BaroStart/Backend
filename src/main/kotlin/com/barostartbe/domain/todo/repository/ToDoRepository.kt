@@ -23,8 +23,6 @@ interface ToDoRepository : JpaRepository<ToDo, Long> {
         @Param("date") date: LocalDate
     ): List<ToDo>
 
-    fun findAllByMentee_IdAndStatus(menteeId: Long, status: Status): List<ToDo>
-
     @Query(
         """
         SELECT COUNT(t)
@@ -70,6 +68,19 @@ interface ToDoRepository : JpaRepository<ToDo, Long> {
         ) streaks
     """, nativeQuery = true)
     fun findMaxConsecutivePerfectDays(@Param("menteeId") menteeId: Long): Long
+
+    @Query("SELECT t FROM ToDo t WHERE t.mentee.id = :menteeId AND t.status = 'COMPLETED' AND DATE(t.startTime) = :date")
+    fun findAllCompletedByMenteeIdAndStartTimeDate(
+        @Param("menteeId") menteeId: Long,
+        @Param("date") date: LocalDate
+    ): List<ToDo>
+
+    @Query("SELECT t FROM ToDo t WHERE t.mentee.id = :menteeId AND DATE(t.createdAt) BETWEEN :startDate AND :endDate")
+    fun findAllByMenteeIdAndCreatedAtBetween(
+        @Param("menteeId") menteeId: Long,
+        @Param("startDate") startDate: LocalDate,
+        @Param("endDate") endDate: LocalDate
+    ): List<ToDo>
 
     @Query(
         """

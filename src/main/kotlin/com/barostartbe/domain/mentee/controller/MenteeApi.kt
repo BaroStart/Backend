@@ -1,5 +1,6 @@
 package com.barostartbe.domain.mentee.controller
 
+import com.barostartbe.domain.mentee.dto.CalendarResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeInfoResponseDto
 import com.barostartbe.domain.mentee.dto.TaskInfoResponseDto
 import com.barostartbe.domain.user.entity.User
@@ -29,4 +30,12 @@ interface MenteeApi {
         @AuthenticationPrincipal mentee: User,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: LocalDate?
     ): ResponseEntity<ApiResponse<List<TaskInfoResponseDto>>>
+
+    @GetMapping("/calendar")
+    @Operation(summary = "멘티 캘린더 조회", description = "특정 년월의 멘티의 캘린더 정보를 조회하는 api")
+    fun getCalendar(
+        @AuthenticationPrincipal mentee: User,
+        @RequestParam year: Int,
+        @RequestParam month: Int
+    ): ResponseEntity<ApiResponse<List<CalendarResponseDto>>>
 }
