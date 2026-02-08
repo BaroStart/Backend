@@ -1,8 +1,6 @@
 package com.barostartbe.domain.assignment.repository
 
 import com.barostartbe.domain.assignment.entity.Assignment
-import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
-import com.barostartbe.domain.assignment.entity.enum.Subject
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

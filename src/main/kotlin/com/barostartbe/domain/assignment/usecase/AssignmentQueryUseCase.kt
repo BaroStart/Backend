@@ -91,7 +91,7 @@ class AssignmentQueryUseCase(
             title = assignment.title,
             subject = assignment.subject,
             dueDate = assignment.dueDate,
-            goal = assignment.assignmentGoal?.name,
+            goal = assignment.goalText,
             content = assignment.content,
             seolStudyContext = assignment.seolStudyContext,
             materials = materials,

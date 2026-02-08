@@ -38,7 +38,7 @@ data class AssignmentMenteeListRes(
                 title = assignment.title,
                 content = assignment.content,
                 status = assignment.status,
-                goal = assignment.assignmentGoal?.name,
+                goal = assignment.goalText,
                 submittedAt = assignment.submittedAt
             )
     }
