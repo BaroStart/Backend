@@ -50,6 +50,13 @@ enum class ErrorCode(
 
     FILE_NOT_FOUND(404, "FILE_NOT_FOUND", "파일을 찾을 수 없습니다."),
 
+    // Feedback Template
+    FEEDBACK_TEMPLATE_NOT_FOUND(404, "FEEDBACK_TEMPLATE_NOT_FOUND", "피드백 템플릿을 찾을 수 없습니다."),
+
+    FEEDBACK_TEMPLATE_NAME_DUPLICATED(409, "FEEDBACK_TEMPLATE_NAME_DUPLICATED", "이미 존재하는 피드백 템플릿 이름입니다."),
+
+    FEEDBACK_TEMPLATE_DELETE_FORBIDDEN(400, "FEEDBACK_TEMPLATE_DELETE_FORBIDDEN", "사용 중인 피드백 템플릿은 삭제할 수 없습니다."),
+
     // 공통
     USER_NOT_FOUND(404, "USER_NOT_FOUND", "유저를 찾을 수 없습니다."),
 
@@ -57,6 +64,7 @@ enum class ErrorCode(
 
     TODO_NOT_FOUND(404, "TODO_NOT_FOUND", "할일을 찾을 수 없습니다."),
 
+    INVALID_REQUEST(400, "INVALID_REQUEST", "요청 값이 올바르지 않습니다."),
 
     INTERNAL_SERVER_ERROR(500, "INTERNAL_SERVER_ERROR", "서버 오류가 발생했습니다."),
 }
