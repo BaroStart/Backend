@@ -1,7 +1,5 @@
 package com.barostartbe.domain.assignmenttemplate.usecase
 
-import com.barostartbe.domain.assignment.entity.AssignmentGoal
-import com.barostartbe.domain.assignment.repository.AssignmentGoalRepository
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateFileRes
 import com.barostartbe.domain.assignmenttemplate.dto.request.AssignmentTemplateCreateReq
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateDetailRes
@@ -16,30 +14,20 @@ import com.barostartbe.global.annotation.CommandUseCase
 class AssignmentTemplateCreateUseCase(
 
     private val assignmentTemplateRepository: AssignmentTemplateRepository,
-    private val assignmentTemplateFileRepository: AssignmentTemplateFileRepository,
-    private val assignmentGoalRepository: AssignmentGoalRepository
+    private val assignmentTemplateFileRepository: AssignmentTemplateFileRepository
 ) {
 
     fun execute(
         mentor: Mentor,
-        req: AssignmentTemplateCreateReq,
-        files: List<AssignmentTemplateFileRes>
+        req: AssignmentTemplateCreateReq
     ): AssignmentTemplateDetailRes {
-
-        val assignmentGoal: AssignmentGoal = assignmentGoalRepository.save(
-            AssignmentGoal(
-                subject = req.subject,
-                name = req.name
-            )
-        )
 
         // 템플릿 생성
         val template: AssignmentTemplate = assignmentTemplateRepository.save(
             AssignmentTemplate(
                 mentor = mentor,
                 subject = req.subject,
-                assignmentGoal = assignmentGoal,
-                name = req.name,
+                name = req.name,    // 목표명
                 description = req.description,
                 title = req.title,
                 content = req.content
@@ -47,7 +35,7 @@ class AssignmentTemplateCreateUseCase(
         )
 
         // 템플릿 파일 생성
-        val templateFiles: List<AssignmentTemplateFile> = files.map {
+        val templateFiles = req.files.map {
             AssignmentTemplateFile(
                 assignmentTemplate = template,
                 fileName = it.fileName,

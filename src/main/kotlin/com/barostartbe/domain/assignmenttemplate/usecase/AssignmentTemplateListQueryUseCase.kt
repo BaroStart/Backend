@@ -39,6 +39,7 @@ class AssignmentTemplateListQueryUseCase(
 
         return templates.map { template ->
             AssignmentTemplateListRes(
+                id = requireNotNull(template.id),
                 subject = template.subject,
                 name = template.name,
                 description = template.description,

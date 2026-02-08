@@ -5,7 +5,6 @@ import com.barostartbe.domain.assignmenttemplate.dto.request.AssignmentTemplateC
 import com.barostartbe.domain.assignmenttemplate.dto.request.AssignmentTemplateUpdateReq
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateDetailRes
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateListRes
-import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateFileRes
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.global.response.ApiResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -23,8 +22,7 @@ interface AssignmentTemplateApi {
     @Operation(summary = "과제 템플릿 생성", description = "멘토가 과제 템플릿을 생성합니다.")
     fun createTemplate(
         @AuthenticationPrincipal mentor: Mentor,
-        @RequestBody req: AssignmentTemplateCreateReq,
-        @RequestParam files: List<AssignmentTemplateFileRes>
+        @RequestBody req: AssignmentTemplateCreateReq
     ): ResponseEntity<ApiResponse<AssignmentTemplateDetailRes>>
 
     @PutMapping("/{id}")

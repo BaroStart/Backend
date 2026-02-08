@@ -1,37 +1,44 @@
 package com.barostartbe.domain.assignmenttemplate.usecase
 
-import com.barostartbe.domain.assignment.entity.AssignmentGoal
-import com.barostartbe.domain.assignment.repository.AssignmentGoalRepository
+
+import com.barostartbe.domain.assignment.entity.enum.Subject
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateByGoalRes
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateByGoalRes.TemplateRes
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateByGoalRes.TemplateFileRes
 import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateFileRepository
 import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateRepository
+import com.barostartbe.domain.mentor.repository.MentorRepository
 import com.barostartbe.global.annotation.QueryUseCase
 import com.barostartbe.global.error.exception.ServiceException
 import com.barostartbe.global.response.type.ErrorCode
 
 @QueryUseCase
 class AssignmentTemplateByGoalQueryUseCase(
-    private val assignmentGoalRepository: AssignmentGoalRepository,
     private val assignmentTemplateRepository: AssignmentTemplateRepository,
-    private val assignmentTemplateFileRepository: AssignmentTemplateFileRepository
+    private val assignmentTemplateFileRepository: AssignmentTemplateFileRepository,
+    private val mentorRepository: MentorRepository
 ) {
 
-    fun execute(goalId: Long): AssignmentTemplateByGoalRes {
+    // 목표명에 따른 템플릿 조회
+    fun execute(mentorId: Long, subject: Subject, goalName: String): AssignmentTemplateByGoalRes {
 
-        // 목표 조회
-        val goal: AssignmentGoal = assignmentGoalRepository.findById(goalId)
-            .orElseThrow { ServiceException(ErrorCode.ASSIGNMENT_GOAL_NOT_FOUND) }
+        // 멘토 조회
+        val mentor = mentorRepository.findById(mentorId)
+            .orElseThrow { ServiceException(ErrorCode.USER_NOT_FOUND) }
 
-        // 목표에 속한 템플릿 조회
-        val templates = assignmentTemplateRepository.findAllByAssignmentGoalOrderByCreatedAtDesc(goal)
+        // 목표명에 해당하는 템플릿 조회
+        val templates =
+            assignmentTemplateRepository
+                .findAllByMentorAndSubjectAndNameOrderByCreatedAtDesc(
+                    mentor = mentor,
+                    subject = subject,
+                    name = goalName
+                )
 
         if (templates.isEmpty()) {
             return AssignmentTemplateByGoalRes(
-                goalId = goal.id!!,
-                goalName = goal.name,
-                subject = goal.subject,
+                goalName = goalName,
+                subject = subject,
                 templates = emptyList()
             )
         }
@@ -65,9 +72,8 @@ class AssignmentTemplateByGoalQueryUseCase(
         }
 
         return AssignmentTemplateByGoalRes(
-            goalId = goal.id!!,
-            goalName = goal.name,
-            subject = goal.subject,
+            goalName = goalName,
+            subject = subject,
             templates = templateResponses
         )
     }

@@ -30,11 +30,11 @@ class AssignmentTemplateController(
     private val assignmentTemplateDetailQueryUseCase: AssignmentTemplateDetailQueryUseCase
 ) : AssignmentTemplateApi {
 
-    override fun createTemplate(@AuthenticationPrincipal mentor: Mentor, @RequestBody req: AssignmentTemplateCreateReq, @RequestParam files: List<AssignmentTemplateFileRes>
+    override fun createTemplate(@AuthenticationPrincipal mentor: Mentor, @RequestBody req: AssignmentTemplateCreateReq
     ): ResponseEntity<ApiResponse<AssignmentTemplateDetailRes>> =
         ApiResponse.success(
             SuccessCode.CREATE_OK,
-            assignmentTemplateCreateUseCase.execute(mentor, req, files))
+            assignmentTemplateCreateUseCase.execute(mentor, req))
 
     override fun updateTemplate(
         @AuthenticationPrincipal mentor: Mentor,

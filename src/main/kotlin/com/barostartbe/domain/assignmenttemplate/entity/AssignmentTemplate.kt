@@ -2,17 +2,12 @@ package com.barostartbe.domain.assignmenttemplate.entity
 
 import com.barostartbe.domain.assignment.entity.enum.Subject
 import com.barostartbe.domain.mentor.entity.Mentor
-import com.barostartbe.domain.assignment.entity.AssignmentGoal
 import com.barostartbe.global.common.entity.BaseEntity
 import jakarta.persistence.*
 
 @Entity
 @Table(name = "assignment_templates")
 class AssignmentTemplate(
-    // 템플릿이 속한 과제 목표
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "goal_id", nullable = false)
-    val assignmentGoal: AssignmentGoal,
 
     // 템플릿 소유자 (멘토 개인 소유)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,7 +19,7 @@ class AssignmentTemplate(
     @Column(nullable = false)
     val subject: Subject,
 
-    // 템플릿 이름 (목표명)
+    // 템플릿 이름 (과제 목표명)
     @Column(nullable = false, length = 100)
     var name: String,
 
