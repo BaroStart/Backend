@@ -56,7 +56,10 @@ class SecurityConfig(
             // 임시
             "/api/v1/assignments/**",
             "/api/v1/storages/**",
-            "/api/v1/files/**"
+            "/api/v1/files/**",
+            "/api/v1/feedback-templates/**"
+
+
         )
 
         http {

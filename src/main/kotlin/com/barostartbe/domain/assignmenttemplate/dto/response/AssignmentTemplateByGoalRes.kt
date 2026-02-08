@@ -14,7 +14,7 @@ data class AssignmentTemplateByGoalRes(
         val name: String,
         val description: String?,
         val title: String,
-        val content: String,
+        val content: String?,
         val files: List<TemplateFileRes>
     )
 

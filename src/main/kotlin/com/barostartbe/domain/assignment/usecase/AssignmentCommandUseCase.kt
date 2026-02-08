@@ -67,7 +67,6 @@ class AssignmentCommandUseCase(
                 )
             )
         }
-
         return AssignmentCreateRes.from(assignment)
     }
 

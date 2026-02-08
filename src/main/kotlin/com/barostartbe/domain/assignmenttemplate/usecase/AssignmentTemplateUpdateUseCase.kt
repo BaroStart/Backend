@@ -63,9 +63,9 @@ class AssignmentTemplateUpdateUseCase(
             id = requireNotNull(template.id),
             subject = template.subject,
             name = template.name,
-            description = template.description,
+            description = template.description ?: "",
             title = template.title,
-            content = template.content,
+            content = template.content ?: "",
             files = currentFiles.map {
                 AssignmentTemplateFileRes(
                     fileName = requireNotNull(it.fileName),
