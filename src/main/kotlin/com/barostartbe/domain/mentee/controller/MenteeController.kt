@@ -1,6 +1,6 @@
 package com.barostartbe.domain.mentee.controller
 
-import com.barostartbe.domain.mentee.dto.GetMenteeInfoResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeBasicInfoResponseDto
 import com.barostartbe.domain.mentee.usecase.MenteeQueryUseCase
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.global.response.ApiResponse
@@ -15,7 +15,7 @@ class MenteeController(
     val  menteeQueryUseCase: MenteeQueryUseCase
 ): MenteeApi{
 
-    override fun getMenteeInfo(@PathVariable menteeId: Long, @AuthenticationPrincipal mentor: User): ResponseEntity<ApiResponse<GetMenteeInfoResponseDto>> {
+    override fun getMenteeInfo(@PathVariable menteeId: Long, @AuthenticationPrincipal mentor: User): ResponseEntity<ApiResponse<GetMenteeBasicInfoResponseDto>> {
         return ApiResponse.success(SuccessCode.REQUEST_OK, menteeQueryUseCase.getMenteeInfo(mentor.id!!, menteeId))
     }
 }

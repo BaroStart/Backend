@@ -1,11 +1,13 @@
 package com.barostartbe.domain.todo.repository
 
+import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.todo.entity.ToDo
 import com.barostartbe.domain.todo.entity.enums.Status
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 interface ToDoRepository : JpaRepository<ToDo, Long> {
 
@@ -45,4 +47,6 @@ interface ToDoRepository : JpaRepository<ToDo, Long> {
         ) streaks
     """, nativeQuery = true)
     fun findMaxConsecutivePerfectDays(@Param("menteeId") menteeId: Long): Long
+
+    fun findAllByMenteeAndCreatedAtAfter(mentee: Mentee, checkDate: LocalDateTime): List<ToDo>
 }

@@ -1,6 +1,6 @@
 package com.barostartbe.domain.mentee.controller
 
-import com.barostartbe.domain.mentee.dto.GetMenteeInfoResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeBasicInfoResponseDto
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.global.response.ApiResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -17,5 +17,5 @@ interface MenteeApi {
 
     @GetMapping("/mentee/{menteeId}")
     @Operation(summary = "멘티 정보 조회", description = "멘티 이름, 활동정보, 평균 점수 등 자세한 정보들을 조회하는 api")
-    fun getMenteeInfo(@PathVariable menteeId: Long, @AuthenticationPrincipal mentor: User): ResponseEntity<ApiResponse<GetMenteeInfoResponseDto>>
+    fun getMenteeInfo(@PathVariable menteeId: Long, @AuthenticationPrincipal mentor: User): ResponseEntity<ApiResponse<GetMenteeBasicInfoResponseDto>>
 }
