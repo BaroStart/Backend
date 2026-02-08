@@ -84,7 +84,7 @@ class SecurityConfig(
 
                 authorize ("/mentor/**", hasRole("MENTOR"))
                 authorize ("/mentee/**", hasRole("MENTEE"))
-                authorize ("/admin/**", hasRole("ADMIN"))
+//                authorize ("/admin/**", hasRole("ADMIN"))
 
                 // default
 //                authorize(anyRequest, authenticated)
