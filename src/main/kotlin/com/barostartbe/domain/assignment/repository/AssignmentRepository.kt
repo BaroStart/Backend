@@ -28,8 +28,42 @@ interface AssignmentRepository : JpaRepository<Assignment, Long> {
     // 멘토 기준 조회
     fun findAllByMentorId(mentorId: Long): List<Assignment>
 
-    // 상태에 따른 과제 존재 여부 확인
     fun existsByMentee_IdAndStatusNot(menteeId: Long, status: AssignmentStatus): Boolean
+
+    @Query(
+        """
+        SELECT COUNT(a)
+        FROM Assignment a
+        WHERE a.mentee.id = :menteeId
+            AND a.status IN ('SUBMITTED', 'FEEDBACKED')
+            AND FUNCTION('TIMESTAMPDIFF', MINUTE, a.startTime, a.endTime) >= 25
+        """
+    )
+    fun countCompletedOver25Minutes(@Param("menteeId") menteeId: Long): Long
+
+    @Query(
+        """
+        SELECT COUNT(a)
+        FROM Assignment a
+        WHERE a.mentee.id = :menteeId
+            AND a.status IN ('SUBMITTED', 'FEEDBACKED')
+            AND FUNCTION('TIME', a.startTime) >= '06:00:00'
+            AND FUNCTION('TIME', a.endTime) <= '09:00:00'
+            AND FUNCTION('DATE', a.startTime) = FUNCTION('DATE', a.endTime)
+        """
+    )
+    fun countStudyBetweenSixAndNine(@Param("menteeId") menteeId: Long): Long
+
+    @Query(
+        """
+        SELECT SUM(FUNCTION('TIMESTAMPDIFF', MINUTE, a.startTime, a.endTime))
+        FROM Assignment a
+        WHERE a.mentee.id = :menteeId
+            AND a.status != com.barostartbe.domain.assignment.entity.enums.AssignmentStatus.NOT_SUBMIT
+            AND (:subject IS NULL OR a.subject = :subject)
+        """
+    )
+    fun sumStudyTimeByMenteeId(@Param("menteeId") menteeId: Long, @Param("subject") subject: Subject?): Long?
 
     @Query(
         value = """

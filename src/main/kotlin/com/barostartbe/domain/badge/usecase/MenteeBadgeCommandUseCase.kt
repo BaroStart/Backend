@@ -1,5 +1,6 @@
 package com.barostartbe.domain.badge.usecase
 
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.assignment.usecase.AssignmentQueryUseCase
 import com.barostartbe.domain.badge.entity.Badge
 import com.barostartbe.domain.badge.entity.MenteeBadgeMapping
@@ -52,24 +53,22 @@ class MenteeBadgeCommandUseCase(
             "주간목표 달성" -> assignmentQueryUseCase.is7DaysAssignmentCompletedStreak(menteeId)
             "오늘도 한 걸음" -> toDoQueryUseCase.is7DaysToDoCompletedStreak(menteeId)
             "질문왕" -> commentQueryUseCase.hasMoreThanTenComments(menteeId)
-            // "국어 마스터" ->
-            // "수학 마스터" ->
-            // "영어 마스터" ->
-            // "100시간 학습" ->
+            "국어 마스터" -> assignmentQueryUseCase.getTotalStudyTimeBySubject(menteeId, Subject.KOREAN) >= 50
+            "수학 마스터" -> assignmentQueryUseCase.getTotalStudyTimeBySubject(menteeId, Subject.MATH) >= 50
+            "영어 마스터" -> assignmentQueryUseCase.getTotalStudyTimeBySubject(menteeId, Subject.ENGLISH) >= 50
+            "100시간 학습" -> assignmentQueryUseCase.getTotalStudyTimeBySubject(menteeId) >= 100
             "포모도로 마스터" -> {
-                // TODO: 구현 (AssignmentCount 로직 추가 필요)
-                val assignmentCount = 0
+                val assignmentCount = assignmentQueryUseCase.getCompletedOver25MinutesCount(menteeId)
                 val toDoCount = toDoQueryUseCase.getCompletedOver25MinutesCount(menteeId)
                 (assignmentCount + toDoCount) >= 20
             }
 
             "아침 루틴" -> {
-                // TODO: 구현 (AssignmentCount 로직 추가 필요)
-                val assignmentCount = 0
+                val assignmentCount = assignmentQueryUseCase.getStudyBetweenSixAndNineCount(menteeId)
                 val toDoCount = toDoQueryUseCase.getStudyBetweenSixAndNineCount(menteeId)
                 (assignmentCount + toDoCount) >= 7
             }
-            // TODO: 국어, 수학, 영어, 100시간 학습 등 미구현 뱃지는 false 처리
+
             else -> false
         }
     }
