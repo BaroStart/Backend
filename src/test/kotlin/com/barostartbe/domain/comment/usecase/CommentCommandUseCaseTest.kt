@@ -1,5 +1,7 @@
 package com.barostartbe.domain.comment.usecase
 
+import com.barostartbe.domain.admin.entity.MentorMenteeMapping
+import com.barostartbe.domain.admin.repository.MentorMenteeMappingRepository
 import com.barostartbe.domain.comment.dto.CreateCommentRequestDto
 import com.barostartbe.domain.comment.dto.CreateSubCommentRequestDto
 import com.barostartbe.domain.comment.dto.UpdateCommentRequestDto
@@ -11,6 +13,8 @@ import com.barostartbe.domain.comment.repository.SubCommentRepository
 import com.barostartbe.domain.mentee.entity.Grade
 import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.mentee.entity.School
+import com.barostartbe.domain.mentor.entity.Mentor
+import com.barostartbe.domain.notification.usecase.SendNotificationUseCase
 import com.barostartbe.domain.user.entity.Role
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.domain.user.repository.UserRepository
@@ -34,11 +38,16 @@ class CommentCommandUseCaseTest : DescribeSpec({
     val commentRepository = mockk<CommentRepository>()
     val userRepository = mockk<UserRepository>()
     val subCommentRepository = mockk<SubCommentRepository>()
+    val sendNotificationUseCase = mockk<SendNotificationUseCase>()
+    val mentorMenteeMappingRepository = mockk<MentorMenteeMappingRepository>()
     val useCase = CommentCommandUseCase(
         commentRepository = commentRepository,
         userRepository = userRepository,
-        subCommentRepository = subCommentRepository
+        subCommentRepository = subCommentRepository,
+        sendNotificationUseCase = sendNotificationUseCase,
+        mentorMenteeMappingRepository = mentorMenteeMappingRepository
     )
+
 
     beforeTest {
         clearAllMocks()
@@ -47,21 +56,32 @@ class CommentCommandUseCaseTest : DescribeSpec({
     describe("댓글 생성") {
         val request = CreateCommentRequestDto(content = "new comment")
 
-        it("사용자가 멘티라면 댓글을 저장한다") {
+        it("사용자가 멘티라면 댓글을 저장하고 멘토들에게 알림을 보낸다") {
             val mentee = createMentee()
+            val mentor = createMentor(id = 1L)
+            val mapping = MentorMenteeMapping(mentor = mentor, mentee = mentee)
+            
             val savedComment = mockk<Comment> {
                 every { id } returns 10L
             }
             val commentSlot = slot<Comment>()
+            
             every { commentRepository.save(capture(commentSlot)) } returns savedComment
+            every { mentorMenteeMappingRepository.findAllByMentee(mentee) } returns listOf(mapping)
+            every { sendNotificationUseCase.execute(any()) } just Runs
 
             val response = useCase.createComment(mentee, request)
 
             response.commentId shouldBe 10L
             commentSlot.captured.mentee shouldBe mentee
             commentSlot.captured.content shouldBe request.content
-            verify(exactly = 1) { commentRepository.save(any()) }
-            confirmVerified(commentRepository)
+            
+            verify(exactly = 1) { 
+                commentRepository.save(any())
+                mentorMenteeMappingRepository.findAllByMentee(mentee)
+                sendNotificationUseCase.execute(any())
+            }
+            confirmVerified(commentRepository, mentorMenteeMappingRepository, sendNotificationUseCase)
         }
 
         it("사용자가 멘티가 아니면 권한 없음 예외를 던진다") {
@@ -155,27 +175,62 @@ class CommentCommandUseCaseTest : DescribeSpec({
             subContent = "reply"
         )
 
-        it("사용자와 댓글이 존재하면 대댓글을 저장한다") {
-            val user = createMentee()
-            val comment = Comment(user, "parent")
+        it("사용자가 멘티라면 대댓글을 저장하고 멘토들에게 알림을 보낸다") {
+            val mentee = createMentee()
+            val mentor = createMentor(id = 1L)
+            val mapping = MentorMenteeMapping(mentor = mentor, mentee = mentee)
+            val parentMentee = createMentee(loginId = "parent")
+            val comment = Comment(parentMentee, "parent")
             val savedSubComment = mockk<SubComment> {
                 every { id } returns 88L
             }
             val subCommentSlot = slot<SubComment>()
+            
             every { commentRepository.findByIdOrNull(request.commentId) } returns comment
             every { subCommentRepository.save(capture(subCommentSlot)) } returns savedSubComment
+            every { mentorMenteeMappingRepository.findAllByMentee(mentee) } returns listOf(mapping)
+            every { sendNotificationUseCase.execute(any()) } just Runs
 
-            val response = useCase.createSubComment(user, request)
+            val response = useCase.createSubComment(mentee, request)
 
             response.subCommentId shouldBe 88L
-            subCommentSlot.captured.user shouldBe user
+            subCommentSlot.captured.user shouldBe mentee
             subCommentSlot.captured.comment shouldBe comment
             subCommentSlot.captured.content shouldBe request.subContent
+            
             verify(exactly = 1) {
                 commentRepository.findByIdOrNull(request.commentId)
                 subCommentRepository.save(any())
+                mentorMenteeMappingRepository.findAllByMentee(mentee)
+                sendNotificationUseCase.execute(any())
             }
-            confirmVerified(commentRepository, subCommentRepository)
+            confirmVerified(commentRepository, subCommentRepository, mentorMenteeMappingRepository, sendNotificationUseCase)
+        }
+
+        it("사용자가 멘토라면 대댓글을 저장하고 멘티에게 알림을 보낸다") {
+            val mentor = createMentor()
+            val mentee = createMentee(id = 10L)
+            val comment = Comment(mentee, "parent")
+            val savedSubComment = mockk<SubComment> {
+                every { id } returns 99L
+            }
+            val subCommentSlot = slot<SubComment>()
+
+            every { commentRepository.findByIdOrNull(request.commentId) } returns comment
+            every { subCommentRepository.save(capture(subCommentSlot)) } returns savedSubComment
+            every { sendNotificationUseCase.execute(any()) } just Runs
+
+            val response = useCase.createSubComment(mentor, request)
+
+            response.subCommentId shouldBe 99L
+            subCommentSlot.captured.user shouldBe mentor
+            
+            verify(exactly = 1) {
+                commentRepository.findByIdOrNull(request.commentId)
+                subCommentRepository.save(any())
+                sendNotificationUseCase.execute(any())
+            }
+            confirmVerified(commentRepository, subCommentRepository, sendNotificationUseCase)
         }
 
         it("댓글이 존재하지 않으면 예외를 던진다") {
@@ -244,10 +299,11 @@ class CommentCommandUseCaseTest : DescribeSpec({
 }) {
     companion object {
         private fun createMentee(
+            id: Long? = null,
             loginId: String = "mentee1",
             nickname: String = "mentee-nick"
         ): Mentee {
-            return Mentee(
+            val mentee = Mentee(
                 loginId = loginId,
                 password = "password",
                 name = "mentee",
@@ -256,6 +312,32 @@ class CommentCommandUseCaseTest : DescribeSpec({
                 school = School.NORMAL,
                 hopeMajor = "CS"
             )
+            if (id != null) {
+                val idField = User::class.java.getDeclaredField("id")
+                idField.isAccessible = true
+                idField.set(mentee, id)
+            }
+            return mentee
+        }
+
+        private fun createMentor(
+            id: Long? = null,
+            loginId: String = "mentor1",
+            nickname: String = "mentor-nick"
+        ): Mentor {
+            val mentor = Mentor(
+                loginId = loginId,
+                password = "password",
+                name = "mentor",
+                nickname = nickname,
+                university = "Uni"
+            )
+            if (id != null) {
+                val idField = User::class.java.getDeclaredField("id")
+                idField.isAccessible = true
+                idField.set(mentor, id)
+            }
+            return mentor
         }
     }
 }

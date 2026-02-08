@@ -8,6 +8,7 @@ import com.barostartbe.domain.badge.repository.MenteeBadgeMappingRepository
 import com.barostartbe.domain.comment.usecase.CommentQueryUseCase
 import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.mentee.repository.MenteeRepository
+import com.barostartbe.domain.notification.usecase.SendNotificationUseCase
 import com.barostartbe.domain.todo.usecase.ToDoQueryUseCase
 import com.barostartbe.domain.user.usecase.AccessLogQueryUseCase
 import com.barostartbe.global.error.exception.ServiceException
@@ -30,6 +31,7 @@ class MenteeBadgeCommandUseCaseTest : DescribeSpec({
     val accessLogQueryUseCase = mockk<AccessLogQueryUseCase>(relaxed = true)
     val toDoQueryUseCase = mockk<ToDoQueryUseCase>(relaxed = true)
     val commentQueryUseCase = mockk<CommentQueryUseCase>(relaxed = true)
+    val sendNotificationUseCase = mockk<SendNotificationUseCase>(relaxed = true)
 
     val menteeBadgeCommandUseCase = MenteeBadgeCommandUseCase(
         menteeBadgeMappingRepository,
@@ -38,7 +40,8 @@ class MenteeBadgeCommandUseCaseTest : DescribeSpec({
         assignmentQueryUseCase,
         accessLogQueryUseCase,
         toDoQueryUseCase,
-        commentQueryUseCase
+        commentQueryUseCase,
+        sendNotificationUseCase
     )
 
     beforeEach {
@@ -76,7 +79,7 @@ class MenteeBadgeCommandUseCaseTest : DescribeSpec({
                 every { menteeBadgeMappingRepository.findAllByMentee_id(menteeId) } returns emptyList()
             }
 
-            it("'첫 과제 완료' 조건을 만족하면 뱃지를 저장한다") {
+            it("'첫 과제 완료' 조건을 만족하면 뱃지를 저장하고 알림을 전송한다") {
                 val badge = mockk<Badge> {
                     every { id } returns 1L
                     every { name } returns "첫 과제 완료"
@@ -88,6 +91,7 @@ class MenteeBadgeCommandUseCaseTest : DescribeSpec({
 
                 val slot = slot<MenteeBadgeMapping>()
                 verify(exactly = 1) { menteeBadgeMappingRepository.save(capture(slot)) }
+                verify(exactly = 1) { sendNotificationUseCase.execute(any()) }
                 slot.captured.badge.name shouldBe "첫 과제 완료"
             }
 
