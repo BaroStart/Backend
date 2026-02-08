@@ -56,9 +56,10 @@ class AssignmentTemplateByGoalQueryUseCase(
             TemplateRes(
                 templateId = template.id!!,
                 name = template.name,
-                description = template.description,
+                description = template.description ?: "",
                 title = template.title,
-                content = template.content,
+                content = template.content ?: "",
+
                 files = fileMap[template.id]
                     ?.map {
                         TemplateFileRes(

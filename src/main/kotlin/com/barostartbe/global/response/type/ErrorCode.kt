@@ -47,11 +47,14 @@ enum class ErrorCode(
 
     // File
     INVALID_FILE_URL(400, "INVALID_FILE_URL", "파일 URL 형식이 올바르지 않습니다."),
+
     FILE_NOT_FOUND(404, "FILE_NOT_FOUND", "파일을 찾을 수 없습니다."),
 
     // Notification
     NOTIFICATION_NOT_FOUND(404, "NOTIFICATION_NOT_FOUND", "알림을 찾을 수 없습니다."),
     NOTIFICATION_READ_FORBIDDEN(403, "NOTIFICATION_READ_FORBIDDEN", "알림을 읽을 권한이 없습니다."),
+
+    INVALID_FILE(400, "INVALID_FILE", "유효하지 않은 파일입니다."),
 
     // Feedback Template
     FEEDBACK_TEMPLATE_NOT_FOUND(404, "FEEDBACK_TEMPLATE_NOT_FOUND", "피드백 템플릿을 찾을 수 없습니다."),

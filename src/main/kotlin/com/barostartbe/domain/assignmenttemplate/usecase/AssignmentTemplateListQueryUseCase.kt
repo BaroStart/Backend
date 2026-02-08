@@ -42,7 +42,7 @@ class AssignmentTemplateListQueryUseCase(
                 id = requireNotNull(template.id),
                 subject = template.subject,
                 name = template.name,
-                description = template.description,
+                description = template.description ?: "",
                 fileNames = fileMap[template.id]
                     ?.map { requireNotNull(it.fileName) }
                     ?: emptyList()

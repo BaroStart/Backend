@@ -31,9 +31,7 @@ class MenteeBadgeCommandUseCase(
     private val sendNotificationUseCase: SendNotificationUseCase
 ) {
     fun updateBadgeForMentee(menteeId: Long) {
-        val mentee = menteeRepository.findByIdOrNull(menteeId)
-            ?: throw ServiceException(ErrorCode.MENTEE_NOT_FOUND)
-
+        val mentee = menteeRepository.findByIdOrNull(menteeId) ?: throw ServiceException(ErrorCode.MENTEE_NOT_FOUND)
         val acquiredBadgeIds = menteeBadgeMappingRepository.findAllByMentee_id(menteeId)
             .mapNotNull { it.badge.id }
             .toSet()
@@ -64,6 +62,7 @@ class MenteeBadgeCommandUseCase(
                 val toDoCount = toDoQueryUseCase.getCompletedOver25MinutesCount(menteeId)
                 (assignmentCount + toDoCount) >= 20
             }
+
             "아침 루틴" -> {
                 // TODO: 구현 (AssignmentCount 로직 추가 필요)
                 val assignmentCount = 0
