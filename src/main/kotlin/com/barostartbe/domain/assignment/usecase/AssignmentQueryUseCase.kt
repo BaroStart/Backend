@@ -4,12 +4,10 @@ import com.barostartbe.domain.assignment.dto.response.AssignmentFileRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeDetailRes
 import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeListRes
 import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
-import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
 import com.barostartbe.domain.assignment.entity.enum.Subject
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
-import com.barostartbe.domain.objectstorage.usecase.GetPreAuthenticatedUrl
 import com.barostartbe.global.annotation.QueryUseCase
 import com.barostartbe.global.error.exception.ServiceException
 import com.barostartbe.global.response.type.ErrorCode
@@ -91,7 +89,7 @@ class AssignmentQueryUseCase(
             title = assignment.title,
             subject = assignment.subject,
             dueDate = assignment.dueDate,
-            goal = assignment.goalText,
+            templateName = assignment.templateName,
             content = assignment.content,
             seolStudyContext = assignment.seolStudyContext,
             materials = materials,
