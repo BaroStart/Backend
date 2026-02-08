@@ -56,6 +56,12 @@ enum class ErrorCode(
 
     INVALID_FILE(400, "INVALID_FILE", "유효하지 않은 파일입니다."),
 
+    // Feedback
+    FEEDBACK_NOT_FOUND(404, "FEEDBACK_NOT_FOUND", "피드백을 찾을 수 없습니다."),
+
+    FEEDBACK_ALREADY_EXISTS(400, "FEEDBACK_ALREADY_EXISTS", "이미 피드백이 존재합니다."),
+
+
     // Feedback Template
     FEEDBACK_TEMPLATE_NOT_FOUND(404, "FEEDBACK_TEMPLATE_NOT_FOUND", "피드백 템플릿을 찾을 수 없습니다."),
 
