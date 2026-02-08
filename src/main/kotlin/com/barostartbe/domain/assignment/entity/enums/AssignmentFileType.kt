@@ -1,4 +1,4 @@
-package com.barostartbe.domain.assignment.entity.enum
+package com.barostartbe.domain.assignment.entity.enums
 
 enum class AssignmentFileType {
     MATERIAL,           // 멘토가 등록한 학습자료

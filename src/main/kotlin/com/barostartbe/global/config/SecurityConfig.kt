@@ -57,8 +57,6 @@ class SecurityConfig(
             "/api/v1/assignments/**",
             "/api/v1/storages/**",
             "/api/v1/files/**"
-
-
         )
 
         http {
@@ -86,7 +84,8 @@ class SecurityConfig(
                 authorize ("/admin/**", hasRole("ADMIN"))
 
                 // default
-                authorize(anyRequest, authenticated)
+//                authorize(anyRequest, authenticated)
+                authorize(anyRequest, permitAll)
             }
         }
 

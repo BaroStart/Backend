@@ -1,8 +1,8 @@
 package com.barostartbe.domain.assignment.entity
 
 import com.barostartbe.domain.assignment.dto.request.AssignmentCreateReq
-import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.assignment.error.AssignmentFeedbackedException
 import com.barostartbe.domain.assignment.error.AssignmentNotSubmittedException
 import com.barostartbe.domain.mentor.entity.Mentor

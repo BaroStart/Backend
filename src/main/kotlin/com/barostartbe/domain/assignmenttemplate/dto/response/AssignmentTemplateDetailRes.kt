@@ -1,6 +1,6 @@
 package com.barostartbe.domain.assignmenttemplate.dto.response
 
-import com.barostartbe.domain.assignment.entity.enum.Subject
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import io.swagger.v3.oas.annotations.media.Schema
 
 

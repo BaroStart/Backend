@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.media.Schema
 @Schema(description = "할 일 응답 DTO")
 data class ToDoRes(
 
+    @Schema(description = "할 일 식별자", example = "1")
+    val id: Long,
+
     @Schema(description = "할 일 제목", example = "국어 문제 풀기")
     val title: String,
 
@@ -22,6 +25,7 @@ data class ToDoRes(
     companion object {
         fun from(entity: ToDo, timeList: List<ToDoTime>): ToDoRes {
             return ToDoRes(
+                id = entity.id!!,
                 title = entity.title,
                 status = entity.status,
                 timeList = timeList.map {
