@@ -4,7 +4,6 @@ import com.barostartbe.domain.assignment.entity.enum.Subject
 
 // 과제 템플릿 목표별 조회 응답 DTO (과제 생성시 사용)
 data class AssignmentTemplateByGoalRes(
-    val goalId: Long,
     val goalName: String,
     val subject: Subject,
     val templates: List<TemplateRes>

@@ -29,5 +29,20 @@ data class AssignmentTemplateCreateReq(
 
     @field:NotBlank
     @Schema(description = "과제 내용(과제 content로 복사)", requiredMode = Schema.RequiredMode.REQUIRED)
-    val content: String
-)
+    val content: String,
+
+    // 과제 템플릿에 포함될 파일 목록
+    @Schema(description = "과제 템플릿에 포함될 파일 목록")
+    val files: List<AssignmentTemplateFileReq> = emptyList()
+    ) {
+        data class AssignmentTemplateFileReq(
+            @Schema(description = "파일명", example = "chapter1.pdf")
+            val fileName: String,
+
+            @Schema(
+                description = "Object Storage 파일 URL",
+                example = "https://xxx.objectstorage.ap-chuncheon-1.oci.customer-oci.com/..."
+            )
+            val url: String
+        )
+    }

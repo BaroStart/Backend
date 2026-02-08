@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema
 @Schema(description = "과제 템플릿 목록 조회 응답")
 data class AssignmentTemplateListRes(
 
+    @Schema(description = "과제 템플릿 ID", example = "1")
+    val id: Long,
+
     @Schema(description = "과목", example = "MATH")
     val subject: Subject,
 
