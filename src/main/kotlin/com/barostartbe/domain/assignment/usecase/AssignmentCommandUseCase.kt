@@ -72,6 +72,21 @@ class AssignmentCommandUseCase(
             )
         }
 
+        val sendNotificationRequest = SendNotificationRequest(
+            receiverId = mentee.id!!,
+            title = String.format(
+                Type.NEW_ASSIGNMENT.titleFormat
+            ),
+            message = String.format(
+                Type.NEW_ASSIGNMENT.messageFormat,
+                mentor.name,
+                assignment.subject.name,
+                assignment.title
+            )
+        )
+
+        sendNotificationUseCase.execute(sendNotificationRequest)
+
         return AssignmentCreateRes.from(assignment)
     }
 
