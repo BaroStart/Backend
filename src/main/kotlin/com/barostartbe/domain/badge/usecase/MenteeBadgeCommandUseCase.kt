@@ -47,7 +47,7 @@ class MenteeBadgeCommandUseCase(
                 }
 
                 "7일 연속 출석" -> {
-                    if (accessLogQueryUseCase.getMaxConsecutiveDays(menteeId) >= 7) {
+                    if (accessLogQueryUseCase.getCurrentConsecutiveDays(menteeId) >= 7) {
                         menteeBadgeMappingRepository.save(
                             MenteeBadgeMapping(mentee, badge)
                         )
@@ -55,7 +55,7 @@ class MenteeBadgeCommandUseCase(
                 }
 
                 "30일 연속 출석" -> {
-                    if (accessLogQueryUseCase.getMaxConsecutiveDays(menteeId) >= 30) {
+                    if (accessLogQueryUseCase.getCurrentConsecutiveDays(menteeId) >= 30) {
                         menteeBadgeMappingRepository.save(
                             MenteeBadgeMapping(mentee, badge)
                         )

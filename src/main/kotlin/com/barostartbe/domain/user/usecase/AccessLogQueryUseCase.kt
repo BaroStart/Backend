@@ -7,5 +7,5 @@ import com.barostartbe.global.annotation.QueryUseCase
 class AccessLogQueryUseCase(
     private val accessLogRepository: AccessLogRepository
 ) {
-    fun getMaxConsecutiveDays(menteeId: Long): Long = accessLogRepository.findMaxConsecutiveDays(menteeId)
+    fun getCurrentConsecutiveDays(menteeId: Long): Long = accessLogRepository.findCurrentConsecutiveDays(menteeId)
 }

@@ -11,7 +11,7 @@ interface AccessLogRepository : JpaRepository<AccessLog, Long> {
     @Query(value = """
         SELECT COALESCE(MAX(streak), 0)
         FROM (
-            SELECT COUNT(*) as streak
+            SELECT COUNT(*) as streak, MAX(log_date) as last_date
             FROM (
                 SELECT DISTINCT DATE(created_at) as log_date,
                        DENSE_RANK() OVER (ORDER BY DATE(created_at)) as rnk
@@ -20,6 +20,8 @@ interface AccessLogRepository : JpaRepository<AccessLog, Long> {
             ) t
             GROUP BY DATE_SUB(log_date, INTERVAL rnk DAY)
         ) streaks
+        WHERE last_date = CURRENT_DATE
     """, nativeQuery = true)
-    fun findMaxConsecutiveDays(@Param("userId") userId: Long): Long
+    fun findCurrentConsecutiveDays(@Param("userId") userId: Long): Long
 }
+
