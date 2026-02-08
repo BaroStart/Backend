@@ -5,6 +5,7 @@ import com.barostartbe.domain.assignment.entity.enum.AssignmentStatus
 import com.barostartbe.domain.assignment.entity.enum.Subject
 import com.barostartbe.domain.assignment.error.AssignmentFeedbackedException
 import com.barostartbe.domain.assignment.error.AssignmentNotSubmittedException
+import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplate
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.global.common.entity.BaseEntity
@@ -24,8 +25,11 @@ class Assignment(
     val mentee: Mentee,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "goal_id", nullable = false)
-    val assignmentGoal: AssignmentGoal,
+    @JoinColumn(name = "template_id")
+    val assignmentTemplate: AssignmentTemplate? = null,
+
+    @Column(name = "goal_text", columnDefinition = "TEXT", nullable = false)
+    val goalText: String,
 
     @Column(nullable = false, length = 100)
     val title: String,
@@ -104,13 +108,15 @@ class Assignment(
         fun create(
             mentor: Mentor,
             mentee: Mentee,
-            assignmentGoal: AssignmentGoal,
+            assignmentTemplate: AssignmentTemplate?,
+            goalText: String,
             req: AssignmentCreateReq
         ): Assignment =
             Assignment(
                 mentor = mentor,
                 mentee = mentee,
-                assignmentGoal = assignmentGoal,
+                assignmentTemplate = assignmentTemplate,
+                goalText = goalText,
                 title = req.title,
                 subject = req.subject,
                 dueDate = req.dueDate,

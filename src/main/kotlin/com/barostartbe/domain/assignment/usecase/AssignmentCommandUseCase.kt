@@ -7,11 +7,11 @@ import com.barostartbe.domain.assignment.dto.response.AssignmentCreateRes
 import com.barostartbe.domain.assignment.entity.enum.AssignmentFileType
 import com.barostartbe.domain.assignment.entity.Assignment
 import com.barostartbe.domain.assignment.entity.AssignmentFile
-import com.barostartbe.domain.assignment.entity.AssignmentGoal
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
-import com.barostartbe.domain.assignment.repository.AssignmentGoalRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
+import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplate
+import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateRepository
 import com.barostartbe.domain.mentee.repository.MenteeRepository
 import com.barostartbe.domain.mentor.repository.MentorRepository
 import com.barostartbe.domain.objectstorage.usecase.GetPreAuthenticatedUrl
@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 class AssignmentCommandUseCase(
     private val assignmentRepository: AssignmentRepository,
     private val assignmentFileRepository: AssignmentFileRepository,
-    private val assignmentGoalRepository: AssignmentGoalRepository,
+    private val assignmentTemplateRepository: AssignmentTemplateRepository,
     private val mentorRepository: MentorRepository,
     private val menteeRepository: MenteeRepository,
     private val mentorMenteeMappingRepository: MentorMenteeMappingRepository,
@@ -46,16 +46,24 @@ class AssignmentCommandUseCase(
             ?: throw ServiceException(ErrorCode.UNMATCHED_PAIR)
 
         // 과제 목표 조회
-        val assignmentGoal: AssignmentGoal =
-            assignmentGoalRepository.findById(req.goalId!!)
-                .orElseThrow { ServiceException(ErrorCode.NOT_FOUND) }
+        val assignmentTemplate: AssignmentTemplate? =
+            req.templateId?.let {
+                assignmentTemplateRepository.findById(it)
+                    .orElseThrow { ServiceException(ErrorCode.NOT_FOUND) }
+            }
 
+        // 과제 목표 텍스트 결정
+        val goalText: String =
+            assignmentTemplate?.name
+                ?: req.goalText
+                ?: throw ServiceException(ErrorCode.INVALID_REQUEST)
 
         val assignment = assignmentRepository.save(
             Assignment.create(
                 mentor = mentor,
                 mentee = mentee,
-                assignmentGoal = assignmentGoal,
+                assignmentTemplate = assignmentTemplate,
+                goalText = goalText,
                 req = req
             )
         )
