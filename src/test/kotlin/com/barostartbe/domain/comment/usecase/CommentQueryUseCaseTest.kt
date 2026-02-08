@@ -95,8 +95,16 @@ class CommentQueryUseCaseTest : DescribeSpec({
             val comment = Comment(mentee = mentee, content = "parent")
             val mentorResponder = createMentor(loginId = "mentor2", nickname = "mentor2", name = "Mentor2")
             val menteeResponder = mentee
-            val subCommentA = SubComment(comment = comment, user = mentorResponder, content = "reply-mentor")
-            val subCommentB = SubComment(comment = comment, user = menteeResponder, content = "reply-mentee")
+            val subCommentA = mockk<SubComment>()
+            val subCommentB = mockk<SubComment>()
+            every { subCommentA.id } returns 1L
+            every { subCommentA.user } returns mentorResponder
+            every { subCommentA.content } returns "reply-mentor"
+            every { subCommentA.comment } returns comment
+            every { subCommentB.id } returns 2L
+            every { subCommentB.user } returns menteeResponder
+            every { subCommentB.content } returns "reply-mentee"
+            every { subCommentB.comment } returns comment
 
             every { commentRepository.findByIdOrNull(commentId) } returns comment
             every { subCommentRepository.findAllByComment(comment) } returns listOf(subCommentA, subCommentB)
