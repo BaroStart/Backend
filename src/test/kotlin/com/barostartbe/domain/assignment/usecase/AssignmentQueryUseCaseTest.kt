@@ -2,6 +2,7 @@ package com.barostartbe.domain.assignment.usecase
 
 import com.barostartbe.domain.assignment.entity.Assignment
 import com.barostartbe.domain.assignment.entity.enums.AssignmentFileType
+import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository

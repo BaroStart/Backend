@@ -87,7 +87,8 @@ class SecurityConfig(
                 authorize ("/admin/**", hasRole("ADMIN"))
 
                 // default
-                authorize(anyRequest, authenticated)
+//                authorize(anyRequest, authenticated)
+                authorize(anyRequest, permitAll)
             }
         }
 

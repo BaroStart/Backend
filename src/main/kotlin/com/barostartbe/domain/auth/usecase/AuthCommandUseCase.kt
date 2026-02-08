@@ -4,9 +4,11 @@ import com.barostartbe.domain.auth.dto.LoginRequestDto
 import com.barostartbe.domain.auth.dto.SignupRequestDto
 import com.barostartbe.domain.auth.dto.SignupResponseDto
 import com.barostartbe.domain.auth.dto.TokenPairResponseDto
+import com.barostartbe.domain.badge.usecase.MenteeBadgeCommandUseCase
 import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.user.entity.AccessLog
+import com.barostartbe.domain.user.entity.Role
 import com.barostartbe.domain.user.repository.AccessLogRepository
 import com.barostartbe.domain.user.repository.UserRepository
 import com.barostartbe.global.annotation.CommandUseCase
@@ -20,13 +22,14 @@ class AuthCommandUseCase(
     val authQueryUseCase: AuthQueryUseCase,
     val userRepository: UserRepository,
     val accessLogRepository: AccessLogRepository,
-    val passwordEncoder: PasswordEncoder
+    val passwordEncoder: PasswordEncoder,
+    val menteeBadgeCommandUseCase: MenteeBadgeCommandUseCase,
 ) {
-    fun createUser(request: SignupRequestDto): SignupResponseDto{
+    fun createUser(request: SignupRequestDto): SignupResponseDto {
         if (userRepository.existsUserByLoginId(request.loginId)) {
             throw ServiceException(ErrorCode.DUPLICATED_LOGIN_ID)
         }
-        val user = when(request.joinType){
+        val user = when (request.joinType) {
             "MENTOR" -> Mentor.from(request)
             "MENTEE" -> Mentee.from(request)
             else -> throw ServiceException(ErrorCode.BAD_PARAMETER)
@@ -46,10 +49,14 @@ class AuthCommandUseCase(
 
         saveAccessLog(user.id!!)
 
+        if (user.role == Role.MENTEE) {
+            menteeBadgeCommandUseCase.updateBadgeForMentee(user.id)
+        }
+
         return authQueryUseCase.generateTokenPairAndSaveRefreshTokenInRedis(user.loginId!!)
     }
 
-    fun saveAccessLog(userId: Long){
+    fun saveAccessLog(userId: Long) {
         accessLogRepository.save(AccessLog.of(userId))
     }
 }
