@@ -1,7 +1,7 @@
 package com.barostartbe.domain.assignmenttemplate.usecase
 
 import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplate
-import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateFileRepository
+import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateLearningResourceRepository
 import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateRepository
 import com.barostartbe.domain.mentor.entity.Mentor
 import io.kotest.core.spec.style.DescribeSpec
@@ -12,11 +12,11 @@ import java.util.*
 class AssignmentTemplateDeleteUseCaseTest : DescribeSpec({
 
     val assignmentTemplateRepository = mockk<AssignmentTemplateRepository>(relaxed = true)
-    val assignmentTemplateFileRepository = mockk<AssignmentTemplateFileRepository>(relaxed = true)
+    val assignmentTemplateLearningResourceRepository = mockk<AssignmentTemplateLearningResourceRepository>(relaxed = true)
 
     val useCase = AssignmentTemplateDeleteUseCase(
         assignmentTemplateRepository,
-        assignmentTemplateFileRepository
+        assignmentTemplateLearningResourceRepository
     )
 
     beforeEach {
@@ -41,7 +41,7 @@ class AssignmentTemplateDeleteUseCaseTest : DescribeSpec({
             } returns Optional.of(template)
 
             every {
-                assignmentTemplateFileRepository.deleteAllByAssignmentTemplate(template)
+                assignmentTemplateLearningResourceRepository.deleteAllByAssignmentTemplate(template)
             } just Runs
 
             every {
