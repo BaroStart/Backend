@@ -25,7 +25,7 @@ class SendNotificationUseCase(
         val notification = Notification.of(
             title = request.title,
             message = request.message,
-            type = Type.ETC,
+            type = request.type ?: Type.ETC,
             receiver = receiver
         )
         notificationRepository.save(notification)
@@ -33,7 +33,7 @@ class SendNotificationUseCase(
         val sseEvent = SseEvent(
             topic = "user_${receiver.id}",
             event = "notification",
-            data = request
+            data = notification
         )
         ssePublishUseCase.publishToTopic(sseEvent.topic!!, sseEvent)
     }

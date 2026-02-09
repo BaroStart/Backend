@@ -1,5 +1,6 @@
 package com.barostartbe.domain.notification.dto.request
 
+import com.barostartbe.domain.notification.entity.enums.Type
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 
@@ -15,5 +16,8 @@ data class SendNotificationRequest(
 
     @Schema(description = "알림 메시지", example = "개별 알림 내용입니다.")
     @NotBlank(message = "메시지는 필수입니다")
-    val message: String
+    val message: String,
+
+    @Schema(description = "알림 타입 (기본 ETC)", example = "ETC")
+    val type: Type?
 )

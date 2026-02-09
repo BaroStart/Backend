@@ -5,6 +5,7 @@ import com.barostartbe.domain.feedback.entity.Feedback
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Optional
 
@@ -18,6 +19,20 @@ interface FeedbackRepository : JpaRepository<Feedback, Long> {
 
     // 과제 ID 목록 기준 피드백 전체 조회
     fun findAllByAssignmentIdIn(assignmentIds: List<Long>): List<Feedback>
+
+    @Query(
+        """
+        SELECT f FROM Feedback f 
+        JOIN f.assignment a 
+        WHERE a.mentee.id = :menteeId 
+        AND DATE(f.createdAt) BETWEEN :startDate AND :endDate
+        """
+    )
+    fun findAllByMenteeIdAndCreatedAtBetween(
+        @Param("menteeId") menteeId: Long,
+        @Param("startDate") startDate: LocalDate,
+        @Param("endDate") endDate: LocalDate
+    ): List<Feedback>
 
     // [멘티] 오늘 작성된 피드백 요약 목록 조회
     @Query(

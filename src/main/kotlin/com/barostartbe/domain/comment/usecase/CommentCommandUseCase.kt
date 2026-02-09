@@ -43,6 +43,7 @@ class CommentCommandUseCase(
                     receiverId = mapping.mentor.id!!,
                     title = Type.NEW_COMMENT.titleFormat,
                     message = Type.NEW_COMMENT.messageFormat.format(user.name),
+                    type = Type.NEW_COMMENT
                 )
             )
         }
@@ -80,6 +81,7 @@ class CommentCommandUseCase(
                         receiverId = mapping.mentor.id!!,
                         title = Type.NEW_COMMENT.titleFormat,
                         message = Type.NEW_COMMENT.messageFormat.format(user.name),
+                        type = Type.NEW_COMMENT
                     )
                 )
             }
@@ -91,6 +93,7 @@ class CommentCommandUseCase(
                     receiverId = comment.mentee!!.id!!,
                     title = Type.NEW_COMMENT.titleFormat,
                     message = Type.NEW_COMMENT.messageFormat.format(user.name),
+                    type = Type.NEW_COMMENT
                 )
             )
         }

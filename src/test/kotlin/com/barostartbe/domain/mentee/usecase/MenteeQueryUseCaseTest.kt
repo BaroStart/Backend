@@ -5,8 +5,10 @@ import com.barostartbe.domain.assignment.entity.Assignment
 import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
 import com.barostartbe.domain.comment.repository.CommentRepository
+import com.barostartbe.domain.feedback.repository.FeedbackRepository
 import com.barostartbe.domain.mentee.repository.MenteeRepository
 import com.barostartbe.domain.mentor.repository.MentorRepository
+import com.barostartbe.domain.overall.repository.OverallRepository
 import com.barostartbe.domain.todo.entity.ToDo
 import com.barostartbe.domain.todo.entity.enums.Status
 import com.barostartbe.domain.todo.repository.ToDoRepository
@@ -29,6 +31,8 @@ class MenteeQueryUseCaseTest : DescribeSpec({
     val assignmentRepository = mockk<AssignmentRepository>()
     val toDoRepository = mockk<ToDoRepository>()
     val commentRepository = mockk<CommentRepository>()
+    val feedbackRepository = mockk<FeedbackRepository>()
+    val overallRepository = mockk<OverallRepository>()
 
     val menteeQueryUseCase = MenteeQueryUseCase(
         mentorRepository,
@@ -38,7 +42,9 @@ class MenteeQueryUseCaseTest : DescribeSpec({
         assignmentRepository,
         redisTemplate,
         toDoRepository,
-        commentRepository
+        commentRepository,
+        feedbackRepository,
+        overallRepository
     )
 
     describe("MenteeQueryUseCase") {
