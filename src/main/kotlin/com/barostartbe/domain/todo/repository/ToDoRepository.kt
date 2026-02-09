@@ -1,5 +1,6 @@
 package com.barostartbe.domain.todo.repository
 
+import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.todo.entity.ToDo
 import com.barostartbe.domain.todo.entity.enums.Status
 import org.springframework.data.jpa.repository.JpaRepository
@@ -22,6 +23,8 @@ interface ToDoRepository : JpaRepository<ToDo, Long> {
         @Param("menteeId") menteeId: Long,
         @Param("date") date: LocalDate
     ): List<ToDo>
+
+    fun findAllByMentee(mentee: Mentee): List<ToDo>
 
     @Query(
         """
@@ -96,4 +99,6 @@ interface ToDoRepository : JpaRepository<ToDo, Long> {
         @Param("startTime") startTime: LocalDateTime,
         @Param("endTime") endTime: LocalDateTime
     ): Boolean
+
+    fun findAllByMenteeAndCreatedAtAfter(mentee: Mentee, checkDate: LocalDateTime): List<ToDo>
 }
