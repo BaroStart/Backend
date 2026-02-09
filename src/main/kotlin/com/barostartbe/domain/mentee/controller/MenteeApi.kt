@@ -6,7 +6,10 @@ import com.barostartbe.domain.mentee.dto.GetMenteeInfoResponseDto
 import com.barostartbe.domain.mentee.dto.TaskInfoResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeBasicInfoResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeDashboardResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeMyPageResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeTotalStudyTimeCalendarResponseDto
 import com.barostartbe.domain.mentee.dto.GetMentoMainDashboardResponseDto
+import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.global.response.ApiResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -56,11 +59,23 @@ interface MenteeApi {
     fun getMenteeDetailsDashboard(
         @PathVariable menteeId: Long,
         @RequestParam searchType: String,
-        @RequestParam date: String?,
+        @RequestParam date: String,
         @AuthenticationPrincipal mentor: User
     ) : ResponseEntity<ApiResponse<GetMenteeDashboardResponseDto>>
 
     @GetMapping("/mentor/{mentorId}/dashboard")
     @Operation(summary = "맨토 대시보드", description = "멘토 페이지에서 멘토 대시보드")
     fun getMentorMainDashboard(@PathVariable mentorId: Long) : ResponseEntity<ApiResponse<GetMentoMainDashboardResponseDto>>
+
+
+    @GetMapping("/mentee/total-time-calendar")
+    @Operation(summary = "멘티 각 날짜별 공부시간 캘린더")
+    fun getMenteeTotalTimeCalendar(
+        @AuthenticationPrincipal mentee: User,
+        @RequestParam date: String
+    ): ResponseEntity<ApiResponse<List<GetMenteeTotalStudyTimeCalendarResponseDto>>>
+
+    @GetMapping("/mentee/main-page")
+    fun getMenteeMainPage(@AuthenticationPrincipal mentee: User): ResponseEntity<ApiResponse<GetMenteeMyPageResponseDto>>
 }
+

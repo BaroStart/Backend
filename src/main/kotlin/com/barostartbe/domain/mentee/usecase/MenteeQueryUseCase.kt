@@ -5,13 +5,31 @@ import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
 import com.barostartbe.domain.mentee.dto.CalendarResponseDto
 import com.barostartbe.domain.assignment.entity.Assignment
+import com.barostartbe.domain.assignment.entity.enums.Subject
+import com.barostartbe.domain.badge.repository.BadgeRepository
+import com.barostartbe.domain.badge.repository.MenteeBadgeMappingRepository
 import com.barostartbe.domain.comment.repository.CommentRepository
+import com.barostartbe.domain.mentee.dto.GetMenteeCommentDashboardResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeDashboardResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeFeedbackDashboardResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeBasicInfoResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeInfoResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeMyPageResponseDto
+import com.barostartbe.domain.mentee.dto.TaskInfoResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeNotCompletedAssignmentResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeTodoDashboardResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeTotalStudyTimeCalendarResponseDto
+import com.barostartbe.domain.mentee.dto.GetMentoMainDashboardResponseDto
+import com.barostartbe.domain.mentee.dto.GetRecentSubmittedAssignmentResponseDto
+import com.barostartbe.domain.mentee.dto.GetTotalMenteeInfoResponsesDto
+import com.barostartbe.domain.mentee.dto.GetWeeklyCompleteRateBySubjectResponseDto
 import com.barostartbe.domain.feedback.repository.FeedbackRepository
 import com.barostartbe.domain.mentee.dto.*
 import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.mentee.repository.MenteeRepository
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.mentor.repository.MentorRepository
+import com.barostartbe.domain.todo.entity.ToDo
 import com.barostartbe.domain.overall.repository.OverallRepository
 import com.barostartbe.domain.todo.repository.ToDoRepository
 import com.barostartbe.domain.user.repository.AccessLogRepository
@@ -37,7 +55,8 @@ class MenteeQueryUseCase(
     private val toDoRepository: ToDoRepository,
     private val commentRepository: CommentRepository,
     private val feedbackRepository: FeedbackRepository,
-    private val overallRepository: OverallRepository
+    private val overallRepository: OverallRepository,
+    private val menteeBadgeMappingRepository: MenteeBadgeMappingRepository
 ) {
     fun getMenteeInfo(mentorId: Long, menteeId: Long): GetMenteeBasicInfoResponseDto {
 
@@ -76,36 +95,116 @@ class MenteeQueryUseCase(
         )
     }
 
-    fun getMenteeDashboard(mentor: Mentor, menteeId: Long, searchType: String, date: String?): GetMenteeDashboardResponseDto{
+    fun getMenteeMyPage(mentee: Mentee): GetMenteeMyPageResponseDto {
+
+        val userName = mentee.name!!
+
+        val weeklyTotalAssignmentCount = getWeeklyTotalAssignments(mentee).count()
+        val weeklyTotalCompleteAssignmentCount = getWeeklyTotalCompletedAssignments(mentee).count()
+        val weeklyTotalCompleteAssignmentRate = ((weeklyTotalCompleteAssignmentCount.toFloat() / weeklyTotalAssignmentCount) / 100).toInt()
+
+        val weeklyTotalStudyTimeTotalMinutes = getWeeklyTotalStudyTime(mentee)
+        val weeklyTotalStudyTimeHour = (weeklyTotalStudyTimeTotalMinutes / 60)
+        val weeklyTotalStudyTimeMinute = weeklyTotalStudyTimeTotalMinutes - 60 * weeklyTotalStudyTimeHour
+
+        val weeklyTotalCompleteRateGroupBySubject = getWeeklyCompletedAssignmentRateBySubject(mentee)
+
+        val totalBadgeCount = menteeBadgeMappingRepository.findAllByMentee_id(mentee.id!!).size
+
+        return GetMenteeMyPageResponseDto(
+            name = userName,
+            weeklyTotalAssignmentCount = weeklyTotalAssignmentCount,
+            weeklyTotalCompletedAssignmentCount = weeklyTotalCompleteAssignmentCount,
+            weeklyCompleteRate = weeklyTotalCompleteAssignmentRate,
+            weeklyTotalStudyTimeHour = weeklyTotalStudyTimeHour,
+            weeklyTotalStudyTimeMinute = weeklyTotalStudyTimeMinute,
+            weeklyCompleteRateBySubject = weeklyTotalCompleteRateGroupBySubject,
+            totalBadgeCount = totalBadgeCount,
+        )
+
+    }
+
+    fun getWeeklyCompletedAssignmentRateBySubject(mentee: Mentee) : List<GetWeeklyCompleteRateBySubjectResponseDto>{
+        val weeklyTotalAssignmentCountGroupBySubject = getWeeklyTotalAssignments(mentee)
+            .groupBy { it.subject }
+            .map { it.key to it.value.count() }
+            .toMap()
+
+        val weeklyTotalCompletedAssignmentCountGroupBySubject = getWeeklyTotalAssignments(mentee)
+            .groupBy { it.subject }
+            .map { it.key to it.value.filter { it.status != AssignmentStatus.NOT_SUBMIT }.count() }
+            .toMap()
+
+        return Subject.entries.map { subject ->
+            GetWeeklyCompleteRateBySubjectResponseDto(
+                subject = subject.name,
+                weeklyCompleteRateBySubject = if (weeklyTotalAssignmentCountGroupBySubject.containsKey(subject)){
+                    weeklyTotalCompletedAssignmentCountGroupBySubject.getOrDefault(subject, 0) /
+                            weeklyTotalAssignmentCountGroupBySubject[subject]!!
+                }
+                else 0
+            )
+        }
+    }
+
+    fun getWeeklyTotalStudyTime(mentee: Mentee): Int {
+        val weeklyTotalStudyTimeForAssignment = getWeeklyTotalAssignments(mentee)
+            .filter { it.status != AssignmentStatus.NOT_SUBMIT }
+            .sumOf { it.endTime!!.toEpochSecond(ZoneOffset.UTC) - it.startTime!!.toEpochSecond(ZoneOffset.UTC) }
+        val weeklyTotalStudyTimeForTodo =getWeeklyTotalDodos(mentee)
+            .sumOf { it.endTime!!.toEpochSecond(ZoneOffset.UTC) - it.startTime!!.toEpochSecond(ZoneOffset.UTC) }
+        return (weeklyTotalStudyTimeForTodo + weeklyTotalStudyTimeForAssignment / 60).toInt()
+    }
+
+    fun getWeeklyTotalAssignments(mentee: Mentee): List<Assignment>{
+        val startDate = LocalDate.now().minusDays(7).atStartOfDay()
+        val endDate = LocalDate.now().plusDays(1).atStartOfDay()
+        return assignmentRepository.findAllByMenteeAndDueDateBetween(mentee, startDate, endDate)
+    }
+
+    fun getWeeklyTotalDodos(mentee: Mentee) : List<ToDo>{
+        val startDate = LocalDate.now().minusDays(7).atStartOfDay()
+        val endDate = LocalDate.now().plusDays(1).atStartOfDay()
+        return toDoRepository.findAllByMenteeAndCreatedAtBetween(mentee, startDate, endDate)
+    }
+
+    fun getWeeklyTotalCompletedAssignments(mentee: Mentee): List<Assignment>{
+        return getWeeklyTotalAssignments(mentee)
+            .filter { it.status != AssignmentStatus.NOT_SUBMIT }
+    }
+
+    fun getMenteeDashboard(mentor: Mentor, menteeId: Long, searchType: String, date: String): GetMenteeDashboardResponseDto{
 
         val mentee = menteeRepository.findByIdOrNull(menteeId) ?: throw ServiceException(ErrorCode.USER_NOT_FOUND)
+        val checkDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
         return when (searchType){
-            "DAY" -> getMenteeDashboardByDate(mentor, mentee, date!!)
+            "DAY" -> getMenteeDashboardByDate(mentor, mentee, checkDate)
             "WEEK" -> {
-                val startDate = LocalDate.now().minusDays(7).atStartOfDay()
-                getMenteeDashboardAfterStartDate(mentor, mentee, startDate)
+                val startDate = checkDate.minusDays(8).atStartOfDay()
+                val endDate = checkDate.atStartOfDay()
+                getMenteeDashboardAfterStartDate(mentor, mentee, startDate, endDate)
             }
             "MONTH" -> {
-                val today = LocalDate.now()
-                val startDate = LocalDate.of(today.year, today.month, 1).atStartOfDay()
-                getMenteeDashboardAfterStartDate(mentor, mentee, startDate)
+                val startDate = LocalDate.of(checkDate.year, checkDate.month, 1).atStartOfDay()
+                val endDate = checkDate.withDayOfMonth(checkDate.lengthOfMonth() + 1).atStartOfDay()
+                getMenteeDashboardAfterStartDate(mentor, mentee, startDate, endDate)
             }
             else -> throw ServiceException(ErrorCode.BAD_PARAMETER)
         }
     }
 
-    fun getMenteeDashboardAfterStartDate(mentor: Mentor, mentee: Mentee, startDate: LocalDateTime): GetMenteeDashboardResponseDto{
+    fun getMenteeDashboardAfterStartDate(mentor: Mentor, mentee: Mentee, startDate: LocalDateTime, endDate: LocalDateTime): GetMenteeDashboardResponseDto{
 
-        val feedbacks = assignmentRepository.findAllByMentorAndMenteeAndSubmittedAtAfter(mentor, mentee, startDate)
+        val feedbacks = assignmentRepository.findAllByMentorAndMenteeAndSubmittedAtBetween(mentor, mentee, startDate, endDate)
             .filter { it.status != AssignmentStatus.NOT_SUBMIT }
             .map { GetMenteeFeedbackDashboardResponseDto.from(it) }
-        val notCompletedAssignments = assignmentRepository.findAllByMentorAndMenteeAndDueDateAfter(mentor, mentee, startDate)
+        val notCompletedAssignments = assignmentRepository.findAllByMentorAndMenteeAndDueDateBetween(mentor, mentee, startDate, endDate)
             .filter { it.status == AssignmentStatus.NOT_SUBMIT }
             .map { GetMenteeNotCompletedAssignmentResponseDto.from(it) }
-        val todoList = toDoRepository.findAllByMenteeAndCreatedAtAfter(mentee, startDate)
+        val todoList = toDoRepository.findAllByMenteeAndCreatedAtBetween(mentee, startDate, endDate)
             .map { GetMenteeTodoDashboardResponseDto.from(it) }
-        val comments = commentRepository.findAllByMenteeAndCreatedAtAfter(mentee, startDate)
+        val comments = commentRepository.findAllByMenteeAndCreatedAtBetween(mentee, startDate, endDate)
             .map { GetMenteeCommentDashboardResponseDto.from(it) }
 
         return GetMenteeDashboardResponseDto(
@@ -116,8 +215,8 @@ class MenteeQueryUseCase(
         )
     }
 
-    fun getMenteeDashboardByDate(mentor: Mentor, mentee: Mentee, date: String): GetMenteeDashboardResponseDto{
-        val checkDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    fun getMenteeDashboardByDate(mentor: Mentor, mentee: Mentee, checkDate: LocalDate): GetMenteeDashboardResponseDto{
+
         val feedbacks =  assignmentRepository.findAllByMentorIdAndMenteeIdAndSubmittedAt(mentor.id!!, mentee.id!!, checkDate)
             .filter { it.status != AssignmentStatus.NOT_SUBMIT }
             .map { GetMenteeFeedbackDashboardResponseDto.from(it) }
@@ -158,28 +257,33 @@ class MenteeQueryUseCase(
         return ((totalAssignmentTimeToSeconds + totalTodoTimeToSeconds) / (60 * 60)).toInt()
     }
 
-    fun getCalendarTotalStudyTime(mentee: Mentee) : Map<String, Int>{
+    fun getTotalStudyTimeCalendar(mentee: Mentee, date: String) : List<GetMenteeTotalStudyTimeCalendarResponseDto>{
         val result = mutableMapOf<String, Int>()
-        val assignmentMap: Map<String, Long> = assignmentRepository.findAllByMentee_Id(mentee.id!!)
+
+        val checkDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val startDate = checkDate.atStartOfDay()
+        val endDate = checkDate.withDayOfMonth(checkDate.lengthOfMonth() + 1).atStartOfDay()
+
+        val assignmentMap: Map<String, Long> = assignmentRepository.findAllByMenteeAndDueDateBetween(mentee, startDate, endDate)
             .filter { it.status != AssignmentStatus.NOT_SUBMIT }
             .groupBy { it.startTime!!.toLocalDate().toString() }
             .map { it.key to it.value.sumOf {
                 it.startTime!!.toEpochSecond(ZoneOffset.UTC) - it.endTime!!.toEpochSecond(ZoneOffset.UTC)
             } }
             .toMap()
-        val todoMap = toDoRepository.findAllByMentee(mentee)
+        val todoMap = toDoRepository.findAllByMenteeAndCreatedAtBetween(mentee, startDate, endDate)
             .groupBy { it.createdAt!!.toLocalDate().toString() }
             .map { it.key to it.value.sumOf {
                 it.endTime!!.toEpochSecond(ZoneOffset.UTC) - it.startTime!!.toEpochSecond(ZoneOffset.UTC)
             } }
             .toMap()
-        val today = LocalDate.now()
-        for (day in 1 .. today.dayOfMonth){
-            val date = LocalDate.of(today.year, today.month, day).toString()
+
+        for (day in 1 .. checkDate.dayOfMonth){
+            val date = LocalDate.of(checkDate.year, checkDate.month, day).toString()
             val totalStudyHours = ((assignmentMap.getOrDefault(date, 0) + todoMap.getOrDefault(date, 0)) / (60 * 60)).toInt()
             result[date] = totalStudyHours
         }
-        return result
+        return result.map { GetMenteeTotalStudyTimeCalendarResponseDto(it.key, it.value) }
     }
 
     fun getLastAccessTime(menteeId: Long): Int {
@@ -257,12 +361,12 @@ class MenteeQueryUseCase(
             .map { it.mentee }
             .map {
                 val menteeInfo: GetMenteeBasicInfoResponseDto = getMenteeInfo(mentor.id!!, it.id!!)
-                val completeRateForWeek: Int = getWeeklyCompletedAssignmentRate(mentor, it)
                 val waitFeedbackCount: Int = getWaitFeedbackCount(mentor, it)
                 val submittedAssignments: List<GetRecentSubmittedAssignmentResponseDto> = getSubmittedAssignmentsBeforeToday(mentor, it)
 
                 val weeklyAssignments: List<Assignment> = getWeeklyAssignments(mentor, it)
-                val weeklyCompletedAssignments: List<Assignment> = getWeeklyCompletedAssignments(weeklyAssignments)
+                val weeklyCompletedAssignments: List<Assignment> = getWeeklyCompletedAssignments(mentor, it)
+                val completeRateForWeek: Int = ((weeklyCompletedAssignments.count().toFloat() / weeklyAssignments.count()) / 100).toInt()
 
                 GetMenteeInfoResponseDto(
                     basicInfo = menteeInfo,
@@ -321,14 +425,10 @@ class MenteeQueryUseCase(
             .size
     }
 
-    fun getWeeklyCompletedAssignmentRate(mentor: Mentor, mentee: Mentee): Int{
-        val assignments = getWeeklyAssignments(mentor, mentee)
-        val completeAssignmentsCountForWeek = getWeeklyCompletedAssignments(assignments)
-        return ((completeAssignmentsCountForWeek.count().toFloat() / assignments.size) * 100).toInt()
-    }
 
-    fun getWeeklyCompletedAssignments(assignments: List<Assignment>):List<Assignment>{
-        return assignments.filter { it.status != AssignmentStatus.NOT_SUBMIT }
+    fun getWeeklyCompletedAssignments(mentor: Mentor, mentee: Mentee):List<Assignment>{
+        return getWeeklyAssignments(mentor, mentee)
+            .filter { it.status != AssignmentStatus.NOT_SUBMIT }
     }
 
     fun getWeeklyAssignments(mentor: Mentor, mentee: Mentee): List<Assignment>{
