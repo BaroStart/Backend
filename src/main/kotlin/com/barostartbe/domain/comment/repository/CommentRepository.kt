@@ -19,5 +19,5 @@ interface CommentRepository: JpaRepository<Comment, Long> {
     )
     fun findAllByMenteeIdAndCreatedAt(menteeId: Long, checkDate: LocalDate): List<Comment>
 
-    fun findAllByMenteeAndCreatedAtAfter(mentee: Mentee, checkDate: LocalDateTime): List<Comment>
+    fun findAllByMenteeAndCreatedAtBetween(mentee: Mentee, startDate: LocalDateTime, endDate: LocalDateTime): List<Comment>
 }

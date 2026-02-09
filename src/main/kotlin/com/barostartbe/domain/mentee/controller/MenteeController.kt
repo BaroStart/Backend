@@ -4,7 +4,10 @@ import com.barostartbe.domain.mentee.dto.CalendarResponseDto
 import com.barostartbe.domain.mentee.dto.TaskInfoResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeBasicInfoResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeDashboardResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeMyPageResponseDto
+import com.barostartbe.domain.mentee.dto.GetMenteeTotalStudyTimeCalendarResponseDto
 import com.barostartbe.domain.mentee.dto.GetMentoMainDashboardResponseDto
+import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.mentee.usecase.MenteeQueryUseCase
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.user.entity.User
@@ -53,7 +56,7 @@ class MenteeController(
     override fun getMenteeDetailsDashboard(
         menteeId: Long,
         searchType: String,
-        date: String?,
+        date: String,
         mentor: User
     ): ResponseEntity<ApiResponse<GetMenteeDashboardResponseDto>> {
         val response = menteeQueryUseCase.getMenteeDashboard(mentor as Mentor, menteeId, searchType, date)
@@ -62,4 +65,14 @@ class MenteeController(
 
     override fun getMentorMainDashboard(mentorId: Long): ResponseEntity<ApiResponse<GetMentoMainDashboardResponseDto>>
         = ApiResponse.success(SuccessCode.REQUEST_OK, menteeQueryUseCase.getMenteesTodayDetails(mentorId))
+
+    override fun getMenteeTotalTimeCalendar(
+        mentee: User,
+        date: String
+    ): ResponseEntity<ApiResponse<List<GetMenteeTotalStudyTimeCalendarResponseDto>>>
+        = ApiResponse.success(SuccessCode.REQUEST_OK, menteeQueryUseCase.getTotalStudyTimeCalendar(mentee as Mentee, date))
+
+    override fun getMenteeMainPage(mentee: User): ResponseEntity<ApiResponse<GetMenteeMyPageResponseDto>>
+        = ApiResponse.success(SuccessCode.REQUEST_OK, menteeQueryUseCase.getMenteeMyPage(mentee as Mentee))
+
 }

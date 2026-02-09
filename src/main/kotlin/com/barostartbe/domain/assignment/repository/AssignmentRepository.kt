@@ -125,11 +125,13 @@ interface AssignmentRepository : JpaRepository<Assignment, Long> {
 
     fun findAllByMentorAndMenteeAndDueDateBetween(mentor: Mentor, mentee: Mentee, startDate: LocalDateTime, endDate: LocalDateTime): List<Assignment>
 
-    fun findAllByMentorAndMenteeAndSubmittedAtAfter(mentor: Mentor, mentee: Mentee, checkDate: LocalDateTime): List<Assignment>
+    fun findAllByMentorAndMenteeAndSubmittedAtBetween(mentor: Mentor, mentee: Mentee, startDate: LocalDateTime, endDate: LocalDateTime): List<Assignment>
 
     fun findAllByMentorAndMenteeAndDueDateAfter(mentor: Mentor, mentee: Mentee, checkDate: LocalDateTime): List<Assignment>
 
     fun findAllByMenteeAndDueDateBefore(mentee: Mentee, checkDate: LocalDateTime): List<Assignment>
 
     fun findAllByMentorAndMenteeAndDueDateBefore(mentor: Mentor, mentee: Mentee, checkDate: LocalDateTime): List<Assignment>
+
+    fun findAllByMenteeAndDueDateBetween(mentee: Mentee, startDate: LocalDateTime, endDate: LocalDateTime): List<Assignment>
 }
