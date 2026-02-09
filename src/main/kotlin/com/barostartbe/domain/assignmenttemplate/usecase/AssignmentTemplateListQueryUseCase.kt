@@ -2,7 +2,7 @@ package com.barostartbe.domain.assignmenttemplate.usecase
 
 import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateListRes
-import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateFileRepository
+import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateLearningResourceRepository
 import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateRepository
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.global.annotation.QueryUseCase
@@ -10,7 +10,7 @@ import com.barostartbe.global.annotation.QueryUseCase
 @QueryUseCase
 class AssignmentTemplateListQueryUseCase(
     private val assignmentTemplateRepository: AssignmentTemplateRepository,
-    private val assignmentTemplateFileRepository: AssignmentTemplateFileRepository
+    private val assignmentTemplateLearningResourceRepository: AssignmentTemplateLearningResourceRepository
 ) {
 
     fun execute(
@@ -28,14 +28,13 @@ class AssignmentTemplateListQueryUseCase(
 
         if (templates.isEmpty()) return emptyList()
 
-        // 템플릿에 속한 파일 한 번에 조회
-        val files = assignmentTemplateFileRepository
+        val relations = assignmentTemplateLearningResourceRepository
             .findAllByAssignmentTemplateIn(templates)
 
-        // 템플릿 ID 기준으로 파일 그룹핑
-        val fileMap = files.groupBy {
+        val relationMap = relations.groupBy {
             requireNotNull(it.assignmentTemplate.id)
         }
+
 
         return templates.map { template ->
             AssignmentTemplateListRes(
@@ -43,9 +42,12 @@ class AssignmentTemplateListQueryUseCase(
                 subject = template.subject,
                 name = template.name,
                 description = template.description ?: "",
-                fileNames = fileMap[template.id]
-                    ?.map { requireNotNull(it.fileName) }
-                    ?: emptyList()
+                fileNames =
+                    relationMap[template.id]
+                        ?.map {
+                            it.learningResource.fileName
+                        }
+                        ?: emptyList()
             )
         }
     }

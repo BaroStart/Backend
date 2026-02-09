@@ -15,10 +15,10 @@ data class AssignmentTemplateByGoalRes(
         val description: String?,
         val title: String,
         val content: String?,
-        val files: List<TemplateFileRes>
+        val learningResources: List<TemplateLearningResourceRes>
     )
 
-    data class TemplateFileRes(
+    data class TemplateLearningResourceRes(
         val id: Long,
         val fileName: String,
         val url: String

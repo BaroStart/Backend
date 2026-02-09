@@ -1,8 +1,8 @@
 package com.barostartbe.domain.assignmenttemplate.usecase
 
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateDetailRes
-import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateFileRes
-import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateFileRepository
+import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateLearningResourceRes
+import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateLearningResourceRepository
 import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateRepository
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.global.annotation.QueryUseCase
@@ -12,7 +12,7 @@ import com.barostartbe.global.response.type.ErrorCode
 @QueryUseCase
 class AssignmentTemplateDetailQueryUseCase(
     private val assignmentTemplateRepository: AssignmentTemplateRepository,
-    private val assignmentTemplateFileRepository: AssignmentTemplateFileRepository
+    private val assignmentTemplateLearningResourceRepository: AssignmentTemplateLearningResourceRepository
 ) {
 
     fun execute(
@@ -24,8 +24,7 @@ class AssignmentTemplateDetailQueryUseCase(
         val template = assignmentTemplateRepository.findByIdAndMentor(templateId, mentor)
             ?: throw ServiceException(ErrorCode.ASSIGNMENT_TEMPLATE_NOT_FOUND)
 
-        // 템플릿에 속한 파일 전체 조회
-        val files = assignmentTemplateFileRepository
+        val relations = assignmentTemplateLearningResourceRepository
             .findAllByAssignmentTemplate(template)
 
         return AssignmentTemplateDetailRes(
@@ -35,10 +34,12 @@ class AssignmentTemplateDetailQueryUseCase(
             description = template.description ?: "",
             title = template.title,
             content = template.content ?: "",
-            files = files.map {
-                AssignmentTemplateFileRes(
-                    fileName = requireNotNull(it.fileName),
-                    url = requireNotNull(it.url)
+            files = relations.map {
+                val resource = it.learningResource
+                AssignmentTemplateLearningResourceRes(
+                    id = requireNotNull(resource.id),
+                    fileName = resource.fileName,
+                    url = resource.fileUrl
                 )
             }
         )
