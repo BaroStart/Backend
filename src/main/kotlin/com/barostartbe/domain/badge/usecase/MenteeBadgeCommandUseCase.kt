@@ -80,7 +80,8 @@ class MenteeBadgeCommandUseCase(
             SendNotificationRequest(
                 receiverId = mentee.id!!,
                 title = Type.NEW_BADGE.titleFormat,
-                message = Type.NEW_BADGE.messageFormat.format(badge.name)
+                message = Type.NEW_BADGE.messageFormat.format(badge.name),
+                type = Type.NEW_BADGE
             )
         )
     }

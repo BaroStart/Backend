@@ -6,6 +6,7 @@ import com.barostartbe.domain.feedback.dto.response.DailyFeedbackRes
 import com.barostartbe.domain.feedback.dto.response.FeedbackListItemRes
 import com.barostartbe.domain.feedback.dto.response.DailyFeedbackSummaryRes
 import com.barostartbe.domain.feedback.dto.response.MenteeFeedbackDetailRes
+import com.barostartbe.domain.feedback.entity.enums.FeedbackStatus
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.global.response.ApiResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -27,14 +28,16 @@ interface FeedbackApi {
 
     // [멘토] 피드백 목록 조회
     @GetMapping
-    @Operation(summary = "피드백 목록 조회", description = "멘토 기준으로 제출된 과제의 피드백 목록을 조회합니다.")
+    @Operation(summary = "[멘토] 피드백 목록 조회", description = "멘토 기준으로 제출된 과제의 피드백 목록을 조회합니다.")
     fun getListByMentor(
-        @AuthenticationPrincipal mentor: User): ResponseEntity<ApiResponse<List<FeedbackListItemRes>>>
+        @AuthenticationPrincipal mentor: User,
+        @RequestParam(required = false) status: FeedbackStatus?
+    ): ResponseEntity<ApiResponse<List<FeedbackListItemRes>>>
 
     // [멘토] 피드백 생성
     @PostMapping("/{assignmentId}")
     @Operation(
-        summary = "피드백 생성",
+        summary = "[멘토] 피드백 생성",
         description = "멘토가 제출된 과제에 대해 피드백을 작성합니다."
     )
     fun createFeedback(
@@ -47,7 +50,7 @@ interface FeedbackApi {
     // [멘티] 데일리 피드백 요약 목록 조회
     @GetMapping("/daily/summary")
     @Operation(
-        summary = "오늘의 피드백 요약 조회",
+        summary = "[멘티] 오늘의 피드백 요약 조회",
         description = "멘티 기준 오늘 받은 피드백 요약 목록을 조회합니다."
     )
     fun getDailyFeedbackSummaries(@AuthenticationPrincipal mentee: User):
@@ -56,7 +59,7 @@ interface FeedbackApi {
     // [멘티] 데일리 피드백 목록 조회
     @GetMapping("/daily")
     @Operation(
-        summary = "데일리 피드백 목록 조회",
+        summary = "[멘티] 데일리 피드백 목록 조회",
         description = "멘티 기준 오늘 받은 피드백 목록을 조회합니다. 과목 필터 가능"
     )
     fun getDailyFeedbacks(
@@ -68,7 +71,7 @@ interface FeedbackApi {
     // [멘티] 과제 기준 피드백 상세 조회
     @GetMapping("/{assignmentId}")
     @Operation(
-        summary = "멘티 피드백 상세 조회",
+        summary = "[멘티] 멘티 피드백 상세 조회",
         description = "멘티가 자신의 과제에 대한 피드백 상세 내용을 조회합니다."
     )
     fun getMenteeFeedbackDetail(

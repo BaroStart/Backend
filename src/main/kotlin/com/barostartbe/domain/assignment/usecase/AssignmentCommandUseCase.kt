@@ -84,7 +84,8 @@ class AssignmentCommandUseCase(
                 mentor.name,
                 assignment.subject.name,
                 assignment.title
-            )
+            ),
+            Type.NEW_ASSIGNMENT
         )
 
         sendNotificationUseCase.execute(sendNotificationRequest)
@@ -162,7 +163,8 @@ class AssignmentCommandUseCase(
                 assignment.mentee.name,
                 assignment.subject.name,
                 assignment.title
-            )
+            ),
+            Type.ASSIGNMENT_SUBMITTED
         )
         sendNotificationUseCase.execute(sendNotificationRequest)
     }

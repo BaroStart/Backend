@@ -23,11 +23,14 @@ import com.barostartbe.domain.mentee.dto.GetMentoMainDashboardResponseDto
 import com.barostartbe.domain.mentee.dto.GetRecentSubmittedAssignmentResponseDto
 import com.barostartbe.domain.mentee.dto.GetTotalMenteeInfoResponsesDto
 import com.barostartbe.domain.mentee.dto.GetWeeklyCompleteRateBySubjectResponseDto
+import com.barostartbe.domain.feedback.repository.FeedbackRepository
+import com.barostartbe.domain.mentee.dto.*
 import com.barostartbe.domain.mentee.entity.Mentee
 import com.barostartbe.domain.mentee.repository.MenteeRepository
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.mentor.repository.MentorRepository
 import com.barostartbe.domain.todo.entity.ToDo
+import com.barostartbe.domain.overall.repository.OverallRepository
 import com.barostartbe.domain.todo.repository.ToDoRepository
 import com.barostartbe.domain.user.repository.AccessLogRepository
 import com.barostartbe.global.annotation.QueryUseCase
@@ -51,7 +54,8 @@ class MenteeQueryUseCase(
     private val redisTemplate: RedisTemplate<String, Any>,
     private val toDoRepository: ToDoRepository,
     private val commentRepository: CommentRepository,
-    private val menteeBadgeMappingRepository: MenteeBadgeMappingRepository
+    private val feedbackRepository: FeedbackRepository,
+    private val overallRepository: OverallRepository
 ) {
     fun getMenteeInfo(mentorId: Long, menteeId: Long): GetMenteeBasicInfoResponseDto {
 
@@ -328,6 +332,23 @@ class MenteeQueryUseCase(
             val hasToDo = todoDates.contains(date)
 
             CalendarResponseDto(date, hasAssignment, hasToDo)
+        }
+    }
+
+    fun getFeedbackCalendar(menteeId: Long, year: Int, month: Int): List<FeedbackCalendarResponseDto> {
+        val startDate = LocalDate.of(year, month, 1)
+        val endDate = startDate.withDayOfMonth(startDate.lengthOfMonth())
+
+        val feedbacks = feedbackRepository.findAllByMenteeIdAndCreatedAtBetween(menteeId, startDate, endDate)
+        val overalls = overallRepository.findAllByMenteeIdAndCreatedAtBetween(menteeId, startDate, endDate)
+
+        val feedbackDates = feedbacks.map { it.createdAt!!.toLocalDate() }.toSet()
+        val overallDates = overalls.map { it.createdAt!!.toLocalDate() }.toSet()
+
+        return (0 until startDate.lengthOfMonth()).map { i ->
+            val date = startDate.plusDays(i.toLong())
+            val hasFeedback = feedbackDates.contains(date) || overallDates.contains(date)
+            FeedbackCalendarResponseDto(date, hasFeedback)
         }
     }
 

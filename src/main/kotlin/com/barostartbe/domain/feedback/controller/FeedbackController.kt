@@ -6,6 +6,7 @@ import com.barostartbe.domain.feedback.dto.response.FeedbackListItemRes
 import com.barostartbe.domain.feedback.dto.response.DailyFeedbackSummaryRes
 import com.barostartbe.domain.feedback.dto.response.DailyFeedbackRes
 import com.barostartbe.domain.feedback.dto.response.MenteeFeedbackDetailRes
+import com.barostartbe.domain.feedback.entity.enums.FeedbackStatus
 import com.barostartbe.domain.feedback.usecase.DailyFeedbackQueryUseCase
 import com.barostartbe.domain.feedback.usecase.FeedbackCreateUseCase
 import com.barostartbe.domain.feedback.usecase.FeedbackListQueryUseCase
@@ -15,6 +16,7 @@ import com.barostartbe.global.response.ApiResponse
 import com.barostartbe.global.response.type.SuccessCode
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -25,10 +27,11 @@ class FeedbackController(
     private val dailyFeedbackQueryUseCase: DailyFeedbackQueryUseCase
 ) : FeedbackApi {
 
-    override fun getListByMentor(@AuthenticationPrincipal mentor: User
+    override fun getListByMentor(@AuthenticationPrincipal mentor: User,
+                                 @RequestParam(required = false) status: FeedbackStatus?
     ): ResponseEntity<ApiResponse<List<FeedbackListItemRes>>> {
         val mentorId = mentor.id!!
-        return ApiResponse.success(SuccessCode.REQUEST_OK, feedbackListQueryUseCase.getListByMentor(mentorId))
+        return ApiResponse.success(SuccessCode.REQUEST_OK, feedbackListQueryUseCase.getListByMentor(mentorId = mentorId, status = status))
     }
 
     override fun createFeedback(@AuthenticationPrincipal mentor: User, assignmentId: Long, req: FeedbackCreateReq
