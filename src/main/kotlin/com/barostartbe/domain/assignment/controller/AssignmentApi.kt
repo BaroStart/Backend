@@ -9,6 +9,7 @@ import com.barostartbe.domain.assignment.dto.response.AssignmentMenteeListRes
 import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.global.response.ApiResponse
+import com.barostartbe.global.response.type.SuccessCode
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -34,6 +35,16 @@ interface AssignmentApi {
         @AuthenticationPrincipal mentor: User,
         @RequestBody @Valid req: AssignmentCreateReq
     ): ResponseEntity<ApiResponse<AssignmentCreateRes>>
+
+    // [멘토] 과제 상세 조회
+    @GetMapping("/{assignmentId}")
+    @Operation(summary = "[멘토] 과제 상세 조회", description = "멘토 기준으로 과제 상세 정보를 조회합니다. (학습자료/제출물 포함)"
+    )
+    fun getAssignmentDetailByMentor(
+        @PathVariable assignmentId: Long,
+        @AuthenticationPrincipal mentor: User
+    ): ResponseEntity<ApiResponse<AssignmentMenteeDetailRes>>
+
 
     // [멘티] 과제 목록 조회
     @GetMapping("/mentee")
@@ -72,9 +83,9 @@ interface AssignmentApi {
     ): ResponseEntity<ApiResponse<String>>
 
 
-    // [멘토] 학습자료 목록 조회
+    // [멘토] 과제 파일 목록 조회
     @GetMapping("/materials")
-    @Operation(summary = "[멘토] 학습자료 전체 조회", description = "멘토가 등록한 모든 학습자료를 조회합니다.")
+    @Operation(summary = "[멘토] 과제 파일 전체 조회 (확인용)", description = "멘토가 등록한 모든 과제 자를 조회합니다.")
     fun getAllMaterials(
         @AuthenticationPrincipal mentor: User,
         @RequestParam(required = false) subject: Subject?
