@@ -1,10 +1,9 @@
 package com.barostartbe.domain.todo.dto.response
 
-import com.barostartbe.domain.todo.dto.base.TimeSlot
 import com.barostartbe.domain.todo.entity.ToDo
-import com.barostartbe.domain.todo.entity.ToDoTime
 import com.barostartbe.domain.todo.entity.enums.Status
 import io.swagger.v3.oas.annotations.media.Schema
+import java.time.LocalDateTime
 
 @Schema(description = "할 일 응답 DTO")
 data class ToDoRes(
@@ -18,22 +17,21 @@ data class ToDoRes(
     @Schema(description = "상태", example = "COMPLETED")
     val status: Status,
 
-    @Schema(description = "시간 목록", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    val timeList: List<TimeSlot>?
+    @Schema(description = "시작 시간", example = "2023-10-01T10:00:00", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    val startTime: LocalDateTime?,
+
+    @Schema(description = "종료 시간", example = "2023-10-01T11:00:00", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    val endTime: LocalDateTime?,
 ) {
 
     companion object {
-        fun from(entity: ToDo, timeList: List<ToDoTime>): ToDoRes {
+        fun from(entity: ToDo): ToDoRes {
             return ToDoRes(
                 id = entity.id!!,
                 title = entity.title,
                 status = entity.status,
-                timeList = timeList.map {
-                    TimeSlot(
-                        startTime = it.startTime,
-                        endTime = it.endTime
-                    )
-                }
+                startTime = entity.startTime,
+                endTime = entity.endTime
             )
         }
     }

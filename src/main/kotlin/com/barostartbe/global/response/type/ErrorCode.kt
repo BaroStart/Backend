@@ -50,7 +50,17 @@ enum class ErrorCode(
 
     FILE_NOT_FOUND(404, "FILE_NOT_FOUND", "파일을 찾을 수 없습니다."),
 
+    // Notification
+    NOTIFICATION_NOT_FOUND(404, "NOTIFICATION_NOT_FOUND", "알림을 찾을 수 없습니다."),
+    NOTIFICATION_READ_FORBIDDEN(403, "NOTIFICATION_READ_FORBIDDEN", "알림을 읽을 권한이 없습니다."),
+
     INVALID_FILE(400, "INVALID_FILE", "유효하지 않은 파일입니다."),
+
+    // Feedback
+    FEEDBACK_NOT_FOUND(404, "FEEDBACK_NOT_FOUND", "피드백을 찾을 수 없습니다."),
+
+    FEEDBACK_ALREADY_EXISTS(400, "FEEDBACK_ALREADY_EXISTS", "이미 피드백이 존재합니다."),
+
 
     // Feedback Template
     FEEDBACK_TEMPLATE_NOT_FOUND(404, "FEEDBACK_TEMPLATE_NOT_FOUND", "피드백 템플릿을 찾을 수 없습니다."),
@@ -58,6 +68,12 @@ enum class ErrorCode(
     FEEDBACK_TEMPLATE_NAME_DUPLICATED(409, "FEEDBACK_TEMPLATE_NAME_DUPLICATED", "이미 존재하는 피드백 템플릿 이름입니다."),
 
     FEEDBACK_TEMPLATE_DELETE_FORBIDDEN(400, "FEEDBACK_TEMPLATE_DELETE_FORBIDDEN", "사용 중인 피드백 템플릿은 삭제할 수 없습니다."),
+
+    TODO_TIME_CONFLICT_WITH_ASSIGNMENT(400, "TODO_TIME_CONFLICT_WITH_ASSIGNMENT", "할일 시간이 과제 시간과 겹칩니다."),
+    TODO_TIME_CONFLICT_WITH_TODO(400, "TODO_TIME_CONFLICT_WITH_TODO", "할일 시간이 다른 할일 시간과 겹칩니다."),
+
+    ASSIGNMENT_TIME_CONFLICT_WITH_TODO(400, "ASSIGNMENT_TIME_CONFLICT_WITH_TODO", "과제 시간이 할일 시간과 겹칩니다."),
+    ASSIGNMENT_TIME_CONFLICT_WITH_ASSIGNMENT(400, "ASSIGNMENT_TIME_CONFLICT_WITH_ASSIGNMENT", "과제 시간이 다른 과제 시간과 겹칩니다."),
 
     // 공통
     USER_NOT_FOUND(404, "USER_NOT_FOUND", "유저를 찾을 수 없습니다."),

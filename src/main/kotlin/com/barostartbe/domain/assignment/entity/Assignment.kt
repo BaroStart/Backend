@@ -37,7 +37,7 @@ class Assignment(
     @Column(nullable = false)
     var status: AssignmentStatus = AssignmentStatus.NOT_SUBMIT,
 
-    @Column(name = "date", nullable = false)
+    @Column(name = "due_date", nullable = false)
     val dueDate: LocalDateTime,             // 마감일시
 
     @Column(columnDefinition = "TEXT")

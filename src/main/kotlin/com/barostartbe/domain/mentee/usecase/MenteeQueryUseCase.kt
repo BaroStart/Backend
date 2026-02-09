@@ -1,6 +1,9 @@
 package com.barostartbe.domain.mentee.usecase
 
 import com.barostartbe.domain.admin.repository.MentorMenteeMappingRepository
+import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
+import com.barostartbe.domain.assignment.repository.AssignmentRepository
+import com.barostartbe.domain.mentee.dto.CalendarResponseDto
 import com.barostartbe.domain.assignment.entity.Assignment
 import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
@@ -10,6 +13,7 @@ import com.barostartbe.domain.mentee.dto.GetMenteeDashboardResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeFeedbackDashboardResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeBasicInfoResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeInfoResponseDto
+import com.barostartbe.domain.mentee.dto.TaskInfoResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeNotCompletedAssignmentResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeTodoDashboardResponseDto
 import com.barostartbe.domain.mentee.dto.GetMentoMainDashboardResponseDto
@@ -21,12 +25,15 @@ import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.mentor.repository.MentorRepository
 import com.barostartbe.domain.todo.repository.ToDoRepository
 import com.barostartbe.domain.todo.repository.ToDoTimeRepository
+import com.barostartbe.domain.todo.entity.enums.Status
+import com.barostartbe.domain.todo.repository.ToDoRepository
 import com.barostartbe.domain.user.repository.AccessLogRepository
 import com.barostartbe.global.annotation.QueryUseCase
 import com.barostartbe.global.error.exception.ServiceException
 import com.barostartbe.global.response.type.ErrorCode
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.repository.findByIdOrNull
+import java.time.LocalDate
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -42,7 +49,6 @@ class MenteeQueryUseCase(
     private val assignmentRepository: AssignmentRepository,
     private val redisTemplate: RedisTemplate<String, Any>,
     private val toDoRepository: ToDoRepository,
-    private val toDoTimeRepository: ToDoTimeRepository,
     private val commentRepository: CommentRepository
 ) {
     fun getMenteeInfo(mentorId: Long, menteeId: Long): GetMenteeBasicInfoResponseDto {
@@ -218,6 +224,42 @@ class MenteeQueryUseCase(
         val mapping = mentorMenteeMappingRepository.findByMentorAndMentee(mentor, mentee)
             ?: throw ServiceException(ErrorCode.UNMATCHED_PAIR)
         return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(mapping.createdAt)
+    }
+
+    fun getTimeTable(menteeId: Long, date: LocalDate): List<TaskInfoResponseDto> {
+        val assignments = assignmentRepository.findAllByMenteeIdAndStartTimeDate(menteeId, date)
+            .map { TaskInfoResponseDto.createAssignment(it) }
+
+        val todos = toDoRepository.findAllCompletedByMenteeIdAndStartTimeDate(menteeId, date)
+            .map { TaskInfoResponseDto.createToDo(it) }
+
+        return (assignments + todos).sortedBy { it.startTime }
+    }
+
+    fun getCalendar(menteeId: Long, year: Int, month: Int): List<CalendarResponseDto> {
+        val startDate = LocalDate.of(year, month, 1)
+        val endDate = startDate.withDayOfMonth(startDate.lengthOfMonth())
+
+
+        val assignments = assignmentRepository.findAllByMenteeIdAndDateOverlapping(menteeId, startDate, endDate)
+
+        val todos = toDoRepository.findAllByMenteeIdAndCreatedAtBetween(menteeId, startDate, endDate)
+
+        val todoDates = todos.mapNotNull { it.createdAt?.toLocalDate() }.toSet()
+
+        return (0 until startDate.lengthOfMonth()).map { i ->
+            val date = startDate.plusDays(i.toLong())
+
+            val hasAssignment = assignments.any {
+                val createdAt = it.createdAt?.toLocalDate()
+                val dueDate = it.dueDate.toLocalDate()
+                createdAt != null && !date.isBefore(createdAt) && !date.isAfter(dueDate)
+            }
+
+            val hasToDo = todoDates.contains(date)
+
+            CalendarResponseDto(date, hasAssignment, hasToDo)
+        }
     }
 
     fun getMenteesTodayDetails(mentorId: Long): GetMentoMainDashboardResponseDto {

@@ -32,17 +32,6 @@ data class AssignmentTemplateCreateReq(
     val content: String,
 
     // 과제 템플릿에 포함될 파일 목록
-    @Schema(description = "과제 템플릿에 포함될 파일 목록")
-    val files: List<AssignmentTemplateFileReq> = emptyList()
-    ) {
-        data class AssignmentTemplateFileReq(
-            @Schema(description = "파일명", example = "chapter1.pdf")
-            val fileName: String,
-
-            @Schema(
-                description = "Object Storage 파일 URL",
-                example = "https://xxx.objectstorage.ap-chuncheon-1.oci.customer-oci.com/..."
-            )
-            val url: String
-        )
-    }
+    @Schema(description = "과제 템플릿에 포함될 학습 자료 ID 목록 (학습 자료에서 선택)", example = "[1, 3, 5]")
+    val learningResourceIds: List<Long> = emptyList()
+)

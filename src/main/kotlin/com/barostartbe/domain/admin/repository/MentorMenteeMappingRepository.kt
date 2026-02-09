@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface MentorMenteeMappingRepository: JpaRepository<MentorMenteeMapping, Long> {
     fun findByMentorAndMentee(mentor: Mentor, mentee: Mentee): MentorMenteeMapping?
     fun findAllByMentor(mentor: Mentor): List<MentorMenteeMapping>
+    fun findAllByMentee(mentee: Mentee): List<MentorMenteeMapping>
 }

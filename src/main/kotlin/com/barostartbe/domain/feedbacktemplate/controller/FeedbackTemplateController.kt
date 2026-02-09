@@ -5,9 +5,11 @@ import com.barostartbe.domain.feedbacktemplate.dto.request.FeedbackTemplateCreat
 import com.barostartbe.domain.feedbacktemplate.dto.request.FeedbackTemplateUpdateReq
 import com.barostartbe.domain.feedbacktemplate.dto.response.FeedbackTemplateListRes
 import com.barostartbe.domain.feedbacktemplate.dto.response.FeedbackTemplateRes
+import com.barostartbe.domain.feedbacktemplate.dto.response.FeedbackTemplateSimpleRes
 import com.barostartbe.domain.feedbacktemplate.usecase.FeedbackTemplateCreateUseCase
 import com.barostartbe.domain.feedbacktemplate.usecase.FeedbackTemplateDeleteUseCase
 import com.barostartbe.domain.feedbacktemplate.usecase.FeedbackTemplateQueryUseCase
+import com.barostartbe.domain.feedbacktemplate.usecase.FeedbackTemplateSelectQueryUseCase
 import com.barostartbe.domain.feedbacktemplate.usecase.FeedbackTemplateUpdateUseCase
 import com.barostartbe.global.response.ApiResponse
 import com.barostartbe.global.response.type.SuccessCode
@@ -19,7 +21,8 @@ class FeedbackTemplateController(
     private val feedbackTemplateQueryUseCase: FeedbackTemplateQueryUseCase,
     private val feedbackTemplateCreateUseCase: FeedbackTemplateCreateUseCase,
     private val feedbackTemplateUpdateUseCase: FeedbackTemplateUpdateUseCase,
-    private val feedbackTemplateDeleteUseCase: FeedbackTemplateDeleteUseCase
+    private val feedbackTemplateDeleteUseCase: FeedbackTemplateDeleteUseCase,
+    private val feedbackTemplateSelectQueryUseCase: FeedbackTemplateSelectQueryUseCase
 ) : FeedbackTemplateApi {
 
     override fun getTemplates(subject: Subject?): ResponseEntity<ApiResponse<List<FeedbackTemplateListRes>>> =
@@ -48,5 +51,10 @@ class FeedbackTemplateController(
         val deleted = feedbackTemplateDeleteUseCase.delete(templateId)
 
         return ApiResponse.success(SuccessCode.REQUEST_OK, FeedbackTemplateRes.from(deleted))
+    }
+
+    override fun getSelectableTemplates(subject: Subject): ResponseEntity<ApiResponse<List<FeedbackTemplateSimpleRes>>> {
+
+        return ApiResponse.success(SuccessCode.REQUEST_OK, feedbackTemplateSelectQueryUseCase.getSelectableTemplates(subject))
     }
 }

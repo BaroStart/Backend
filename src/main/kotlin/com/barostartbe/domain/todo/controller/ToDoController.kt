@@ -1,8 +1,8 @@
 package com.barostartbe.domain.todo.controller
 
-import com.barostartbe.domain.todo.dto.request.UpdateToDoStatusReq
 import com.barostartbe.domain.todo.dto.request.CreateToDoReq
 import com.barostartbe.domain.todo.dto.request.UpdateToDoReq
+import com.barostartbe.domain.todo.dto.request.UpdateToDoStatusReq
 import com.barostartbe.domain.todo.dto.response.ToDoRes
 import com.barostartbe.domain.todo.usecase.*
 import com.barostartbe.domain.user.entity.User
@@ -34,13 +34,19 @@ class ToDoController(
         return ApiResponse.success(SuccessCode.CREATE_OK)
     }
 
-    override fun updateToDo(@RequestBody updateToDoReq: UpdateToDoReq): ResponseEntity<ApiResponse<Unit>> {
-        updateToDoUseCase.execute(updateToDoReq)
+    override fun updateToDo(
+        @RequestBody updateToDoReq: UpdateToDoReq,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<ApiResponse<Unit>> {
+        updateToDoUseCase.execute(updateToDoReq, user)
         return ApiResponse.success(SuccessCode.REQUEST_OK)
     }
 
-    override fun changeToDoStatus(@RequestBody updateToDoStatusReq: UpdateToDoStatusReq): ResponseEntity<ApiResponse<Unit>> {
-        changeToDoStatusUseCase.execute(updateToDoStatusReq)
+    override fun changeToDoStatus(
+        @RequestBody updateToDoStatusReq: UpdateToDoStatusReq,
+        @AuthenticationPrincipal user: User
+    ): ResponseEntity<ApiResponse<Unit>> {
+        changeToDoStatusUseCase.execute(updateToDoStatusReq, user)
         return ApiResponse.success(SuccessCode.REQUEST_OK)
     }
 

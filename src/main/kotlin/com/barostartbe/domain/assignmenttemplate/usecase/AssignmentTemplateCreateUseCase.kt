@@ -1,49 +1,70 @@
 package com.barostartbe.domain.assignmenttemplate.usecase
 
-import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateFileRes
+import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateLearningResourceRes
 import com.barostartbe.domain.assignmenttemplate.dto.request.AssignmentTemplateCreateReq
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateDetailRes
 import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplate
-import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplateFile
-import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateFileRepository
+import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplateLearningResource
+import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateLearningResourceRepository
 import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateRepository
+import com.barostartbe.domain.learningresource.repository.LearningResourceRepository
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.global.annotation.CommandUseCase
+import com.barostartbe.global.error.exception.ServiceException
+import com.barostartbe.global.response.type.ErrorCode
 
 @CommandUseCase
 class AssignmentTemplateCreateUseCase(
 
     private val assignmentTemplateRepository: AssignmentTemplateRepository,
-    private val assignmentTemplateFileRepository: AssignmentTemplateFileRepository
+    private val learningResourceRepository: LearningResourceRepository,
+    private val assignmentTemplateLearningResourceRepository: AssignmentTemplateLearningResourceRepository
 ) {
-
     fun execute(
         mentor: Mentor,
         req: AssignmentTemplateCreateReq
     ): AssignmentTemplateDetailRes {
+
+        // 멘토 유효성 체크
+        if (mentor.id == null) {
+            throw ServiceException(ErrorCode.NO_AUTH)
+        }
 
         // 템플릿 생성
         val template: AssignmentTemplate = assignmentTemplateRepository.save(
             AssignmentTemplate(
                 mentor = mentor,
                 subject = req.subject,
-                name = req.name,    // 목표명
+                name = req.name,
                 description = req.description,
                 title = req.title,
                 content = req.content
             )
         )
 
-        // 템플릿 파일 생성
-        val templateFiles = req.files.map {
-            AssignmentTemplateFile(
+        // 학습 자료 Id 기반 조회 (멘토 본인 소유 학습 자료만)
+        val learningResources =
+            if (req.learningResourceIds.isEmpty()) {
+                emptyList()
+            } else {
+                learningResourceRepository.findAllByMentorAndIdIn(
+                    mentor = mentor,
+                    ids = req.learningResourceIds
+                )
+            }
+
+        if (learningResources.size != req.learningResourceIds.size) {
+            throw ServiceException(ErrorCode.BAD_PARAMETER)
+        }
+
+        val relations = learningResources.map {
+            AssignmentTemplateLearningResource(
                 assignmentTemplate = template,
-                fileName = it.fileName,
-                url = it.url
+                learningResource = it
             )
         }
 
-        assignmentTemplateFileRepository.saveAll(templateFiles)
+        assignmentTemplateLearningResourceRepository.saveAll(relations)
 
 
         return AssignmentTemplateDetailRes(
@@ -53,10 +74,11 @@ class AssignmentTemplateCreateUseCase(
             description = template.description ?: "",
             title = template.title,
             content = template.content ?: "",
-            files = templateFiles.map {
-                AssignmentTemplateFileRes(
-                    fileName = requireNotNull(it.fileName),
-                    url = requireNotNull(it.url)
+            files = learningResources.map {
+                AssignmentTemplateLearningResourceRes(
+                    id = requireNotNull(it.id),
+                    fileName = it.fileName,
+                    url = it.fileUrl
                 )
             }
         )

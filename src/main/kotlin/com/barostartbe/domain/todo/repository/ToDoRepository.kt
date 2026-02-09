@@ -26,7 +26,29 @@ interface ToDoRepository : JpaRepository<ToDo, Long> {
 
     fun findAllByMentee(mentee: Mentee): List<ToDo>
 
-    fun findAllByMentee_IdAndStatus(menteeId: Long, status: Status): List<ToDo>
+    @Query(
+        """
+        SELECT COUNT(t)
+        FROM ToDo t
+        WHERE t.mentee.id = :menteeId
+            AND t.status = 'COMPLETED'
+            AND FUNCTION('TIMESTAMPDIFF', MINUTE, t.startTime, t.endTime) >= 25
+        """
+    )
+    fun countCompletedOver25Minutes(@Param("menteeId") menteeId: Long): Long
+
+    @Query(
+        """
+        SELECT COUNT(t)
+        FROM ToDo t
+        WHERE t.mentee.id = :menteeId
+            AND t.status = 'COMPLETED'
+            AND FUNCTION('TIME', t.startTime) >= '06:00:00'
+            AND FUNCTION('TIME', t.endTime) <= '09:00:00'
+            AND FUNCTION('DATE', t.startTime) = FUNCTION('DATE', t.endTime)
+        """
+    )
+    fun countStudyBetweenSixAndNine(@Param("menteeId") menteeId: Long): Long
 
     @Query(value = """
         SELECT COALESCE(MAX(streak), 0)
@@ -49,6 +71,34 @@ interface ToDoRepository : JpaRepository<ToDo, Long> {
         ) streaks
     """, nativeQuery = true)
     fun findMaxConsecutivePerfectDays(@Param("menteeId") menteeId: Long): Long
+
+    @Query("SELECT t FROM ToDo t WHERE t.mentee.id = :menteeId AND t.status = 'COMPLETED' AND DATE(t.startTime) = :date")
+    fun findAllCompletedByMenteeIdAndStartTimeDate(
+        @Param("menteeId") menteeId: Long,
+        @Param("date") date: LocalDate
+    ): List<ToDo>
+
+    @Query("SELECT t FROM ToDo t WHERE t.mentee.id = :menteeId AND DATE(t.createdAt) BETWEEN :startDate AND :endDate")
+    fun findAllByMenteeIdAndCreatedAtBetween(
+        @Param("menteeId") menteeId: Long,
+        @Param("startDate") startDate: LocalDate,
+        @Param("endDate") endDate: LocalDate
+    ): List<ToDo>
+
+    @Query(
+        """
+        SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END
+        FROM ToDo t
+        WHERE t.mentee.id = :menteeId
+            AND t.startTime >= :startTime
+            AND t.endTime <= :endTime
+    """
+    )
+    fun existsByMenteeIdAndTimeRange(
+        @Param("menteeId") menteeId: Long,
+        @Param("startTime") startTime: LocalDateTime,
+        @Param("endTime") endTime: LocalDateTime
+    ): Boolean
 
     fun findAllByMenteeAndCreatedAtAfter(mentee: Mentee, checkDate: LocalDateTime): List<ToDo>
 }

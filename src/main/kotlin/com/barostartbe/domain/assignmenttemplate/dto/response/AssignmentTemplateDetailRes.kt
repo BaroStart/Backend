@@ -26,5 +26,5 @@ data class AssignmentTemplateDetailRes(
     val content: String,
 
     @Schema(description = "템플릿에 첨부된 학습 자료 파일 목록")
-    val files: List<AssignmentTemplateFileRes>
+    val files: List<AssignmentTemplateLearningResourceRes>
 )
