@@ -1,7 +1,6 @@
 package com.barostartbe.domain.mentee.dto
 
 import com.barostartbe.domain.todo.entity.ToDo
-import com.barostartbe.domain.todo.entity.ToDoTime
 import java.time.LocalDateTime
 
 data class GetMenteeTodoDashboardResponseDto(
@@ -11,11 +10,11 @@ data class GetMenteeTodoDashboardResponseDto(
     val status: String
 ){
     companion object{
-        fun of(todo: ToDo, timeSlot: ToDoTime): GetMenteeTodoDashboardResponseDto{
+        fun from(todo: ToDo): GetMenteeTodoDashboardResponseDto{
             return GetMenteeTodoDashboardResponseDto(
                 title = todo.title,
-                startAt = timeSlot.startTime,
-                finishAt = timeSlot.endTime,
+                startAt = todo.startTime!!,
+                finishAt = todo.endTime!!,
                 status = todo.status.name
             )
         }

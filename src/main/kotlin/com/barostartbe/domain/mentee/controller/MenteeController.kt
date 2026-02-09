@@ -1,7 +1,6 @@
 package com.barostartbe.domain.mentee.controller
 
 import com.barostartbe.domain.mentee.dto.CalendarResponseDto
-import com.barostartbe.domain.mentee.dto.GetMenteeInfoResponseDto
 import com.barostartbe.domain.mentee.dto.TaskInfoResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeBasicInfoResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeDashboardResponseDto

@@ -25,7 +25,7 @@ interface MenteeApi {
 
     @GetMapping("/{menteeId}")
     @Operation(summary = "멘티 정보 조회", description = "멘티 이름, 활동정보, 평균 점수 등 자세한 정보들을 조회하는 api")
-    fun getMenteeInfo(@PathVariable menteeId: Long, @AuthenticationPrincipal mentor: User): ResponseEntity<ApiResponse<GetMenteeInfoResponseDto>>
+    fun getMenteeInfo(@PathVariable menteeId: Long, @AuthenticationPrincipal mentor: User): ResponseEntity<ApiResponse<GetMenteeBasicInfoResponseDto>>
 
     @GetMapping("/mentee/timetable")
     @Operation(summary = "멘티 타임 테이블 조회", description = "특정 날짜의 멘티의 타임테이블을 조회하는 api")

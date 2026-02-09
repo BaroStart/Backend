@@ -5,8 +5,6 @@ import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
 import com.barostartbe.domain.mentee.dto.CalendarResponseDto
 import com.barostartbe.domain.assignment.entity.Assignment
-import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
-import com.barostartbe.domain.assignment.repository.AssignmentRepository
 import com.barostartbe.domain.comment.repository.CommentRepository
 import com.barostartbe.domain.mentee.dto.GetMenteeCommentDashboardResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeDashboardResponseDto
@@ -24,16 +22,12 @@ import com.barostartbe.domain.mentee.repository.MenteeRepository
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.mentor.repository.MentorRepository
 import com.barostartbe.domain.todo.repository.ToDoRepository
-import com.barostartbe.domain.todo.repository.ToDoTimeRepository
-import com.barostartbe.domain.todo.entity.enums.Status
-import com.barostartbe.domain.todo.repository.ToDoRepository
 import com.barostartbe.domain.user.repository.AccessLogRepository
 import com.barostartbe.global.annotation.QueryUseCase
 import com.barostartbe.global.error.exception.ServiceException
 import com.barostartbe.global.response.type.ErrorCode
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.repository.findByIdOrNull
-import java.time.LocalDate
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -116,12 +110,7 @@ class MenteeQueryUseCase(
             .filter { it.status == AssignmentStatus.NOT_SUBMIT }
             .map { GetMenteeNotCompletedAssignmentResponseDto.from(it) }
         val todoList = toDoRepository.findAllByMenteeAndCreatedAtAfter(mentee, startDate)
-            .flatMap { todo ->
-                toDoTimeRepository.findAllByToDo_Id(todo.id!!)
-                    .map { timeSlot ->
-                        GetMenteeTodoDashboardResponseDto.of(todo, timeSlot)
-                    }
-            }
+            .map { GetMenteeTodoDashboardResponseDto.from(it) }
         val comments = commentRepository.findAllByMenteeAndCreatedAtAfter(mentee, startDate)
             .map { GetMenteeCommentDashboardResponseDto.from(it) }
 
@@ -142,12 +131,7 @@ class MenteeQueryUseCase(
             .filter { it.status == AssignmentStatus.NOT_SUBMIT }
             .map { GetMenteeNotCompletedAssignmentResponseDto.from(it) }
         val todoList = toDoRepository.findAllByMenteeIdAndCreatedDate(mentee.id, checkDate)
-            .flatMap { todo ->
-                toDoTimeRepository.findAllByToDo_Id(todo.id!!)
-                    .map { timeSlot ->
-                        GetMenteeTodoDashboardResponseDto.of(todo, timeSlot)
-                    }
-            }
+            .map { GetMenteeTodoDashboardResponseDto.from(it) }
         val comments = commentRepository.findAllByMenteeIdAndCreatedAt(mentee.id, checkDate)
             .map { GetMenteeCommentDashboardResponseDto.from(it) }
 
@@ -175,12 +159,7 @@ class MenteeQueryUseCase(
             .sumOf { it.endTime!!.toEpochSecond(ZoneOffset.UTC) - it.startTime!!.toEpochSecond(ZoneOffset.UTC)
         }
         val totalTodoTimeToSeconds = toDoRepository.findAllByMentee(mentee)
-            .sumOf { todo ->
-                toDoTimeRepository.findAllByToDo_Id(todo.id!!)
-                    .sumOf { timeSlot ->
-                        timeSlot.endTime.toEpochSecond(ZoneOffset.UTC) - timeSlot.startTime.toEpochSecond(ZoneOffset.UTC)
-                    }
-            }
+            .sumOf { it.endTime!!.toEpochSecond(ZoneOffset.UTC) - it.startTime!!.toEpochSecond(ZoneOffset.UTC) }
 
         return ((totalAssignmentTimeToSeconds + totalTodoTimeToSeconds) / (60 * 60)).toInt()
     }
@@ -196,11 +175,8 @@ class MenteeQueryUseCase(
             .toMap()
         val todoMap = toDoRepository.findAllByMentee(mentee)
             .groupBy { it.createdAt!!.toLocalDate().toString() }
-            .map { it.key to it.value.sumOf { todo ->
-                toDoTimeRepository.findAllByToDo_Id(todo.id!!)
-                    .sumOf { timeSlot ->
-                        timeSlot.endTime.toEpochSecond(ZoneOffset.UTC) - timeSlot.startTime.toEpochSecond(ZoneOffset.UTC)
-                    }
+            .map { it.key to it.value.sumOf {
+                it.endTime!!.toEpochSecond(ZoneOffset.UTC) - it.startTime!!.toEpochSecond(ZoneOffset.UTC)
             } }
             .toMap()
         val today = LocalDate.now()
