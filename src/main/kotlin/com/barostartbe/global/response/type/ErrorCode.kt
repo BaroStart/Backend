@@ -75,6 +75,8 @@ enum class ErrorCode(
     ASSIGNMENT_TIME_CONFLICT_WITH_TODO(400, "ASSIGNMENT_TIME_CONFLICT_WITH_TODO", "과제 시간이 할일 시간과 겹칩니다."),
     ASSIGNMENT_TIME_CONFLICT_WITH_ASSIGNMENT(400, "ASSIGNMENT_TIME_CONFLICT_WITH_ASSIGNMENT", "과제 시간이 다른 과제 시간과 겹칩니다."),
 
+    OVERALL_NOT_FOUND(404, "OVERALL_NOT_FOUND", "플래너 총평을 찾을 수 없습니다."),
+
     // 공통
     USER_NOT_FOUND(404, "USER_NOT_FOUND", "유저를 찾을 수 없습니다."),
 
