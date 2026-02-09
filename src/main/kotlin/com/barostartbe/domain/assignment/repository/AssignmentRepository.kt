@@ -57,9 +57,6 @@ interface AssignmentRepository : JpaRepository<Assignment, Long> {
     )
     fun sumStudyTimeByMenteeId(@Param("menteeId") menteeId: Long, @Param("subject") subject: Subject?): Long?
 
-    // 멘토 ID, 상태 목록 기준 최신 제출일 내림차순 조회
-    fun findAllByMentorIdAndStatusInOrderBySubmittedAtDesc(mentorId: Long, status: List<AssignmentStatus>): List<Assignment>
-
     @Query(
         value = """
         SELECT COALESCE(MAX(streak), 0)
