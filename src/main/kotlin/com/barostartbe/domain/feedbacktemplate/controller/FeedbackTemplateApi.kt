@@ -5,6 +5,7 @@ import com.barostartbe.domain.feedbacktemplate.dto.request.FeedbackTemplateCreat
 import com.barostartbe.domain.feedbacktemplate.dto.request.FeedbackTemplateUpdateReq
 import com.barostartbe.domain.feedbacktemplate.dto.response.FeedbackTemplateListRes
 import com.barostartbe.domain.feedbacktemplate.dto.response.FeedbackTemplateRes
+import com.barostartbe.domain.feedbacktemplate.dto.response.FeedbackTemplateSimpleRes
 import com.barostartbe.global.response.ApiResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -63,4 +64,12 @@ interface FeedbackTemplateApi {
         @Parameter(description = "피드백 템플릿 ID", required = true)
         @PathVariable templateId: Long
     ): ResponseEntity<ApiResponse<FeedbackTemplateRes>>
+
+
+    // [피드백 작성용] 템플릿 선택 목록 조회
+    @GetMapping("/select")
+    @Operation(summary = "[피드백 생성] 피드백 템플릿 선택용 목록 조회")
+    fun getSelectableTemplates(
+        @RequestParam subject: Subject
+    ): ResponseEntity<ApiResponse<List<FeedbackTemplateSimpleRes>>>
 }
