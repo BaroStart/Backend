@@ -176,7 +176,8 @@ class MenteeBadgeCommandUseCaseTest : DescribeSpec({
                     every { name } returns "포모도로 마스터"
                 }
                 every { badgeRepository.findAll() } returns listOf(badge)
-                every { toDoQueryUseCase.getCompletedOver25MinutesCount(menteeId) } returns 20
+                every { assignmentQueryUseCase.getCompletedOver25MinutesCount(menteeId) } returns 10
+                every { toDoQueryUseCase.getCompletedOver25MinutesCount(menteeId) } returns 10
 
                 menteeBadgeCommandUseCase.updateBadgeForMentee(menteeId)
 
@@ -191,13 +192,74 @@ class MenteeBadgeCommandUseCaseTest : DescribeSpec({
                     every { name } returns "아침 루틴"
                 }
                 every { badgeRepository.findAll() } returns listOf(badge)
-                every { toDoQueryUseCase.getStudyBetweenSixAndNineCount(menteeId) } returns 7
+                every { assignmentQueryUseCase.getStudyBetweenSixAndNineCount(menteeId) } returns 4
+                every { toDoQueryUseCase.getStudyBetweenSixAndNineCount(menteeId) } returns 3
 
                 menteeBadgeCommandUseCase.updateBadgeForMentee(menteeId)
 
                 val slot = slot<MenteeBadgeMapping>()
                 verify(exactly = 1) { menteeBadgeMappingRepository.save(capture(slot)) }
                 slot.captured.badge.name shouldBe "아침 루틴"
+            }
+
+            it("'국어 마스터' 조건을 만족하면 뱃지를 저장한다") {
+                val badge = mockk<Badge> {
+                    every { id } returns 9L
+                    every { name } returns "국어 마스터"
+                }
+                every { badgeRepository.findAll() } returns listOf(badge)
+                every { assignmentQueryUseCase.getTotalStudyTimeBySubject(menteeId, com.barostartbe.domain.assignment.entity.enums.Subject.KOREAN) } returns 50L
+
+                menteeBadgeCommandUseCase.updateBadgeForMentee(menteeId)
+
+                val slot = slot<MenteeBadgeMapping>()
+                verify(exactly = 1) { menteeBadgeMappingRepository.save(capture(slot)) }
+                slot.captured.badge.name shouldBe "국어 마스터"
+            }
+
+            it("'수학 마스터' 조건을 만족하면 뱃지를 저장한다") {
+                val badge = mockk<Badge> {
+                    every { id } returns 10L
+                    every { name } returns "수학 마스터"
+                }
+                every { badgeRepository.findAll() } returns listOf(badge)
+                every { assignmentQueryUseCase.getTotalStudyTimeBySubject(menteeId, com.barostartbe.domain.assignment.entity.enums.Subject.MATH) } returns 50L
+
+                menteeBadgeCommandUseCase.updateBadgeForMentee(menteeId)
+
+                val slot = slot<MenteeBadgeMapping>()
+                verify(exactly = 1) { menteeBadgeMappingRepository.save(capture(slot)) }
+                slot.captured.badge.name shouldBe "수학 마스터"
+            }
+
+            it("'영어 마스터' 조건을 만족하면 뱃지를 저장한다") {
+                val badge = mockk<Badge> {
+                    every { id } returns 11L
+                    every { name } returns "영어 마스터"
+                }
+                every { badgeRepository.findAll() } returns listOf(badge)
+                every { assignmentQueryUseCase.getTotalStudyTimeBySubject(menteeId, com.barostartbe.domain.assignment.entity.enums.Subject.ENGLISH) } returns 50L
+
+                menteeBadgeCommandUseCase.updateBadgeForMentee(menteeId)
+
+                val slot = slot<MenteeBadgeMapping>()
+                verify(exactly = 1) { menteeBadgeMappingRepository.save(capture(slot)) }
+                slot.captured.badge.name shouldBe "영어 마스터"
+            }
+
+            it("'100시간 학습' 조건을 만족하면 뱃지를 저장한다") {
+                val badge = mockk<Badge> {
+                    every { id } returns 12L
+                    every { name } returns "100시간 학습"
+                }
+                every { badgeRepository.findAll() } returns listOf(badge)
+                every { assignmentQueryUseCase.getTotalStudyTimeBySubject(menteeId) } returns 100L
+
+                menteeBadgeCommandUseCase.updateBadgeForMentee(menteeId)
+
+                val slot = slot<MenteeBadgeMapping>()
+                verify(exactly = 1) { menteeBadgeMappingRepository.save(capture(slot)) }
+                slot.captured.badge.name shouldBe "100시간 학습"
             }
         }
 

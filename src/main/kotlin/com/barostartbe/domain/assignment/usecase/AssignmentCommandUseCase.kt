@@ -10,6 +10,7 @@ import com.barostartbe.domain.assignment.entity.AssignmentFile
 import com.barostartbe.domain.assignment.error.AssignmentNotFoundException
 import com.barostartbe.domain.assignment.repository.AssignmentFileRepository
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
+import com.barostartbe.domain.todo.repository.ToDoRepository
 import com.barostartbe.domain.mentee.repository.MenteeRepository
 import com.barostartbe.domain.mentor.repository.MentorRepository
 import com.barostartbe.domain.notification.dto.request.SendNotificationRequest
@@ -29,6 +30,7 @@ class AssignmentCommandUseCase(
     private val mentorRepository: MentorRepository,
     private val menteeRepository: MenteeRepository,
     private val mentorMenteeMappingRepository: MentorMenteeMappingRepository,
+    private val toDoRepository: ToDoRepository,
     private val getPreAuthenticatedUrl: GetPreAuthenticatedUrl,
     private val sendNotificationUseCase: SendNotificationUseCase
 ) {
@@ -102,9 +104,29 @@ class AssignmentCommandUseCase(
             throw ServiceException(ErrorCode.NOT_FOUND)
         }
 
+        if (req.startTime != null && req.endTime != null) {
+            if (toDoRepository.existsByMenteeIdAndTimeRange(
+                    menteeId,
+                    req.startTime,
+                    req.endTime
+                )
+            ) {
+                throw ServiceException(ErrorCode.ASSIGNMENT_TIME_CONFLICT_WITH_TODO)
+            }
+
+            if (assignmentRepository.existsByMenteeIdAndTimeRange(
+                    menteeId,
+                    req.startTime,
+                    req.endTime,
+                )
+            ) {
+                throw ServiceException(ErrorCode.ASSIGNMENT_TIME_CONFLICT_WITH_ASSIGNMENT)
+            }
+        }
+
         assignment.submit(
-            startTime = req.timeSlot.startTime,
-            endTime = req.timeSlot.endTime,
+            startTime = req.startTime,
+            endTime = req.endTime,
             memo = req.memo,
             submittedAt = LocalDateTime.now()
         )

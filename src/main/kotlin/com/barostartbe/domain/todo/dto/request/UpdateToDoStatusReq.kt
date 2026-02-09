@@ -1,9 +1,9 @@
 package com.barostartbe.domain.todo.dto.request
 
-import com.barostartbe.domain.todo.dto.base.TimeSlot
 import com.barostartbe.domain.todo.entity.enums.Status
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
+import java.time.LocalDateTime
 
 @Schema(description = "할 일 상태 변경 요청 DTO")
 data class UpdateToDoStatusReq(
@@ -16,7 +16,10 @@ data class UpdateToDoStatusReq(
     @NotBlank(message = "status는 필수입니다")
     val status: Status,
 
-    @Schema(description = "시간 목록", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    val timeList: List<TimeSlot>?
+    @Schema(description = "시작 시간", example = "2023-10-01T10:00:00", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    val startTime: LocalDateTime?,
+
+    @Schema(description = "종료 시간", example = "2023-10-01T11:00:00", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    val endTime: LocalDateTime?,
 ) {
 }

@@ -1,8 +1,8 @@
 package com.barostartbe.domain.todo.controller
 
-import com.barostartbe.domain.todo.dto.request.UpdateToDoStatusReq
 import com.barostartbe.domain.todo.dto.request.CreateToDoReq
 import com.barostartbe.domain.todo.dto.request.UpdateToDoReq
+import com.barostartbe.domain.todo.dto.request.UpdateToDoStatusReq
 import com.barostartbe.domain.todo.dto.response.ToDoRes
 import com.barostartbe.domain.user.entity.User
 import com.barostartbe.global.response.ApiResponse
@@ -33,13 +33,15 @@ interface ToDoApi {
     @PutMapping
     @Operation(summary = "할 일 수정", description = "기존 할 일을 수정합니다.")
     fun updateToDo(
-        @RequestBody updateToDoReq: UpdateToDoReq
+        @RequestBody updateToDoReq: UpdateToDoReq,
+        @AuthenticationPrincipal user: User
     ): ResponseEntity<ApiResponse<Unit>>
 
     @PatchMapping("/{id}/status")
     @Operation(summary = "할 일 상태 변경", description = "할 일의 완료/미완료 상태를 변경합니다.")
     fun changeToDoStatus(
-        @RequestBody updateToDoStatusReq: UpdateToDoStatusReq
+        @RequestBody updateToDoStatusReq: UpdateToDoStatusReq,
+        @AuthenticationPrincipal user: User
     ): ResponseEntity<ApiResponse<Unit>>
 
     @DeleteMapping("/{id}")
