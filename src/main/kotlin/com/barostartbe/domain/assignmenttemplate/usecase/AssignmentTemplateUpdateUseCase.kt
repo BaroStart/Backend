@@ -50,19 +50,19 @@ class AssignmentTemplateUpdateUseCase(
 
             if (newIds.isNotEmpty()) {
 
-                // [MODIFIED] 멘토 본인 소유 학습자료만 조회
+                // 멘토 본인 소유 학습자료만 조회
                 val learningResources =
                     learningResourceRepository.findAllByMentorAndIdIn(
                         mentor = mentor,
                         ids = newIds
                     )
 
-                // [MODIFIED] 요청 ID 수와 실제 조회 수 불일치 시 에러
+                // 요청 ID 수와 실제 조회 수 불일치 시 에러
                 if (learningResources.size != newIds.size) {
                     throw ServiceException(ErrorCode.BAD_PARAMETER)
                 }
 
-                // [MODIFIED] 템플릿-학습자료 관계 엔티티 생성
+                // 템플릿-학습자료 관계 엔티티 생성
                 val relations = learningResources.map {
                     AssignmentTemplateLearningResource(
                         assignmentTemplate = template,
