@@ -18,7 +18,7 @@ class Notification(
     @Column(nullable = false)
     var isRead: Boolean = false,
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
     val type: Type,
 
