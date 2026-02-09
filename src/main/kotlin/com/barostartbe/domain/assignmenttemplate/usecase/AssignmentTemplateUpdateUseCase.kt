@@ -2,10 +2,11 @@ package com.barostartbe.domain.assignmenttemplate.usecase
 
 import com.barostartbe.domain.assignmenttemplate.dto.request.AssignmentTemplateUpdateReq
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateDetailRes
-import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateFileRes
-import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplateFile
-import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateFileRepository
+import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateLearningResourceRes
+import com.barostartbe.domain.assignmenttemplate.entity.AssignmentTemplateLearningResource
+import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateLearningResourceRepository
 import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateRepository
+import com.barostartbe.domain.learningresource.repository.LearningResourceRepository
 import com.barostartbe.global.error.exception.ServiceException
 
 import com.barostartbe.domain.mentor.entity.Mentor
@@ -15,7 +16,8 @@ import com.barostartbe.global.annotation.CommandUseCase
 @CommandUseCase
 class AssignmentTemplateUpdateUseCase(
     private val assignmentTemplateRepository: AssignmentTemplateRepository,
-    private val assignmentTemplateFileRepository: AssignmentTemplateFileRepository
+    private val assignmentTemplateLearningResourceRepository: AssignmentTemplateLearningResourceRepository,
+    private val learningResourceRepository: LearningResourceRepository
 ) {
 
     fun execute(
@@ -41,22 +43,39 @@ class AssignmentTemplateUpdateUseCase(
         )
 
         // 기존 파일 전부 삭제
-        req.files?.let { newFiles ->
-            assignmentTemplateFileRepository.deleteAllByAssignmentTemplate(template)
+        req.learningResourceIds?.let { newIds ->
+            // 기존 관계 전부 삭제
+            assignmentTemplateLearningResourceRepository
+                .deleteAllByAssignmentTemplate(template)
 
-            val entities = newFiles.map {
-                AssignmentTemplateFile(
-                    assignmentTemplate = template,
-                    fileName = it.fileName,
-                    url = it.url
-                )
+            if (newIds.isNotEmpty()) {
+
+                // [MODIFIED] 멘토 본인 소유 학습자료만 조회
+                val learningResources =
+                    learningResourceRepository.findAllByMentorAndIdIn(
+                        mentor = mentor,
+                        ids = newIds
+                    )
+
+                // [MODIFIED] 요청 ID 수와 실제 조회 수 불일치 시 에러
+                if (learningResources.size != newIds.size) {
+                    throw ServiceException(ErrorCode.BAD_PARAMETER)
+                }
+
+                // [MODIFIED] 템플릿-학습자료 관계 엔티티 생성
+                val relations = learningResources.map {
+                    AssignmentTemplateLearningResource(
+                        assignmentTemplate = template,
+                        learningResource = it
+                    )
+                }
+
+                assignmentTemplateLearningResourceRepository.saveAll(relations)
             }
-            assignmentTemplateFileRepository.saveAll(entities)
         }
 
-        // 최신 파일 목록 조회
-        val currentFiles = assignmentTemplateFileRepository
-            .findAllByAssignmentTemplate(template)
+        val currentRelations =
+            assignmentTemplateLearningResourceRepository.findAllByAssignmentTemplate(template)
 
         // 상세 DTO 반환
         return AssignmentTemplateDetailRes(
@@ -66,10 +85,11 @@ class AssignmentTemplateUpdateUseCase(
             description = template.description ?: "",
             title = template.title,
             content = template.content ?: "",
-            files = currentFiles.map {
-                AssignmentTemplateFileRes(
-                    fileName = requireNotNull(it.fileName),
-                    url = requireNotNull(it.url)
+            files = currentRelations.map {
+                AssignmentTemplateLearningResourceRes(
+                    id = requireNotNull(it.learningResource.id),
+                    fileName = it.learningResource.fileName,
+                    url = it.learningResource.fileUrl
                 )
             }
         )

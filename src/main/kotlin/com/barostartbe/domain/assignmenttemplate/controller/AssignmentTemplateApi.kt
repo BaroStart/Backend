@@ -19,14 +19,17 @@ import org.springframework.web.bind.annotation.*
 interface AssignmentTemplateApi {
 
     @PostMapping
-    @Operation(summary = "과제 템플릿 생성", description = "멘토가 과제 템플릿을 생성합니다.")
+    @Operation(summary = "과제 템플릿 생성", description = "멘토가 과제 템플릿을 생성합니다. 기존 학습 자료를 선택적으로 연결할 수 있습니다.")
     fun createTemplate(
         @AuthenticationPrincipal mentor: Mentor,
         @RequestBody req: AssignmentTemplateCreateReq
     ): ResponseEntity<ApiResponse<AssignmentTemplateDetailRes>>
 
     @PutMapping("/{id}")
-    @Operation(summary = "과제 템플릿 수정", description = "멘토 본인이 생성한 과제 템플릿의 텍스트 및 첨부 파일을 수정합니다.")
+    @Operation(summary = "과제 템플릿 수정",
+        description = """멘토 본인이 생성한 과제 템플릿을 수정합니다.
+                       - learningResourceIds = null : 학습 자료 변경 없음
+                       - learningResourceIds = []   : 기존 학습 자료 전체 해제""")
     fun updateTemplate(
         @AuthenticationPrincipal mentor: Mentor,
         @Parameter(description = "과제 템플릿 ID") @PathVariable id: Long,

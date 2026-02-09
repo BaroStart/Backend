@@ -4,8 +4,7 @@ package com.barostartbe.domain.assignmenttemplate.usecase
 import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateByGoalRes
 import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateByGoalRes.TemplateRes
-import com.barostartbe.domain.assignmenttemplate.dto.response.AssignmentTemplateByGoalRes.TemplateFileRes
-import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateFileRepository
+import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateLearningResourceRepository
 import com.barostartbe.domain.assignmenttemplate.repository.AssignmentTemplateRepository
 import com.barostartbe.domain.mentor.repository.MentorRepository
 import com.barostartbe.global.annotation.QueryUseCase
@@ -15,7 +14,7 @@ import com.barostartbe.global.response.type.ErrorCode
 @QueryUseCase
 class AssignmentTemplateByGoalQueryUseCase(
     private val assignmentTemplateRepository: AssignmentTemplateRepository,
-    private val assignmentTemplateFileRepository: AssignmentTemplateFileRepository,
+    private val assignmentTemplateLearningResourceRepository: AssignmentTemplateLearningResourceRepository,
     private val mentorRepository: MentorRepository
 ) {
 
@@ -43,34 +42,37 @@ class AssignmentTemplateByGoalQueryUseCase(
             )
         }
 
-        // 템플릿에 속한 파일 전체 조회
-        val templateFiles = assignmentTemplateFileRepository
-            .findAllByAssignmentTemplateIn(templates)
+        // 템플릿에 속한 파일 한 번에 조회
+        val relations =
+            assignmentTemplateLearningResourceRepository
+                .findAllByAssignmentTemplateIn(templates)
 
-        val fileMap = templateFiles.groupBy {
+        val resourceMap = relations.groupBy {
             requireNotNull(it.assignmentTemplate.id)
         }
 
-
         val templateResponses = templates.map { template ->
             TemplateRes(
-                templateId = template.id!!,
+                templateId = requireNotNull(template.id),
                 name = template.name,
                 description = template.description ?: "",
                 title = template.title,
                 content = template.content ?: "",
 
-                files = fileMap[template.id]
-                    ?.map {
-                        TemplateFileRes(
-                            id = it.id!!,
-                            fileName = requireNotNull(it.fileName),
-                            url = requireNotNull(it.url)
-                        )
-                    }
-                    ?: emptyList()
+                learningResources =
+                    resourceMap[template.id]
+                        ?.map { relation ->
+                            val resource = relation.learningResource
+                            AssignmentTemplateByGoalRes.TemplateLearningResourceRes(
+                                id = requireNotNull(resource.id),
+                                fileName = resource.fileName,
+                                url = resource.fileUrl
+                            )
+                        }
+                        ?: emptyList()
             )
         }
+
 
         return AssignmentTemplateByGoalRes(
             goalName = goalName,
