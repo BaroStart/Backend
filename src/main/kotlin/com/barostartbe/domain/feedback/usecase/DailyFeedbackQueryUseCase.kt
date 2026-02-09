@@ -6,6 +6,7 @@ import com.barostartbe.domain.feedback.repository.FeedbackRepository
 import com.barostartbe.global.annotation.QueryUseCase
 import java.time.LocalDate
 
+@Deprecated("미사용")
 @QueryUseCase
 class DailyFeedbackQueryUseCase(
     private val feedbackRepository: FeedbackRepository
