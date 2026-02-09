@@ -1,9 +1,11 @@
 package com.barostartbe.domain.feedback.usecase
 
 import com.barostartbe.domain.assignment.entity.enums.AssignmentStatus
+import com.barostartbe.domain.assignment.entity.enums.Subject
 import com.barostartbe.domain.assignment.repository.AssignmentRepository
 import com.barostartbe.domain.feedback.dto.response.FeedbackListItemRes
 import com.barostartbe.domain.feedback.dto.response.MenteeFeedbackDetailRes
+import com.barostartbe.domain.feedback.entity.enums.FeedbackStatus
 import com.barostartbe.domain.feedback.repository.FeedbackRepository
 import com.barostartbe.global.annotation.QueryUseCase
 import com.barostartbe.global.error.exception.ServiceException
@@ -20,6 +22,7 @@ class FeedbackListQueryUseCase(
     // [멘토] 피드백 목록 조회
     fun getListByMentor(
         mentorId: Long,
+        status: FeedbackStatus? = null,
         now: LocalDateTime = LocalDateTime.now()
     ): List<FeedbackListItemRes> {
 
@@ -35,15 +38,28 @@ class FeedbackListQueryUseCase(
 
         if (assignments.isEmpty()) { return emptyList() }
 
+        // 상태 필터링
+        val filteredAssignments = when (status) {
+            null -> assignments
+            FeedbackStatus.COMPLETED ->
+                assignments.filter { it.status == AssignmentStatus.FEEDBACKED }
+
+            FeedbackStatus.WAITING ->
+                assignments.filter { it.status == AssignmentStatus.SUBMITTED && !it.dueDate.isBefore(now) }
+
+            FeedbackStatus.DEADLINE ->
+                assignments.filter { it.status == AssignmentStatus.SUBMITTED && it.dueDate.isBefore(now) }
+        }
+
         // assignmentId 목록 추출
-        val assignmentIds: List<Long> = assignments.mapNotNull { it.id }
+        val assignmentIds: List<Long> = filteredAssignments.mapNotNull { it.id }
 
         // 피드백 일괄 조회
         val feedbackMap =
             feedbackRepository.findAllByAssignmentIdIn(assignmentIds)
                 .associateBy { it.assignment.id!! }
 
-        return assignments.map { assignment ->
+        return filteredAssignments.map { assignment ->
             FeedbackListItemRes.from(
                 assignment = assignment,
                 menteeName = assignment.mentee.name ?: "알 수 없음",
