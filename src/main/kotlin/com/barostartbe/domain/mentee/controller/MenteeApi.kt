@@ -1,6 +1,7 @@
 package com.barostartbe.domain.mentee.controller
 
 import com.barostartbe.domain.mentee.dto.CalendarResponseDto
+import com.barostartbe.domain.mentee.dto.FeedbackCalendarResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeInfoResponseDto
 import com.barostartbe.domain.mentee.dto.TaskInfoResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeBasicInfoResponseDto
@@ -41,6 +42,14 @@ interface MenteeApi {
         @RequestParam year: Int,
         @RequestParam month: Int
     ): ResponseEntity<ApiResponse<List<CalendarResponseDto>>>
+
+    @GetMapping("/mentee/feedback/calendar")
+    @Operation(summary = "멘티 피드백 캘린더 조회", description = "특정 년월의 멘티의 피드백 캘린더 정보를 조회하는 api")
+    fun getFeedbackCalendar(
+        @AuthenticationPrincipal mentee: User,
+        @RequestParam year: Int,
+        @RequestParam month: Int
+    ): ResponseEntity<ApiResponse<List<FeedbackCalendarResponseDto>>>
 
     @GetMapping("/mentee/{menteeId}/dashboard")
     @Operation(summary = "멘티 대시보드", description = "멘토 페이지에서 멘티 상세보기의 대시보드")

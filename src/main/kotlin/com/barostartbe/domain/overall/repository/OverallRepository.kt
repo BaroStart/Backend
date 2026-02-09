@@ -12,4 +12,11 @@ interface OverallRepository : JpaRepository<Overall, Long> {
 
     @Query("SELECT o FROM Overall o JOIN FETCH o.mentor WHERE o.mentee.id = :menteeId AND o.mentor.id = :mentorId AND DATE(o.createdAt) = :date")
     fun findByMenteeIdAndMentorIdAndDate(@Param("menteeId") menteeId: Long, @Param("mentorId") mentorId: Long, @Param("date") date: LocalDate): Overall?
+
+    @Query("SELECT o FROM Overall o WHERE o.mentee.id = :menteeId AND DATE(o.createdAt) BETWEEN :startDate AND :endDate")
+    fun findAllByMenteeIdAndCreatedAtBetween(
+        @Param("menteeId") menteeId: Long,
+        @Param("startDate") startDate: LocalDate,
+        @Param("endDate") endDate: LocalDate
+    ): List<Overall>
 }

@@ -1,6 +1,7 @@
 package com.barostartbe.domain.mentee.controller
 
 import com.barostartbe.domain.mentee.dto.CalendarResponseDto
+import com.barostartbe.domain.mentee.dto.FeedbackCalendarResponseDto
 import com.barostartbe.domain.mentee.dto.TaskInfoResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeBasicInfoResponseDto
 import com.barostartbe.domain.mentee.dto.GetMenteeDashboardResponseDto
@@ -47,6 +48,17 @@ class MenteeController(
         return ApiResponse.success(
             SuccessCode.REQUEST_OK,
             menteeQueryUseCase.getCalendar(mentee.id!!, year, month)
+        )
+    }
+
+    override fun getFeedbackCalendar(
+        @AuthenticationPrincipal mentee: User,
+        year: Int,
+        month: Int
+    ): ResponseEntity<ApiResponse<List<FeedbackCalendarResponseDto>>> {
+        return ApiResponse.success(
+            SuccessCode.REQUEST_OK,
+            menteeQueryUseCase.getFeedbackCalendar(mentee.id!!, year, month)
         )
     }
 
