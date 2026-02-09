@@ -44,9 +44,9 @@ class MenteeQueryUseCaseTest : DescribeSpec({
         redisTemplate,
         toDoRepository,
         commentRepository,
-        menteeBadgeMappingRepository
         feedbackRepository,
-        overallRepository
+        overallRepository,
+        menteeBadgeMappingRepository
     )
 
     describe("MenteeQueryUseCase") {

@@ -55,7 +55,8 @@ class MenteeQueryUseCase(
     private val toDoRepository: ToDoRepository,
     private val commentRepository: CommentRepository,
     private val feedbackRepository: FeedbackRepository,
-    private val overallRepository: OverallRepository
+    private val overallRepository: OverallRepository,
+    private val menteeBadgeMappingRepository: MenteeBadgeMappingRepository
 ) {
     fun getMenteeInfo(mentorId: Long, menteeId: Long): GetMenteeBasicInfoResponseDto {
 
