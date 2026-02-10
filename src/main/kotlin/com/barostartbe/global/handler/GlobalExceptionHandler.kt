@@ -27,7 +27,8 @@ class GlobalExceptionHandler(
             "Exception occurred. HTTP Status: {}, Code: {}, Message: {}",
             errorCode.httpStatus,
             errorCode.code,
-            errorCode.message
+            errorCode.message,
+            e
         )
 
         saveLog(errorCode)
