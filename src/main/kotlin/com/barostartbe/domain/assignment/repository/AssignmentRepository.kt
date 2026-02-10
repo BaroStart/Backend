@@ -119,7 +119,7 @@ interface AssignmentRepository : JpaRepository<Assignment, Long> {
 
     @Query("""
         SELECT a from Assignment a
-        WHERE a.mentee.id = :menteeId AND a.mentor.id = :mentorId AND DATE(a.createdAt) = :checkDate
+        WHERE a.mentee.id = :menteeId AND a.mentor.id = :mentorId AND DATE(a.dueDate) = :checkDate
     """)
     fun findAllByMentorIdAndMenteeIdAndDueDate(mentorId: Long, menteeId: Long, checkDate: LocalDate): List<Assignment>
 

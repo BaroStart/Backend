@@ -179,7 +179,7 @@ class MenteeQueryUseCase(
         val mentee = menteeRepository.findByIdOrNull(menteeId) ?: throw ServiceException(ErrorCode.USER_NOT_FOUND)
         val checkDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
 
-        return when (searchType){
+        return when (searchType.uppercase()){
             "DAY" -> getMenteeDashboardByDate(mentor, mentee, checkDate)
             "WEEK" -> {
                 val startDate = checkDate.minusDays(8).atStartOfDay()
