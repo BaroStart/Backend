@@ -188,7 +188,7 @@ class MenteeQueryUseCase(
             }
             "MONTH" -> {
                 val startDate = LocalDate.of(checkDate.year, checkDate.month, 1).atStartOfDay()
-                val endDate = checkDate.withDayOfMonth(checkDate.lengthOfMonth() + 1).atStartOfDay()
+                val endDate = checkDate.withDayOfMonth(checkDate.lengthOfMonth()).atStartOfDay()
                 getMenteeDashboardAfterStartDate(mentor, mentee, startDate, endDate)
             }
             else -> throw ServiceException(ErrorCode.BAD_PARAMETER)
@@ -242,7 +242,7 @@ class MenteeQueryUseCase(
         val totalMenteeAssignment = assignmentRepository.findAllByMenteeAndDueDateBefore(mentee, dueDate)
 
         val totalAssignmentCount = totalMenteeAssignment.size
-        val submittedAssignmentCount = totalMenteeAssignment.count { it.status == AssignmentStatus.SUBMITTED }
+        val submittedAssignmentCount = totalMenteeAssignment.count { it.status != AssignmentStatus.NOT_SUBMIT }
 
         return ((submittedAssignmentCount.toFloat()/totalAssignmentCount) * 100).toInt()
     }
