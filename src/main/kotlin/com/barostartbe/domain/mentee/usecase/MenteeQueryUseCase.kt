@@ -6,7 +6,6 @@ import com.barostartbe.domain.assignment.repository.AssignmentRepository
 import com.barostartbe.domain.mentee.dto.CalendarResponseDto
 import com.barostartbe.domain.assignment.entity.Assignment
 import com.barostartbe.domain.assignment.entity.enums.Subject
-import com.barostartbe.domain.badge.repository.BadgeRepository
 import com.barostartbe.domain.badge.repository.MenteeBadgeMappingRepository
 import com.barostartbe.domain.comment.repository.CommentRepository
 import com.barostartbe.domain.mentee.dto.GetMenteeCommentDashboardResponseDto
@@ -31,6 +30,7 @@ import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.mentor.repository.MentorRepository
 import com.barostartbe.domain.todo.entity.ToDo
 import com.barostartbe.domain.overall.repository.OverallRepository
+import com.barostartbe.domain.todo.entity.enums.Status
 import com.barostartbe.domain.todo.repository.ToDoRepository
 import com.barostartbe.domain.user.repository.AccessLogRepository
 import com.barostartbe.global.annotation.QueryUseCase
@@ -152,6 +152,7 @@ class MenteeQueryUseCase(
             .filter { it.status != AssignmentStatus.NOT_SUBMIT }
             .sumOf { it.endTime!!.toEpochSecond(ZoneOffset.UTC) - it.startTime!!.toEpochSecond(ZoneOffset.UTC) }
         val weeklyTotalStudyTimeForTodo =getWeeklyTotalDodos(mentee)
+            .filter { it.status == Status.COMPLETED }
             .sumOf { it.endTime!!.toEpochSecond(ZoneOffset.UTC) - it.startTime!!.toEpochSecond(ZoneOffset.UTC) }
         return (weeklyTotalStudyTimeForTodo + weeklyTotalStudyTimeForAssignment / 60).toInt()
     }
@@ -252,6 +253,7 @@ class MenteeQueryUseCase(
             .sumOf { it.endTime!!.toEpochSecond(ZoneOffset.UTC) - it.startTime!!.toEpochSecond(ZoneOffset.UTC)
         }
         val totalTodoTimeToSeconds = toDoRepository.findAllByMentee(mentee)
+            .filter { it.status == Status.COMPLETED }
             .sumOf { it.endTime!!.toEpochSecond(ZoneOffset.UTC) - it.startTime!!.toEpochSecond(ZoneOffset.UTC) }
 
         return ((totalAssignmentTimeToSeconds + totalTodoTimeToSeconds) / (60 * 60)).toInt()
