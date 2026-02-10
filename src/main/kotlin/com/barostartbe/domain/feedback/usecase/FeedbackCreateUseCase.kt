@@ -5,6 +5,9 @@ import com.barostartbe.domain.assignment.repository.AssignmentRepository
 import com.barostartbe.domain.feedback.dto.request.FeedbackCreateReq
 import com.barostartbe.domain.feedback.entity.Feedback
 import com.barostartbe.domain.feedback.repository.FeedbackRepository
+import com.barostartbe.domain.notification.dto.request.SendNotificationRequest
+import com.barostartbe.domain.notification.entity.enums.Type
+import com.barostartbe.domain.notification.usecase.SendNotificationUseCase
 import com.barostartbe.global.annotation.CommandUseCase
 import com.barostartbe.global.error.exception.ServiceException
 import com.barostartbe.global.response.type.ErrorCode
@@ -14,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional
 class FeedbackCreateUseCase(
 
     private val assignmentRepository: AssignmentRepository,
-    private val feedbackRepository: FeedbackRepository
+    private val feedbackRepository: FeedbackRepository,
+    private val sendNotificationUseCase: SendNotificationUseCase
 
 ) {
 
@@ -56,6 +60,22 @@ class FeedbackCreateUseCase(
 
         // 과제 상태 변경 (SUBMITTED -> FEEDBACKED)
         assignment.markFeedbacked()
+
+        val sendNotificationRequest = SendNotificationRequest(
+            receiverId = assignment.mentee.id!!,
+            title = String.format(
+                Type.FEEDBACK_RECEIVED.name
+            ),
+            message = String.format(
+                Type.FEEDBACK_RECEIVED.messageFormat,
+                assignment.mentor.name,
+                assignment.subject.name,
+                assignment.title
+            ),
+            Type.FEEDBACK_RECEIVED
+        )
+
+        sendNotificationUseCase.execute(sendNotificationRequest)
 
         return feedback.id!!
     }
