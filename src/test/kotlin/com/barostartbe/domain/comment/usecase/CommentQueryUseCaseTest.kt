@@ -14,6 +14,7 @@ import com.barostartbe.domain.mentee.entity.School
 import com.barostartbe.domain.mentor.entity.Mentor
 import com.barostartbe.domain.mentor.repository.MentorRepository
 import com.barostartbe.domain.user.entity.User
+import com.barostartbe.global.common.entity.BaseEntity
 import com.barostartbe.global.error.exception.ServiceException
 import com.barostartbe.global.response.type.ErrorCode
 import io.kotest.assertions.throwables.shouldThrow
@@ -53,8 +54,14 @@ class CommentQueryUseCaseTest : DescribeSpec({
             val menteeB = createMentee(loginId = "menteeB", nickname = "mentee-b", name = "B")
             val mappingA = MentorMenteeMapping(mentor = mentor, mentee = menteeA)
             val mappingB = MentorMenteeMapping(mentor = mentor, mentee = menteeB)
-            val commentA = Comment(mentee = menteeA, content = "comment-a").apply { createdAt = now }
-            val commentB = Comment(mentee = menteeB, content = "comment-b").apply { createdAt = now }
+            val commentA = Comment(mentee = menteeA, content = "comment-a").apply {
+                setId(this, 1L)
+                createdAt = now
+            }
+            val commentB = Comment(mentee = menteeB, content = "comment-b").apply {
+                setId(this, 2L)
+                createdAt = now
+            }
 
             every { mentorRepository.findByIdOrNull(mentorId) } returns mentor
             every { mentorMenteeMappingRepository.findAllByMentor(mentor) } returns listOf(mappingA, mappingB)
@@ -100,13 +107,13 @@ class CommentQueryUseCaseTest : DescribeSpec({
             val menteeResponder = mentee
             val subCommentA = mockk<SubComment>()
             val subCommentB = mockk<SubComment>()
-            
+
             every { subCommentA.id } returns 1L
             every { subCommentA.user } returns mentorResponder
             every { subCommentA.content } returns "reply-mentor"
             every { subCommentA.comment } returns comment
             every { subCommentA.createdAt } returns now
-            
+
             every { subCommentB.id } returns 2L
             every { subCommentB.user } returns menteeResponder
             every { subCommentB.content } returns "reply-mentee"
@@ -158,6 +165,12 @@ class CommentQueryUseCaseTest : DescribeSpec({
     }
 }) {
     companion object {
+        private fun setId(entity: Any, id: Long) {
+            val idField = BaseEntity::class.java.getDeclaredField("id")
+            idField.isAccessible = true
+            idField.set(entity, id)
+        }
+
         private fun createMentee(
             id: Long? = null,
             loginId: String = "mentee-login",
@@ -173,11 +186,7 @@ class CommentQueryUseCaseTest : DescribeSpec({
                 school = School.NORMAL,
                 hopeMajor = "CS"
             )
-            if (id != null) {
-                val idField = User::class.java.getDeclaredField("id")
-                idField.isAccessible = true
-                idField.set(mentee, id)
-            }
+            id?.let { setId(mentee, it) }
             return mentee
         }
 
@@ -194,11 +203,7 @@ class CommentQueryUseCaseTest : DescribeSpec({
                 nickname = nickname,
                 university = "Uni"
             )
-            if (id != null) {
-                val idField = User::class.java.getDeclaredField("id")
-                idField.isAccessible = true
-                idField.set(mentor, id)
-            }
+            id?.let { setId(mentor, it) }
             return mentor
         }
     }
