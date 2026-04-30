@@ -79,6 +79,21 @@ kotlin {
     }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
+// 기본 test task — 벤치마크 / 부하 테스트는 외부 MySQL · Redis 컨테이너가 필요하므로 제외
+tasks.named<Test>("test") {
+    useJUnitPlatform {
+        excludeTags("bench")
+    }
+}
+
+// 로컬 부하 / 동시성 측정 전용 task — `docker-compose-bench.yml` 띄운 뒤 실행
+tasks.register<Test>("benchTest") {
+    description = "부하 / 동시성 벤치마크 테스트 (로컬 전용, MySQL · Redis 필요)"
+    group = "verification"
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    useJUnitPlatform {
+        includeTags("bench")
+    }
+    outputs.upToDateWhen { false }
 }

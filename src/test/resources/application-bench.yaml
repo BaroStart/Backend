@@ -1,0 +1,52 @@
+spring:
+  datasource:
+    username: root
+    url: jdbc:mysql://localhost:3307/barostart_bench?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  sql:
+    init:
+      mode: never
+
+  data:
+    redis:
+      host: localhost
+      port: 6380
+      ssl:
+        enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: false
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+    show_sql: false
+    open-in-view: false
+
+jwt:
+  secret: dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdHRlc3R0ZXN0dGVzdHRlc3Q=
+  issuer: bench
+  token:
+    expire: 600000
+  refresh:
+    expire: 3600000
+
+oci:
+  tenant-id: ocid1.tenancy.oc1..bench
+  user-id: ocid1.user.oc1..bench
+  fingerprint: 00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+  private-key-path: /tmp/bench-fake-oci-key.pem
+  region: ap-seoul-1
+  bucket:
+    name: bench
+    namespace: bench
+
+app:
+  server:
+    url: http://localhost:8080
+  service:
+    url: http://localhost:3000
