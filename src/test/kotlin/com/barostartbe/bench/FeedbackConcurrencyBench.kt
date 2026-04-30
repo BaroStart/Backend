@@ -16,6 +16,7 @@ import com.barostartbe.domain.mentor.repository.MentorRepository
 import com.barostartbe.domain.notification.repository.NotificationRepository
 import com.barostartbe.global.error.exception.ServiceException
 import com.barostartbe.global.response.type.ErrorCode
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -30,6 +31,8 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 // 피드백 생성에서 race 차단 / 비즈니스 로직 차단 동작을 두 시나리오로 측정
+// CI 에서는 MySQL · Redis 컨테이너가 없어 제외, 로컬에서 `./gradlew benchTest` 로만 실행
+@Tag("bench")
 @SpringBootTest
 @ActiveProfiles("bench")
 @Import(BenchTestConfig::class)
